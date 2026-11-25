@@ -1,3 +1,5 @@
+
+from ijcas_paths import layout_path as _ijcas_path, workspace_root as _ijcas_workspace
 from copy import deepcopy
 import json
 from pathlib import Path
@@ -93,7 +95,7 @@ def test_output_is_exclusive_and_never_in_immutable_evidence(tmp_path):
         workflow.reserve(spec)
     from ijcas_paths import ROOT
     with pytest.raises(ValueError):
-        workflow.reserve(dict(spec, output=str(ROOT / 'studies/IJCAS/results/new')))
+        workflow.reserve(dict(spec, output=str(_ijcas_path(ROOT, 'studies/IJCAS/results/new'))))
 
 
 def test_fresh_protocol_does_not_grant_motion_or_relabel_paper_results(tmp_path, monkeypatch):

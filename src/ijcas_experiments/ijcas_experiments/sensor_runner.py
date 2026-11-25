@@ -1,4 +1,6 @@
 """One fresh replay of a retained sensor case; no ground-truth fallback."""
+
+from ijcas_paths import layout_path as _ijcas_path, workspace_root as _ijcas_workspace
 from copy import deepcopy
 from pathlib import Path
 from types import SimpleNamespace
@@ -9,9 +11,9 @@ import os
 import subprocess
 import time
 
-from ijcas_paths import ROOT, load_archived_json
+from ijcas_paths import ROOT, load_archived_json, original_layout_source
 
-BASE = ROOT / 'studies/IJCAS/results/hospital_paper_gate/hospital_sensor_navigation'
+BASE = _ijcas_path(ROOT, 'studies/IJCAS/results/hospital_paper_gate/hospital_sensor_navigation')
 
 
 def sensor_selection(task):
@@ -87,7 +89,7 @@ def prepare_controller_template(spec, output):
     sequence.lifecycle.verify_workflow_sources(archive_path, original_route['input_sha256'])
     with zipfile.ZipFile(archive_path) as archive:
         saved = archive.read('studies/IJCAS/scripts/hospital_mission_sequence.py')
-    active = Path(sequence.__file__).read_bytes()
+    active = original_layout_source(sequence.__file__)
     if ast.dump(ast.parse(saved), include_attributes=False) != ast.dump(ast.parse(active), include_attributes=False):
         original_route, review = platform.reviewed_controller_packet(
             spec['sensor_case']['controller_definition'], original_route,
@@ -115,14 +117,17 @@ def verify(output):
 def bridge_command(configuration):
     # Reset the SDK binary environment before loading system ROS Python.
     script = ('source /opt/ros/humble/setup.bash; source "$1/install/setup.bash"; '
-              'export PYTHONPATH="$1/tools:$1/studies/IJCAS/scripts:$1/isaac/scripts:$PYTHONPATH"; '
-              'exec /usr/bin/python3 "$1/studies/IJCAS/scripts/hospital_sensor_ros_bridge.py" "$2"')
+              'export PYTHONPATH="$2:$3:$4:$PYTHONPATH"; '
+              'exec /usr/bin/python3 "$5" "$6"')
     env = dict(os.environ)
     for key in ('PYTHONPATH', 'LD_LIBRARY_PATH', 'PYTHONHOME', 'CONDA_PREFIX',
                 'AMENT_PREFIX_PATH', 'COLCON_PREFIX_PATH', 'CMAKE_PREFIX_PATH'):
         env.pop(key, None)
     return ['/bin/bash', '--noprofile', '--norc', '-c', script, 'ijcas_sensor_bridge',
-            str(ROOT), str(configuration)], env
+            str(ROOT), str(_ijcas_path(ROOT, 'src/ijcas_experiments')),
+            str(_ijcas_path(ROOT, 'studies/IJCAS/scripts')), str(_ijcas_path(ROOT, 'isaac/scripts')),
+            str(_ijcas_path(ROOT, 'studies/IJCAS/scripts/hospital_sensor_ros_bridge.py')),
+            str(configuration)], env
 
 
 def restore_paper_bridge_settings(generated, archived):
@@ -265,7 +270,7 @@ async def run(spec, output):
     bridge_def = bind(workflow.bridge_definition, sequence=sequence)
     config = bridge_def(output / 'controller_template.json', actor=host.protocol['actor'],
         snapshot=host.protocol['required_tensor_snapshot'], map_report=map_path,
-        plugin_prefix=ROOT / 'install/ijcas_nav2_sensor_adapter', capture_id=capture,
+        plugin_prefix=_ijcas_path(ROOT, 'install/ijcas_nav2_sensor_adapter'), capture_id=capture,
         initial_stamp_ns=round(host.timeline_state()['current_time_s'] * 1e9),
         initial_prior_xyyaw=geometry['start_xyyaw'], topic_name='case_' + output.name.lower(),
         sensor_capture_policy=platform.SENSOR_CAPTURE_POLICY)

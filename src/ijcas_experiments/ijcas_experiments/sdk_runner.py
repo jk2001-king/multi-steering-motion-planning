@@ -1,10 +1,21 @@
 """Fresh SDK process adapter. Never imported by check/plan/analyze."""
+
 from pathlib import Path
 from types import SimpleNamespace
 import asyncio
 import json
 import sys
 import traceback
+
+# A direct SDK-Python script does not inherit ROS's Python-3.10 environment.
+# Bootstrap only the package path; no simulator or motion is started here.
+for _parent in Path(__file__).resolve().parents:
+    _package = _parent / 'src/ijcas_experiments'
+    if (_package / 'ijcas_paths.py').is_file():
+        if str(_package) not in sys.path:
+            sys.path.insert(0, str(_package))
+        break
+from ijcas_paths import layout_path as _ijcas_path, workspace_root as _ijcas_workspace
 
 
 def bind_relocated_support(context):
@@ -22,8 +33,8 @@ def bind_relocated_support(context):
     check = original.verify_actual_support
     readback = check.__globals__['support_readback_checks']
     support = readback.__globals__['support']
-    manifest = {r['path']: r['sha256_original'] for r in
-        (json.loads(line) for line in (ROOT / 'migration/sha256_manifest.jsonl').read_text().splitlines())}
+    manifest = {str(_ijcas_path(ROOT, r['path']).relative_to(ROOT)): r['sha256_original'] for r in
+        (json.loads(line) for line in (_ijcas_path(ROOT, 'migration/sha256_manifest.jsonl')).read_text().splitlines())}
     for path in (support.TARGET, support.LIVE):
         if sha(path) != manifest[str(path.relative_to(ROOT))]:
             raise ValueError('Original frozen support artifact changed: ' + str(path))
@@ -39,9 +50,9 @@ def bind_relocated_support(context):
 
 
 def configure_paths():
-    root = Path(__file__).resolve().parents[3]
-    for folder in (root / 'tools', root / 'studies/IJCAS/scripts', root / 'isaac/scripts',
-                   root / 'src/patient_initial_stability', root / 'src/ijcas_experiments'):
+    root = _ijcas_workspace()
+    for folder in (_ijcas_path(root, 'tools'), _ijcas_path(root, 'studies/IJCAS/scripts'), _ijcas_path(root, 'isaac/scripts'),
+                   _ijcas_path(root, 'src/patient_initial_stability'), _ijcas_path(root, 'src/ijcas_experiments')):
         sys.path.insert(0, str(folder))
     return root
 

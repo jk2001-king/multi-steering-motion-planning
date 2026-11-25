@@ -1,5 +1,7 @@
 """Offline software tests; fixtures are never presented as actual H6 trials."""
 
+from ijcas_paths import layout_path as _ijcas_path, workspace_root as _ijcas_workspace
+
 import asyncio
 import copy
 import inspect
@@ -393,7 +395,7 @@ def test_revised_orchestration_exactly_once_and_preserves_errors_with_SOFTWARE_S
     import sys
     from types import ModuleType
     root=tmp_path/'SOFTWARE_ONLY_NOT_A_TRIAL';root.mkdir()
-    protocol_path=root/'protocol.json';mission.evidence.write_exclusive(protocol_path,dict(software_fixture=True))
+    protocol_path=_ijcas_path(root, 'protocol.json');mission.evidence.write_exclusive(protocol_path,dict(software_fixture=True))
     live=mission.read(mission.H6/'static_boundary_GET/live_boundary.json');clock=dict(mission.boundary.STOPPED)
     class Layer:
         def __init__(self,key):self.key=key
@@ -420,7 +422,7 @@ def test_revised_orchestration_exactly_once_and_preserves_errors_with_SOFTWARE_S
         return None,None,dict(verdict='PASS')
     context=SimpleNamespace(static_folder=root,protocol_path=protocol_path,
         protocol=dict(saved_verified_GET=str(mission.H6/'static_boundary_GET/live_boundary.json'),required_display_settings={}),
-        preparation=SimpleNamespace(LIVE=root/'handoff.json'),stationary=SimpleNamespace(RESULT=root/'SOFTWARE_RESULT.json'),
+        preparation=SimpleNamespace(LIVE=_ijcas_path(root, 'handoff.json')),stationary=SimpleNamespace(RESULT=_ijcas_path(root, 'SOFTWARE_RESULT.json')),
         operations=SimpleNamespace(static=static,replay_static=replay))
     sdk=SimpleNamespace(omni=SimpleNamespace(usd=SimpleNamespace(get_context=lambda:SimpleNamespace(get_stage=lambda:stage)),
         timeline=SimpleNamespace(get_timeline_interface=lambda:timeline),
@@ -445,11 +447,11 @@ def test_revised_orchestration_exactly_once_and_preserves_errors_with_SOFTWARE_S
     if outcome.endswith('error'):
         with pytest.raises(RuntimeError,match='SOFTWARE_INJECTED'):
             asyncio.run(mission.run_reviewed_static_once(protocol_path,authorized=True,approval=approval))
-        error=mission.read(root/'static_operation_error.json')
+        error=mission.read(_ijcas_path(root, 'static_operation_error.json'))
         assert error['actual_current_layer_texts']==live['actual_layer_texts']
         assert error['exact_changes_since_entry']==dict(Root=[],Session=[])
         assert error['automatic_retry'] is False
-        assert not (root/'static_only_closeout.json').exists()
+        assert not (_ijcas_path(root, 'static_only_closeout.json')).exists()
     else:
         result=asyncio.run(mission.run_reviewed_static_once(protocol_path,authorized=True,approval=approval))
         assert result['static_verdict']==outcome
@@ -457,7 +459,7 @@ def test_revised_orchestration_exactly_once_and_preserves_errors_with_SOFTWARE_S
         assert result['additional_Stop_calls']==result['new_route_trials']==0
     assert counts['static']==1
     assert counts['replay']==int(outcome in ('PASS','replay_error'))
-    assert mission.read(root/'actual_layers_before_preflight.json')['actual_layer_texts']==live['actual_layer_texts']
+    assert mission.read(_ijcas_path(root, 'actual_layers_before_preflight.json'))['actual_layer_texts']==live['actual_layer_texts']
     duplicate=asyncio.run(mission.run_reviewed_static_once(protocol_path,authorized=True,approval=approval))
     assert duplicate['status']=='PRIOR_REVIEWED_STATIC_DISPATCH_RETAINED_NO_NEW_ACTION'
     assert counts['static']==1
@@ -1141,7 +1143,7 @@ def test_recorded_writeback_never_exempts_arbitrary_actor_defaults_or_rebases_te
 @pytest.mark.parametrize('fault',[None,'USD_angular_velocity','SDK_angular_velocity'])
 def test_real_held_neutral_HOLD_exact_vector3f_degree_roundtrip_is_not_a_physical_tolerance_waiver(fault):
     from pxr import Sdf,Gf
-    folder=mission.retained.GATE if hasattr(mission,'retained') else mission.ROOT/'studies/IJCAS/results/hospital_paper_gate'
+    folder=mission.retained.GATE if hasattr(mission,'retained') else _ijcas_path(mission.ROOT, 'studies/IJCAS/results/hospital_paper_gate')
     p=folder/'hospital_h6_experiments/cohort_15_held_static_r01/route/P_dynamics_full_envelope'
     prior=mission.read(p/'route_readback.json');raw=mission.read(p/'held_neutral_response_probe_r01/probe_readback.json')
     before=copy.deepcopy(prior['actual_final_readback']['layer_texts']);after=copy.deepcopy(raw['actual_final_readback']['layer_texts'])
@@ -1165,7 +1167,7 @@ def test_real_held_neutral_HOLD_exact_vector3f_degree_roundtrip_is_not_a_physica
 @pytest.mark.parametrize('fault',[None,'USD_angular_velocity','SDK_angular_velocity'])
 def test_real_H3_cusp_HOLD_proves_exact_native_float32_radian_to_degree_multiply(fault):
     from pxr import Sdf,Gf
-    folder=mission.ROOT/'studies/IJCAS/results/hospital_paper_gate/hospital_h3_experiments/cohort_06_held_static_r01/route/P_dynamics_full_envelope'
+    folder=_ijcas_path(mission.ROOT, 'studies/IJCAS/results/hospital_paper_gate/hospital_h3_experiments/cohort_06_held_static_r01/route/P_dynamics_full_envelope')
     raw=mission.read(folder/'route_readback.json');protocol=mission.read(raw['protocol'])
     static=mission.read(protocol['original_static_record'])
     before=copy.deepcopy(static['actual_final_readback']['layer_texts']);after=copy.deepcopy(raw['actual_final_readback']['layer_texts'])

@@ -1,4 +1,6 @@
 """Recompute the published selection without a simulator or result replacement."""
+
+from ijcas_paths import layout_path as _ijcas_path, workspace_root as _ijcas_workspace
 import csv
 import gzip
 from datetime import datetime, timezone
@@ -11,10 +13,10 @@ from types import FunctionType, SimpleNamespace
 
 from ijcas_paths import ROOT, load_archived_json, resolve_archived_path
 
-GATE = ROOT/'studies/IJCAS/results/hospital_paper_gate'
+GATE = _ijcas_path(ROOT, 'studies/IJCAS/results/hospital_paper_gate')
 BLOCK = GATE/'revision_final_n3_seed30_v2_20261122'
 SELECTED = BLOCK/'technical_camera_replacement_r01'
-SENSOR_DATA = ROOT/'studies/IJCAS/reports/technical_evidence/figures/figures_02_06_source'
+SENSOR_DATA = _ijcas_path(ROOT, 'studies/IJCAS/reports/technical_evidence/figures/figures_02_06_source')
 
 
 def sha(path):
@@ -294,8 +296,8 @@ def write_csv(path, rows):
 
 
 def export(output=None):
-    folder = Path(output).resolve() if output else ROOT/'results/reproduced'/datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S_%f')
-    protected = ROOT/'studies'
+    folder = Path(output).resolve() if output else _ijcas_path(ROOT, 'results/reproduced', datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S_%f'))
+    protected = _ijcas_path(ROOT, 'studies')
     if folder.is_relative_to(protected) or folder.exists():
         raise FileExistsError('Use a new output directory outside the archived study')
     main = main_results()

@@ -1,5 +1,7 @@
 """Pure source/frame tests, not ROS/Isaac sensor or navigation trials."""
 
+from ijcas_paths import layout_path as _ijcas_path, workspace_root as _ijcas_workspace
+
 import copy
 import json
 import math
@@ -393,7 +395,7 @@ def test_source_review_does_not_accept_an_edited_workflow_definition(tmp_path):
 def test_current_source_fingerprint_cannot_overwrite_an_existing_frozen_input_pin(tmp_path):
     import hashlib
     data=json.loads(PROTOCOL.read_bytes())
-    old=str(sensor.ROOT/'isaac/scripts/isaac_prepare_ijcas_cpu_laserscan.py')
+    old=str(_ijcas_path(sensor.ROOT, 'isaac/scripts/isaac_prepare_ijcas_cpu_laserscan.py'))
     data['input_sha256'][old]='0'*64
     data['definition_sha256']=hashlib.sha256(json.dumps({k:v for k,v in data.items() if k!='definition_sha256'},
         sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()
@@ -450,7 +452,7 @@ def test_bad_or_ambiguous_planning_snapshot_does_not_get_an_identity(edits):
 
 
 def test_legacy_map_cache_and_timer_are_reproduced_without_ROS_or_H5_trial():
-    path=sensor.ROOT/'src/patient_initial_stability/patient_initial_stability/occupancy_lattice_planner.py'
+    path=_ijcas_path(sensor.ROOT, 'src/patient_initial_stability/patient_initial_stability/occupancy_lattice_planner.py')
     original=path.read_bytes();before=set(sys.modules);r=sensor.legacy_replanning_source_review()
     assert path.read_bytes()==original and r['fake_planner_call_counts']==dict(initial=1,
         after_changed_map_same_goal_default_period=1,after_periodic_timer_at_fixture_speed50mm_s=2,
@@ -465,7 +467,7 @@ def test_legacy_map_cache_and_timer_are_reproduced_without_ROS_or_H5_trial():
 
 
 def test_legacy_cache_reproduction_cannot_be_reused_if_source_behavior_is_fixed(tmp_path):
-    path=sensor.ROOT/'src/patient_initial_stability/patient_initial_stability/occupancy_lattice_planner.py'
+    path=_ijcas_path(sensor.ROOT, 'src/patient_initial_stability/patient_initial_stability/occupancy_lattice_planner.py')
     source=path.read_text().replace('self.grid = message','self.grid = message\n        self.last_request = None')
     fixture=tmp_path/'SOFTWARE_CACHE_CHANGED_NOT_PRODUCTION.py';fixture.write_text(source)
     with pytest.raises(ValueError,match='behavior changed'):sensor.legacy_replanning_source_review(fixture)

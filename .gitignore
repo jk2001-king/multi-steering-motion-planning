@@ -1,4 +1,4 @@
-# Colcon and Python outputs
+# ROS / Python generated outputs
 /build/
 /install/
 /log/
@@ -12,33 +12,12 @@ __pycache__/
 .vscode/
 *.code-workspace
 
-# Original evidence, local relocation receipts and generated runs
-/studies/IJCAS/results/
-/studies/IJCAS/reports/
-/studies/CICS26/
-/data/
-/results/
-/migration/
+# Original experiment evidence and recoverable development material
 /archive/
-
-# Retired development inputs and local aliases
-/external/
-/scripts/
-/isaac_model/
-/motor_bag
-/motor_file
-/config/experiments
-isaac/scenes/*.bak*
 **/*~
+*.bak*
 
-# Superseded early study notes; current documentation lives in docs/*.md
-/docs/research_plan.md
-/docs/isaac_steering_calibration.md
-/docs/wheelchair_model_intake_audit.md
-/docs/isaac_sim_model_inspection.md
-/docs/model_audit.md
-
-# Credentials and local environment overrides
+# Credentials / local overrides
 .env
 .env.*
 !.env.example

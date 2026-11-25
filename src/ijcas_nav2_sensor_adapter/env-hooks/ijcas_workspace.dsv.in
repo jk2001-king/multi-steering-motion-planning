@@ -1,3 +1,5 @@
 set;IJCAS_WORKSPACE_ROOT;@IJCAS_WORKSPACE_ROOT@
-prepend-non-duplicate;PYTHONPATH;@IJCAS_WORKSPACE_ROOT@/studies/IJCAS/scripts
-prepend-non-duplicate;PYTHONPATH;@IJCAS_WORKSPACE_ROOT@/tools
+prepend-non-duplicate;PYTHONPATH;@IJCAS_WORKSPACE_ROOT@/src/ijcas_experiments/runtime/study
+prepend-non-duplicate;PYTHONPATH;@IJCAS_WORKSPACE_ROOT@/src/ijcas_experiments/runtime/sdk
+prepend-non-duplicate;PYTHONPATH;@IJCAS_WORKSPACE_ROOT@/src/ijcas_experiments/tools
+prepend-non-duplicate;PYTHONPATH;@IJCAS_WORKSPACE_ROOT@/src/ijcas_experiments

@@ -6,6 +6,8 @@ while this adapter applies the plan's steering-mode and speed schedule. The
 Nav2 local costmap consumes the live CPU-PhysX LaserScan for collision checks.
 """
 
+from ijcas_paths import layout_path as _ijcas_path, workspace_root as _ijcas_workspace
+
 import csv
 import json
 import math
@@ -39,11 +41,9 @@ from .spatial_utility_replay import (
 )
 
 
-WORKSPACE = Path(__file__).resolve().parents[3]
+WORKSPACE = _ijcas_workspace()
 DEFAULT_PLAN = (
-    WORKSPACE
-    / "studies/IJCAS/results/rigid_body_edge_gate/"
-    "corridor_90_hierarchical_rigid_body_envelope.json"
+    _ijcas_path(WORKSPACE, 'studies/IJCAS/results/rigid_body_edge_gate/corridor_90_hierarchical_rigid_body_envelope.json')
 )
 GOAL_LOCAL = (1.50, 2.20, math.radians(90.0))
 VALID_MODES = {"coordinated_counterphase", "front_only", "rear_only"}
@@ -785,7 +785,7 @@ class ProposedNav2PathRunner(Node):
             and heading_error is not None
             and abs(heading_error) <= summary["terminal_heading_tolerance_deg"]
         )
-        output_dir = WORKSPACE / "results/nav2_initial_motion"
+        output_dir = _ijcas_path(WORKSPACE, 'results/nav2_initial_motion')
         output_dir.mkdir(parents=True, exist_ok=True)
         json_path = output_dir / f"{self.run_id}.json"
         json_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")

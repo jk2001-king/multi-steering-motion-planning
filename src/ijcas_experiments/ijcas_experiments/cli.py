@@ -1,4 +1,6 @@
 """Standard ROS executables; motion is never implied by a readiness check."""
+
+from ijcas_paths import layout_path as _ijcas_path, workspace_root as _ijcas_workspace
 import argparse
 import ast
 import json
@@ -7,20 +9,22 @@ from pathlib import Path
 import shutil
 import subprocess
 
-from ijcas_paths import ROOT
+from ijcas_paths import ROOT, load_archived_json
 
 
 def check_main():
-    argparse.ArgumentParser(description='Offline final experiment readiness; no simulator or motion').parse_args()
+    parser = argparse.ArgumentParser(description='Offline final experiment readiness; no simulator or motion')
+    parser.add_argument('--full', action='store_true', help='Audit all preserved original file hashes')
+    args = parser.parse_args()
     from .reproduce import BLOCK, SELECTED, SENSOR_DATA
     paths = [BLOCK/'protocol.json',BLOCK/'execution_protocol.json',
         SELECTED/'FINAL_EXPERIMENT_CLOSEOUT.json',SELECTED/'selection_manifest.json',
-        SENSOR_DATA/'fig06_metrics.json',ROOT/'isaac/scenes/hospital_experiment.usda']
+        SENSOR_DATA/'fig06_metrics.json',_ijcas_path(ROOT, 'isaac/scenes/hospital_experiment.usda')]
     missing = [str(p) for p in paths if not p.is_file()]
     errors = []
-    receipt = ROOT / 'migration/commissioning_latest.json'
-    commissioning = json.loads(receipt.read_text()) if receipt.is_file() else None
-    for directory in (ROOT/'studies/IJCAS/scripts',ROOT/'isaac/scripts'):
+    receipt = _ijcas_path(ROOT, 'migration/commissioning_latest.json')
+    commissioning = load_archived_json(receipt) if receipt.is_file() else None
+    for directory in (_ijcas_path(ROOT, 'studies/IJCAS/scripts'),_ijcas_path(ROOT, 'isaac/scripts')):
         for path in directory.glob('*.py'):
             try:ast.parse(path.read_text())
             except SyntaxError as error:errors.append(str(error))
@@ -32,8 +36,11 @@ def check_main():
         local_commissioning_receipt=commissioning,
         live_reproduction_note='Only cases explicitly listed in a saved commissioning receipt are physically checked. This readiness command starts no simulator and grants no motion authority.',
         simulator_started=False,new_trials=0)
+    if args.full:
+        from verify_workspace import verify
+        result['layout_verification'] = verify(full=True)
     print(json.dumps(result,indent=2))
-    return int(bool(missing or errors))
+    return int(bool(missing or errors or args.full and not result['layout_verification']['PASS']))
 
 
 def results_main():

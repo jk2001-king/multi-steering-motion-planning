@@ -1,5 +1,7 @@
 """Coverage diagnostics never join tasks, invent support or admit driving."""
 
+from ijcas_paths import layout_path as _ijcas_path, workspace_root as _ijcas_workspace
+
 import copy
 
 import numpy as np
@@ -581,7 +583,7 @@ def test_prior_flush_open_environment_is_not_silently_assumed_after_source_reope
 def test_original_H3_geometry_comes_from_pinned_lineage_not_a_newer_folder_with_same_pose():
     import json
     protocol=mission.GATE/'hospital_h5_experiments/cohort_01_P_development_r01/runtime_protocol.json'
-    anchors,pins=mission.existing_task_controls(protocol,mission.ROOT/'studies/IJCAS/reports/technical_evidence/korean_review_manifest.json')
+    anchors,pins=mission.existing_task_controls(protocol,_ijcas_path(mission.ROOT, 'studies/IJCAS/reports/technical_evidence/korean_review_manifest.json'))
     path,record=mission.pinned_H3_geometry(pins,anchors)
     assert path==mission.GATE/'hospital_h3_turn_setup/setup_r01/hospital_h3_turn_geometry.json'
     assert record['environment_condition']=='H3_flush_fully_open_continuous_floor'
@@ -733,7 +735,7 @@ def test_source_metadata_GET_records_actual_proxy_interpolation_and_inherited_in
 def test_source_metadata_GET_private_embedded_loader_uses_same_existing_stage_without_import_cache_mutation():
     import runpy,sys
     stage,asset,mesh,expected=_metadata_source_fixture();before=dict(sys.modules)
-    namespace=runpy.run_path(str(mission.ROOT/'studies/IJCAS/scripts/hospital_private_loader.py'))['load'](mission.__file__)
+    namespace=runpy.run_path(str(_ijcas_path(mission.ROOT, 'studies/IJCAS/scripts/hospital_private_loader.py')))['load'](mission.__file__)
     result=namespace['source_mesh_composition_metadata'](stage,expected)
     assert result==mission.source_mesh_composition_metadata(stage,expected)
     assert all(sys.modules[k] is v for k,v in before.items())

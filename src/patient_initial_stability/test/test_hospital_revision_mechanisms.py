@@ -1,3 +1,5 @@
+
+from ijcas_paths import layout_path as _ijcas_path, workspace_root as _ijcas_workspace
 from dataclasses import asdict
 import math
 from pathlib import Path
@@ -88,8 +90,8 @@ def test_python_and_native_interventions_match_actual_1330_profile():
     import numpy as np
     import audit_hospital_paper_readiness as shared
     from patient_initial_stability.rigid_body_edge import MassNormalizedRigidBodyEdgeModel,RigidBodyParameterBounds
-    root=Path(__file__).resolve().parents[3]
-    reference=root/'studies/IJCAS/results/hospital_paper_gate/revision_campaign_20261121/planning/H2_P_dynamics_full_envelope_s03/P_dynamics_full_envelope.json'
+    root=_ijcas_workspace()
+    reference=_ijcas_path(root, 'studies/IJCAS/results/hospital_paper_gate/revision_campaign_20261121/planning/H2_P_dynamics_full_envelope_s03/P_dynamics_full_envelope.json')
     plan=json.loads(reference.read_text())
     profile=plan['geometry_profile']
     connections=shared.unified_wheelbase_connections(profile,include_compiled=True)

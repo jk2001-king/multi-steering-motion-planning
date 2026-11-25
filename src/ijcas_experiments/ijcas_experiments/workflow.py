@@ -1,4 +1,6 @@
 """Shared selection, new offline planning, SDK handoff and archived analysis."""
+
+from ijcas_paths import layout_path as _ijcas_path, workspace_root as _ijcas_workspace
 from contextlib import contextmanager
 from copy import deepcopy
 from datetime import datetime, timezone
@@ -36,11 +38,10 @@ def write(path, value):
 def reserve(spec):
     if spec['missing_inputs']:
         raise FileNotFoundError('Missing experiment inputs: ' + repr(spec['missing_inputs']))
-    output = Path(spec['output']) if spec['output'] else ROOT / 'results/experiments' / (
-        datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S_%f') + '_' + spec['cell']['cell_id'])
+    output = Path(spec['output']) if spec['output'] else _ijcas_path(ROOT, 'results/experiments', datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S_%f') + '_' + spec['cell']['cell_id'])
     output = output.resolve()
     for folder in ('src', 'studies', 'isaac', 'config', 'tools', 'migration', 'archive', 'build', 'install'):
-        protected = ROOT / folder
+        protected = _ijcas_path(ROOT, folder)
         if output == ROOT or output.is_relative_to(protected) or protected.is_relative_to(output):
             raise ValueError('Output must not overwrite code, assets or archived evidence')
     output.mkdir(parents=True, exist_ok=False)
@@ -50,7 +51,7 @@ def reserve(spec):
 
 @contextmanager
 def single_worker():
-    folder = ROOT / 'results'
+    folder = _ijcas_path(ROOT, 'results')
     folder.mkdir(exist_ok=True)
     with (folder / '.experiment.lock').open('a+') as stream:
         try:
@@ -68,8 +69,8 @@ def source_pins():
     for folder in ('studies/IJCAS/scripts', 'isaac/scripts',
                    'src/patient_initial_stability/patient_initial_stability',
                    'src/ijcas_experiments/ijcas_experiments'):
-        paths.extend((ROOT / folder).glob('*.py'))
-    paths.extend((Path(selection.default_catalog()), ROOT / 'tools/ijcas_paths.py'))
+        paths.extend((_ijcas_path(ROOT, folder)).glob('*.py'))
+    paths.extend((Path(selection.default_catalog()), _ijcas_path(ROOT, 'tools/ijcas_paths.py')))
     return {str(p.resolve()): sha(p) for p in sorted(set(paths))}
 
 

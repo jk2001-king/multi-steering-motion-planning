@@ -1,5 +1,7 @@
 """Software sequence/cleanup fixtures, NOT Isaac contacts or hold-force tests."""
 
+from ijcas_paths import layout_path as _ijcas_path, workspace_root as _ijcas_workspace
+
 import asyncio
 import copy
 import math
@@ -286,8 +288,8 @@ def test_guard_before_first_actuation_refusal_never_writes_gains_or_targets_even
 def test_all_four_real_native_H6_plans_use_same_prehold_and_unmodified_original_controller():
     import json
     from pathlib import Path
-    root=Path(__file__).resolve().parents[3]
-    folder=root/'studies/IJCAS/results/hospital_paper_gate/hospital_h6_planning/heading0_fresh_terminal_beam_matched_dev_r19'
+    root=_ijcas_workspace()
+    folder=_ijcas_path(root, 'studies/IJCAS/results/hospital_paper_gate/hospital_h6_planning/heading0_fresh_terminal_beam_matched_dev_r19')
     from ijcas_paths import load_archived_json
     review=load_archived_json(folder/'planning_review.json')
     protocol=load_archived_json(review['protocol'])
@@ -1184,7 +1186,7 @@ def test_fresh_held_historical_archive_cannot_waive_a_changed_original_controlle
 
 
 def _postabort_handoff():
-    return lifecycle.retained.ROOT/'studies/IJCAS/results/hospital_paper_gate/hospital_h6_experiments/cohort_03_held_static_r01/held_static/paused_preparation_handoff_r01.json'
+    return _ijcas_path(lifecycle.retained.ROOT, 'studies/IJCAS/results/hospital_paper_gate/hospital_h6_experiments/cohort_03_held_static_r01/held_static/paused_preparation_handoff_r01.json')
 
 
 def test_new_fresh_definition_uses_actual213s_GET_NOT_old_consumed_zero_clock_or_prior_actor():
@@ -1503,7 +1505,7 @@ def test_fresh_workflow_export_load_and_duplicate_dispatch_are_pinned_and_never_
 
 
 def _saved_cohort04_held_result():
-    return lifecycle.retained.ROOT/'studies/IJCAS/results/hospital_paper_gate/hospital_h6_experiments/cohort_04_held_static_r01/held_static/held_static_readback.json'
+    return _ijcas_path(lifecycle.retained.ROOT, 'studies/IJCAS/results/hospital_paper_gate/hospital_h6_experiments/cohort_04_held_static_r01/held_static/held_static_readback.json')
 
 
 def test_saved_held_abort_handoff_is_exact_failed_evidence_not_a_new_GET_or_static():

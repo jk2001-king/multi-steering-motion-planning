@@ -1,4 +1,6 @@
 """Resolve one explicit experiment selection without starting any backend."""
+
+from ijcas_paths import layout_path as _ijcas_path, workspace_root as _ijcas_workspace
 from copy import deepcopy
 from pathlib import Path
 import math
@@ -44,7 +46,7 @@ def read_yaml(path):
 
 def workspace_path(value):
     path = Path(value).expanduser()
-    return (ROOT / path if not path.is_absolute() else path).resolve()
+    return (_ijcas_path(ROOT, path) if not path.is_absolute() else path).resolve()
 
 
 def resolve(config=None, **overrides):

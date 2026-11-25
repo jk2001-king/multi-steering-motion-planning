@@ -1,5 +1,7 @@
 """Injected GET-only acquisition tests; never an Isaac/ROS trial."""
 
+from ijcas_paths import layout_path as _ijcas_path, workspace_root as _ijcas_workspace
+
 import copy
 import asyncio
 import math
@@ -312,7 +314,7 @@ def test_independent_triangle_certification_preserves_raw_native_position_and_ra
 def test_explicit_finite_surface_metric_does_not_amplify_grazing_angle_or_change_original_range():
     import hashlib,json
     from pathlib import Path
-    path=Path(runtime.__file__).resolve().parents[1]/'results/hospital_paper_gate/hospital_sensor_navigation/whole_H5_P_sensor_nav2/cohort_01_r01/first_route_with_declared_fixed_start_prior/range_source_disagreement_GET.json'
+    path=_ijcas_path(_ijcas_workspace(),'studies/IJCAS/results/hospital_paper_gate/hospital_sensor_navigation/whole_H5_P_sensor_nav2/cohort_01_r01/first_route_with_declared_fixed_start_prior/range_source_disagreement_GET.json')
     issue=json.loads(path.read_text())['issues'][0]
     ray=issue['ray'];hit=issue['original_native_hit'];original=copy.deepcopy(hit)
     triangles=np.array([issue['independent_source_intersection']['source_triangle_vertices_m']],float)
@@ -677,9 +679,8 @@ def plane_map_configuration():
 def test_H6_full12m_sensor_disc_extent_fits_bounded20mm_reference_not_a_new_safety_map():
     import json
     from pathlib import Path
-    root=Path(__file__).resolve().parents[3]
-    plan=json.loads((root/'studies/IJCAS/results/hospital_paper_gate/hospital_h6_experiments/'
-        'cohort_20_held_static_r01/route/P_dynamics_full_envelope/frozen_plan.json').read_text())
+    root=_ijcas_workspace()
+    plan=json.loads((_ijcas_path(root, 'studies/IJCAS/results/hospital_paper_gate/hospital_h6_experiments/cohort_20_held_static_r01/route/P_dynamics_full_envelope/frozen_plan.json')).read_text())
     lower=[1.5,-1.];shape=[1500,1775];resolution=.02
     upper=[lower[0]+shape[1]*resolution,lower[1]+shape[0]*resolution]
     assert shape[0]*shape[1]==2662500<=runtime.MAX_REFERENCE_MAP_CELLS==3000000

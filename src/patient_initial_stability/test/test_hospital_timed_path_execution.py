@@ -1,5 +1,7 @@
 """Shared timing prototype remains method-blind and cannot authorize motion."""
 
+from ijcas_paths import layout_path as _ijcas_path, workspace_root as _ijcas_workspace
+
 import ast
 import copy
 import json
@@ -189,8 +191,8 @@ def test_mission_terminal_cannot_advance_an_alignment_without_confirmed_hold():
 
 def test_all_four_actual_r19_native_inputs_bind_one_prospective_controller_without_changing_saved_sources():
     import screen_hospital_h4_common_executor as original
-    root=Path(__file__).resolve().parents[3]
-    folder=root/'studies/IJCAS/results/hospital_paper_gate/hospital_h6_planning/heading0_fresh_terminal_beam_matched_dev_r19'
+    root=_ijcas_workspace()
+    folder=_ijcas_path(root, 'studies/IJCAS/results/hospital_paper_gate/hospital_h6_planning/heading0_fresh_terminal_beam_matched_dev_r19')
     review=json.loads((folder/'planning_review.json').read_bytes());contract=json.loads(Path(review['protocol']).read_bytes())
     geometry=json.loads(Path(contract['common_geometry']).read_bytes());settings=[]
     for row in review['methods']:
@@ -214,8 +216,8 @@ class _FakeTensorBackend:
     """SDK-shaped STATEFUL fake; not a physical articulation or hold force."""
     def __init__(self):
         from types import SimpleNamespace
-        root=Path(__file__).resolve().parents[3]
-        path=root/'studies/IJCAS/results/hospital_paper_gate/hospital_h6_experiments/cohort_01_common_preparation_r01/reviewed_first_static/hospital_h6_reviewed_static_r01.json'
+        root=_ijcas_workspace()
+        path=_ijcas_path(root, 'studies/IJCAS/results/hospital_paper_gate/hospital_h6_experiments/cohort_01_common_preparation_r01/reviewed_first_static/hospital_h6_reviewed_static_r01.json')
         self.baseline=json.loads(path.read_bytes())['runtime_motor_baseline']
         self.shared_metatype=SimpleNamespace(dof_names=self.baseline['joint_names'],link_names=['link_%d'%i for i in range(13)])
         self.count=1;self.max_dofs=12;self.max_links=13;self.valid=True;self.paused=False;self.context_valid=True

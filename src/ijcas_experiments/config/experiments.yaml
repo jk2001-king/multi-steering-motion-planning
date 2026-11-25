@@ -13,8 +13,8 @@ defaults:
   allow_motion: false
 environments:
   hospital:
-    scene: isaac/scenes/hospital_experiment.usda
-    execution_protocol: studies/IJCAS/results/hospital_paper_gate/revision_final_n3_seed30_v2_20261122/execution_protocol.json
+    scene: src/ijcas_experiments/assets/isaac/scenes/hospital_experiment.usda
+    execution_protocol: archive/original/studies/IJCAS/results/hospital_paper_gate/revision_final_n3_seed30_v2_20261122/execution_protocol.json
     tasks:
       H1: {simulation_budget_s: 180.0, wall_budget_s: 900.0}
       H2: {simulation_budget_s: 180.0, wall_budget_s: 900.0}

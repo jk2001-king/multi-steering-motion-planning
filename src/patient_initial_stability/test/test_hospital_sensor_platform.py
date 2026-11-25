@@ -1,4 +1,6 @@
 """Pure proposal computations, NOT a physical or Nav2 integration PASS."""
+
+from ijcas_paths import layout_path as _ijcas_path, workspace_root as _ijcas_workspace
 import copy
 import hashlib
 import json
@@ -15,9 +17,9 @@ BASE=Path(__file__).resolve().parents[3]/'studies/IJCAS/results/hospital_paper_g
 def definition_fixture():
     sample,settings=encoder_inputs()
     root=BASE/'hospital_h5_experiments/cohort_10_held_static_r01/route/P_dynamics_full_envelope'
-    route=root/'route_protocol.json'
+    route=_ijcas_path(root, 'route_protocol.json')
     r=load_archived_json(route)
-    files=dict(controller_definition=route,frozen_plan=root/'frozen_plan.json',geometry=Path(r['geometry_file']),
+    files=dict(controller_definition=route,frozen_plan=_ijcas_path(root, 'frozen_plan.json'),geometry=Path(r['geometry_file']),
         encoder_geometry=BASE/'hospital_sensor_navigation/encoder_diagnostic/retrospective_h5_r01/source_geometry_GET.json',
         encoder_wrap_contract=BASE/'hospital_sensor_navigation/encoder_diagnostic/wrapped_positions_h5_r01/source_wrap_and_cap_contract.json')
     value=dict(version=platform.VERSION,scenario='H5_obstacle_bypass_return',method='P_dynamics_full_envelope',
@@ -33,20 +35,20 @@ def definition_fixture():
 def test_H6_sensor3000s_is_separate_from_original1500s_and_exact_active_math_is_reviewed():
     value,_=definition_fixture()
     root=BASE/'hospital_h6_experiments/cohort_20_held_static_r01/route/P_dynamics_full_envelope'
-    route=load_archived_json(root/'route_protocol.json')
+    route=load_archived_json(_ijcas_path(root, 'route_protocol.json'))
     value.update(scenario='H6_integrated_transfer_mission',simulation_budget_s=600.,maximum_wall_time_s=3000.,
         sensor_wall_budget_review=copy.deepcopy(platform.H6_SENSOR_WALL_REVIEW))
-    for key,path in dict(controller_definition=root/'route_protocol.json',frozen_plan=root/'frozen_plan.json',
+    for key,path in dict(controller_definition=_ijcas_path(root, 'route_protocol.json'),frozen_plan=_ijcas_path(root, 'frozen_plan.json'),
             geometry=Path(route['geometry_file'])).items():
         value[key]=str(path);value['input_sha256'][str(path)]=hashlib.sha256(path.read_bytes()).hexdigest()
     assert platform.checked_definition(value)['scenario']=='H6_integrated_transfer_mission'
-    original_bytes=(root/'route_protocol.json').read_bytes()
+    original_bytes=(_ijcas_path(root, 'route_protocol.json')).read_bytes()
     controller=platform.MeasuredPlatformController(value)
     review=controller.controller_source_review
     assert review['exact_active_generated_tracking_code_and_binding']
     assert review['all_other_module_AST_exact'] and review['inactive_H5_branch_removed_recovers_original_AST']
     assert review['original_packet_and_result_NOT_modified']
-    assert (root/'route_protocol.json').read_bytes()==original_bytes
+    assert (_ijcas_path(root, 'route_protocol.json')).read_bytes()==original_bytes
     assert route['maximum_wall_time_s']==1500.
     limits=platform.task_limits(value['scenario'])
     assert limits['maximum_sensor_frames']==3010 and limits['maximum_control_records']==12010

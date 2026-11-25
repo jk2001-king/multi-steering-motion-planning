@@ -1,4 +1,6 @@
 """Software boundary tests only; these do not assert a physical PASS."""
+
+from ijcas_paths import layout_path as _ijcas_path, workspace_root as _ijcas_workspace
 import copy
 import gzip
 import json
@@ -121,10 +123,10 @@ def test_H6_ROS_goal_array_is_all_double_without_changing_the_declared_zero_yaw_
     definition,_=definition_fixture()
     root=BASE/'hospital_h6_experiments/cohort_20_held_static_r01/route/P_dynamics_full_envelope'
     from ijcas_paths import load_archived_json
-    route=load_archived_json(root/'route_protocol.json')
+    route=load_archived_json(_ijcas_path(root, 'route_protocol.json'))
     definition.update(scenario='H6_integrated_transfer_mission',simulation_budget_s=600.,maximum_wall_time_s=3000.,
         sensor_wall_budget_review=copy.deepcopy(platform.H6_SENSOR_WALL_REVIEW))
-    for key,path in dict(controller_definition=root/'route_protocol.json',frozen_plan=root/'frozen_plan.json',geometry=Path(route['geometry_file'])).items():
+    for key,path in dict(controller_definition=_ijcas_path(root, 'route_protocol.json'),frozen_plan=_ijcas_path(root, 'frozen_plan.json'),geometry=Path(route['geometry_file'])).items():
         definition[key]=str(path);definition['input_sha256'][str(path)]=hashlib.sha256(path.read_bytes()).hexdigest()
     params=platform_nav2_parameters('/ijcas_sensor_dev/software_H6',definition)
     assert params['/ijcas_sensor_dev/software_H6/controller_server']['ros__parameters']['FollowPath.footprint_guard_version']=='CLOSED_CONVEX_FULL_POLYGON_CELL_SAT_v1'

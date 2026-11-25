@@ -1,5 +1,7 @@
 """Mission scope bindings, not a steering/physical mission certificate."""
 
+from ijcas_paths import layout_path as _ijcas_path, workspace_root as _ijcas_workspace
+
 import math
 import pytest
 
@@ -848,8 +850,8 @@ def test_independent_extra_reserve_audit_reuses_original_code_and_globals_privat
 def test_matched_driver_extra_reserve_is_explicit_common_50mm_and_never_old_folder_or_P_only():
     import runpy
     from pathlib import Path
-    root=Path(__file__).resolve().parents[3]
-    driver=root/'studies/IJCAS/results/hospital_paper_gate/hospital_h6_planning/review_matched_probe_driver.txt'
+    root=_ijcas_workspace()
+    driver=_ijcas_path(root, 'studies/IJCAS/results/hospital_paper_gate/hospital_h6_planning/review_matched_probe_driver.txt')
     target=driver.parent/'heading0_execution_reserve_matched_dev_r14'
     scope=runpy.run_path(str(driver),run_name='offline_DRIVER_DEFINITION_ONLY',init_globals=dict(
         h6_offline_additional_execution_reserve_m=.050,h6_offline_output=target))
@@ -863,8 +865,8 @@ def test_matched_driver_extra_reserve_is_explicit_common_50mm_and_never_old_fold
 def test_new_common20mm_reserve_requires_explicit10mm_halfdegree_assumption_and_all_methods(fault):
     import runpy
     from pathlib import Path
-    root=Path(__file__).resolve().parents[3]
-    driver=root/'studies/IJCAS/results/hospital_paper_gate/hospital_h6_planning/review_matched_probe_driver.txt'
+    root=_ijcas_workspace()
+    driver=_ijcas_path(root, 'studies/IJCAS/results/hospital_paper_gate/hospital_h6_planning/review_matched_probe_driver.txt')
     values=dict(h6_offline_additional_execution_reserve_m=.020,
         h6_offline_assumed_tracking_position_m=.010,h6_offline_assumed_tracking_heading_deg=.5,
         h6_offline_output=driver.parent/'SOFTWARE_DEFINITION_ONLY_NOT_EXECUTED')
@@ -1530,8 +1532,8 @@ def test_mission_priority_barrier_reduction_is_guidance_only_not_a_terminal_waiv
 def mission_offline_probe_driver():
     import runpy
     from pathlib import Path
-    root=Path(__file__).resolve().parents[3]
-    path=root/'studies/IJCAS/results/hospital_paper_gate/hospital_h6_planning/review_matched_probe_driver.txt'
+    root=_ijcas_workspace()
+    path=_ijcas_path(root, 'studies/IJCAS/results/hospital_paper_gate/hospital_h6_planning/review_matched_probe_driver.txt')
     return runpy.run_path(str(path),run_name='software_fixture_NO_main')
 
 
@@ -1566,7 +1568,7 @@ def test_completed_original_offline_probe_is_verified_not_run_again(mission_offl
     # Fail before calling main if the historical fixture is absent. It is
     # never permissible for a missing test fixture to launch a real search.
     root=mission_offline_probe_driver['OUTPUT']
-    assert (root/'planning_review.json').exists()
+    assert (_ijcas_path(root, 'planning_review.json')).exists()
     mission_offline_probe_driver['main']()
 
 

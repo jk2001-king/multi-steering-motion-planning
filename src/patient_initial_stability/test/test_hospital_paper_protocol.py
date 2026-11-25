@@ -1,3 +1,5 @@
+
+from ijcas_paths import layout_path as _ijcas_path, workspace_root as _ijcas_workspace
 from pathlib import Path
 import importlib.util
 import copy
@@ -9,12 +11,12 @@ import pytest
 import yaml
 
 
-WORKSPACE = Path(__file__).resolve().parents[3]
+WORKSPACE = _ijcas_workspace()
 PROTOCOL = (
-    WORKSPACE / "studies/IJCAS/config/hospital_paper_validation_protocol.yaml"
+    _ijcas_path(WORKSPACE, 'studies/IJCAS/config/hospital_paper_validation_protocol.yaml')
 )
 MEASUREMENT = (
-    WORKSPACE / "studies/IJCAS/config/hospital_environment_measurement_template.yaml"
+    _ijcas_path(WORKSPACE, 'studies/IJCAS/config/hospital_environment_measurement_template.yaml')
 )
 
 
@@ -48,7 +50,7 @@ def test_scope_keeps_cics_results_separate_and_matches_execution_controllers():
 
 
 def test_readiness_audit_does_not_require_the_removed_controller_coupling():
-    path = WORKSPACE / "studies/IJCAS/scripts/audit_hospital_paper_readiness.py"
+    path = _ijcas_path(WORKSPACE, 'studies/IJCAS/scripts/audit_hospital_paper_readiness.py')
     spec = importlib.util.spec_from_file_location("hospital_paper_audit", path)
     audit = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(audit)
@@ -73,7 +75,7 @@ def test_measurement_template_blocks_paper_trials_until_populated():
 
 @pytest.fixture
 def ledger_module():
-    path=WORKSPACE/'studies/IJCAS/scripts/audit_hospital_paper_readiness.py'
+    path=_ijcas_path(WORKSPACE, 'studies/IJCAS/scripts/audit_hospital_paper_readiness.py')
     spec=importlib.util.spec_from_file_location('hospital_ledger_software_test',path)
     module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
     return module
@@ -192,17 +194,17 @@ def _software_resource_inputs(module,root):
         path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps(data));return path
     cases=[];outputs={};plans=[]
     for index,method in enumerate(module.METHODS):
-        plan=write(root/('SOFTWARE_PLAN_'+str(index)+'.json'),dict(method=method,
+        plan=write(_ijcas_path(root, 'SOFTWARE_PLAN_' + str(index) + '.json'),dict(method=method,
             reference_center_arc_m=7.6,common_max_command_speed_m_s=.05,common_max_acceleration_m_s2=.02))
         plans.append(str(plan));outputs[str(plan)]=module.file_sha(plan)
         for dt in (.02,.01):
-            trace=root/(f'SOFTWARE_MODEL_{index}_{dt}.csv');trace.write_text('SOFTWARE_ONLY\n')
+            trace=_ijcas_path(root, f'SOFTWARE_MODEL_{index}_{dt}.csv');trace.write_text('SOFTWARE_ONLY\n')
             cases.append(dict(method=method,integration_dt_s=dt,simulation_duration_s=170.+index,
                 hold_entry_model_time_s=165.+index,terminal_pulse_count=0,model_status='MODEL_SCREEN_PASS',
                 model_trace=str(trace),model_trace_sha256=module.file_sha(trace)))
-    write(root/'hospital_h4_execution_bundle/bundle_r01/execution_bundle.json',dict(plans=plans,output_sha256=outputs))
-    model=write(root/'hospital_h4_common_executor_screen/screen_r01/common_executor_model_screen.json',dict(cases=cases))
-    write(root/'hospital_h4_path_execution_v3/cohort_01_adopted_query_r01/hospital_h4_shared_v3_P_dynamics_full_envelope_r01.json',
+    write(_ijcas_path(root, 'hospital_h4_execution_bundle/bundle_r01/execution_bundle.json'),dict(plans=plans,output_sha256=outputs))
+    model=write(_ijcas_path(root, 'hospital_h4_common_executor_screen/screen_r01/common_executor_model_screen.json'),dict(cases=cases))
+    write(_ijcas_path(root, 'hospital_h4_path_execution_v3/cohort_01_adopted_query_r01/hospital_h4_shared_v3_P_dynamics_full_envelope_r01.json'),
         dict(guards={'maximum_simulation_duration_s':180.,'maximum_wall_time_s':900.},
             acceptance={'hold_observation_s':5.},terminal_controller_config={'terminal_timeout_s':90.}))
     return model,plans
@@ -295,7 +297,7 @@ def test_multiple_hold_episodes_never_get_merged_into_one_favorable_final_window
 
 @pytest.fixture(scope='module')
 def original_H4_native_plans():
-    bundle=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate/hospital_h4_execution_bundle/bundle_r01/execution_bundle.json'
+    bundle=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate/hospital_h4_execution_bundle/bundle_r01/execution_bundle.json')
     if not bundle.is_file():pytest.skip('Frozen H4 planning evidence unavailable')
     return [json.loads(Path(path).read_bytes()) for path in json.loads(bundle.read_bytes())['plans']]
 
@@ -388,8 +390,8 @@ def test_incomplete_hold_statistics_are_diagnostic_not_required_fixed_tail_accep
 
 
 def test_actual_H4_timeout_and_common_resource_option_remain_new_design_not_relabelled_PASS(ledger_module):
-    root=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate'
-    path=root/'hospital_h4_experiments/cohort_04_full_task_r01/route/hospital_h4_cohort_04_full_task_r01_P_dynamics_full_envelope_r01.json'
+    root=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate')
+    path=_ijcas_path(root, 'hospital_h4_experiments/cohort_04_full_task_r01/route/hospital_h4_cohort_04_full_task_r01_P_dynamics_full_envelope_r01.json')
     if not path.exists():pytest.skip('Actual fresh H4 first route not recorded')
     before=path.read_bytes();row=ledger_module.inspect_execution_record(path,'method_path')
     assert row['reported_verdict']=='FAIL' and row['outcome_stage']=='ACTUAL_PATH_OUTCOME'
@@ -408,7 +410,7 @@ def test_actual_H4_timeout_and_common_resource_option_remain_new_design_not_rela
 
 
 def _configured_resource_fixture(module,root,cohort,limit,*,common=True):
-    path=root/'hospital_h4_experiments'/cohort/'protocol.json';path.parent.mkdir(parents=True)
+    path=_ijcas_path(root, 'hospital_h4_experiments', cohort, 'protocol.json');path.parent.mkdir(parents=True)
     guards=dict(maximum_simulation_duration_s=limit,maximum_wall_time_s=900.,maximum_control_gap_s=.25)
     data=dict(version='H4_configured_fresh_single_whole_task_v1',cohort=cohort,
         method=module.METHODS[-1],environment_variant='SOFTWARE_SAME_ENV',guards=guards,
@@ -503,13 +505,13 @@ def test_unreadable_resource_limits_are_unknown_not_physical_failure(ledger_modu
 
 def _measured_H4_envelope_fixture(module,tmp_path):
     root=tmp_path/'hospital_paper_gate'
-    manifest=root/'hospital_h4_setup/candidate_r01/hospital_h4_geometry_candidate.json'
+    manifest=_ijcas_path(root, 'hospital_h4_setup/candidate_r01/hospital_h4_geometry_candidate.json')
     manifest.parent.mkdir(parents=True)
     manifest.write_text(json.dumps(dict(footprint=dict(length_m=1.630,width_m=.965,clearance_m=.010),
         candidate_occupancy_digest='SOFTWARE_MAP_PIN',obstacle_height_slab_m=[.006,.450],
         included_collision_AABBs=[dict(path='/SOFTWARE_ONLY/obstacle',
             world_aabb=dict(minimum_m=[1.5,-.2,.006],maximum_m=[2.,.2,.450]))])))
-    path=root/'hospital_h4_experiments/SOFTWARE_ENVELOPE/route/hospital_h4_SOFTWARE_r01.json'
+    path=_ijcas_path(root, 'hospital_h4_experiments/SOFTWARE_ENVELOPE/route/hospital_h4_SOFTWARE_r01.json')
     raw=_write_test_result(path,started=True)
     trace=path.with_suffix('.csv')
     trace.write_text('time_s,phase,phase_time_s,x_m,y_m,yaw_rad\n'
@@ -667,7 +669,7 @@ def test_six_task_inventory_pins_raw_inputs_and_is_idempotent(ledger_module,tmp_
 
 
 def _software_scope_plans(module,root):
-    folder=root/'hospital_h6_planning/heading0_fresh_terminal_beam_matched_dev_r19'
+    folder=_ijcas_path(root, 'hospital_h6_planning/heading0_fresh_terminal_beam_matched_dev_r19')
     folder.mkdir(parents=True);methods=[];outputs={}
     for method in module.METHODS:
         path=folder/(method+'.json');path.write_text(json.dumps(dict(method=method,plan_success=True)))
@@ -711,7 +713,7 @@ def test_six_task_inventory_catches_trace_mutation_during_inspection(ledger_modu
 def test_one_actual_development_figure_is_pinned_readonly_and_idempotent(ledger_module,tmp_path,monkeypatch):
     monkeypatch.setenv('MPLCONFIGDIR',str(tmp_path/'matplotlib_cache'))
     pytest.importorskip('matplotlib')
-    result=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments/cohort_05_full_task_r01/route/first_motion_after_prepath_hold/hospital_h4_cohort_05_full_task_r01_P_dynamics_full_envelope_after_prepath_hold_r01.json'
+    result=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments/cohort_05_full_task_r01/route/first_motion_after_prepath_hold/hospital_h4_cohort_05_full_task_r01_P_dynamics_full_envelope_after_prepath_hold_r01.json')
     if not result.exists():pytest.skip('Actual completed H4 P not recorded')
     before={path:ledger_module.file_sha(path) for path in (result,result.with_suffix('.csv'))}
     output=tmp_path/'derived_figure'
@@ -795,7 +797,7 @@ def test_clock_overlap_rejects_missing_nonfinite_nonmonotonic_or_unshared_data(l
 def test_actual_frozen_prediction_review_retains_both_original_resolutions_and_raw_outcome(ledger_module,tmp_path,monkeypatch):
     monkeypatch.setenv('MPLCONFIGDIR',str(tmp_path/'matplotlib_cache'))
     pytest.importorskip('matplotlib')
-    result=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments/cohort_05_full_task_r01/route/first_motion_after_prepath_hold/hospital_h4_cohort_05_full_task_r01_P_dynamics_full_envelope_after_prepath_hold_r01.json'
+    result=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments/cohort_05_full_task_r01/route/first_motion_after_prepath_hold/hospital_h4_cohort_05_full_task_r01_P_dynamics_full_envelope_after_prepath_hold_r01.json')
     if not result.exists():pytest.skip('Actual P record not available')
     pins={p:ledger_module.file_sha(p) for p in (result,result.with_suffix('.csv'))}
     output=tmp_path/'derived_prediction'
@@ -827,7 +829,7 @@ def test_prediction_review_never_promotes_an_unstarted_HOLD(ledger_module,tmp_pa
 
 @pytest.mark.parametrize('fault',['screen_not_prepinned','changed_control_source','protocol_pin','plan_pin','trace_pin'])
 def test_frozen_prediction_review_requires_its_own_preexecuted_pins_and_common_control(ledger_module,tmp_path,fault):
-    original=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments/cohort_05_full_task_r01/route/first_motion_after_prepath_hold/hospital_h4_cohort_05_full_task_r01_P_dynamics_full_envelope_after_prepath_hold_r01.json'
+    original=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments/cohort_05_full_task_r01/route/first_motion_after_prepath_hold/hospital_h4_cohort_05_full_task_r01_P_dynamics_full_envelope_after_prepath_hold_r01.json')
     if not original.exists():pytest.skip('Actual P record not available')
     raw=json.loads(original.read_bytes());result=tmp_path/'SOFTWARE_evidence_copy.json'
     trace=result.with_suffix('.csv');trace.write_bytes(original.with_suffix('.csv').read_bytes())
@@ -846,7 +848,7 @@ def test_frozen_prediction_review_requires_its_own_preexecuted_pins_and_common_c
 def test_failed_180s_actual_outcome_is_not_promoted_by_a_completed_nominal_prediction(ledger_module,tmp_path,monkeypatch):
     monkeypatch.setenv('MPLCONFIGDIR',str(tmp_path/'matplotlib_cache'))
     pytest.importorskip('matplotlib')
-    original=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments/cohort_04_full_task_r01/route/hospital_h4_cohort_04_full_task_r01_P_dynamics_full_envelope_r01.json'
+    original=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments/cohort_04_full_task_r01/route/hospital_h4_cohort_04_full_task_r01_P_dynamics_full_envelope_r01.json')
     if not original.exists():pytest.skip('Actual original 180s FAIL not available')
     before=original.read_bytes()
     target=ledger_module.write_frozen_prediction_review(original,tmp_path/'failed_actual_review')
@@ -859,7 +861,7 @@ def test_failed_180s_actual_outcome_is_not_promoted_by_a_completed_nominal_predi
 
 
 def test_explicit_development_export_never_promotes_one_run_to_a_four_method_comparison(ledger_module,tmp_path):
-    result=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments/cohort_05_full_task_r01/route/first_motion_after_prepath_hold/hospital_h4_cohort_05_full_task_r01_P_dynamics_full_envelope_after_prepath_hold_r01.json'
+    result=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments/cohort_05_full_task_r01/route/first_motion_after_prepath_hold/hospital_h4_cohort_05_full_task_r01_P_dynamics_full_envelope_after_prepath_hold_r01.json')
     if not result.exists():pytest.skip('Actual P not present')
     before=result.read_bytes();output=tmp_path/'one_run'
     path=ledger_module.write_explicit_development_comparison([result],output)
@@ -873,7 +875,7 @@ def test_explicit_development_export_never_promotes_one_run_to_a_four_method_com
 
 
 def test_explicit_development_export_rejects_duplicate_receipts_and_unstarted_HOLD(ledger_module,tmp_path):
-    result=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments/cohort_05_full_task_r01/route/first_motion_after_prepath_hold/hospital_h4_cohort_05_full_task_r01_P_dynamics_full_envelope_after_prepath_hold_r01.json'
+    result=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments/cohort_05_full_task_r01/route/first_motion_after_prepath_hold/hospital_h4_cohort_05_full_task_r01_P_dynamics_full_envelope_after_prepath_hold_r01.json')
     if result.exists():
         with pytest.raises(ValueError,match='distinct actual result paths'):
             ledger_module.write_explicit_development_comparison([result,result],tmp_path/'duplicate')
@@ -885,9 +887,9 @@ def test_explicit_development_export_rejects_duplicate_receipts_and_unstarted_HO
 
 
 def test_explicit_development_export_does_not_pool_old_180s_FAIL_with_new_300s_PASS(ledger_module,tmp_path):
-    root=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments'
-    old=root/'cohort_04_full_task_r01/route/hospital_h4_cohort_04_full_task_r01_P_dynamics_full_envelope_r01.json'
-    new=root/'cohort_05_full_task_r01/route/first_motion_after_prepath_hold/hospital_h4_cohort_05_full_task_r01_P_dynamics_full_envelope_after_prepath_hold_r01.json'
+    root=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments')
+    old=_ijcas_path(root, 'cohort_04_full_task_r01/route/hospital_h4_cohort_04_full_task_r01_P_dynamics_full_envelope_r01.json')
+    new=_ijcas_path(root, 'cohort_05_full_task_r01/route/first_motion_after_prepath_hold/hospital_h4_cohort_05_full_task_r01_P_dynamics_full_envelope_after_prepath_hold_r01.json')
     if not old.exists() or not new.exists():pytest.skip('Actual separate resource-version outcomes not present')
     target=ledger_module.write_explicit_development_comparison([old,new],tmp_path/'different_versions')
     report=json.loads(target.read_bytes())
@@ -899,7 +901,7 @@ def test_explicit_development_export_does_not_pool_old_180s_FAIL_with_new_300s_P
 
 
 def test_explicit_comparison_does_not_relabel_a_P_trace_as_a_B2_method_trial(ledger_module,tmp_path):
-    original=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments/cohort_05_full_task_r01/route/first_motion_after_prepath_hold/hospital_h4_cohort_05_full_task_r01_P_dynamics_full_envelope_after_prepath_hold_r01.json'
+    original=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments/cohort_05_full_task_r01/route/first_motion_after_prepath_hold/hospital_h4_cohort_05_full_task_r01_P_dynamics_full_envelope_after_prepath_hold_r01.json')
     if not original.exists():pytest.skip('Actual P not present')
     raw=json.loads(original.read_bytes());raw['method']='B2_multimode_transition_cost_ramp'
     path=tmp_path/'SOFTWARE_relabeled.json';path.write_text(json.dumps(raw))
@@ -968,7 +970,7 @@ def test_phase_response_rejects_invalid_clock_channels_or_reference_classificati
 
 
 def test_actual_P_B2_phase_diagnosis_retains_own_traces_and_never_creates_a_physical_trial(ledger_module,tmp_path):
-    base=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments'
+    base=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments')
     proposed=base/'cohort_05_full_task_r01/route/first_motion_after_prepath_hold/hospital_h4_cohort_05_full_task_r01_P_dynamics_full_envelope_after_prepath_hold_r01.json'
     baseline=base/'cohort_06_full_task_r01/route/hospital_h4_cohort_06_full_task_r01_B2_multimode_transition_cost_ramp_r01.json'
     if not all(p.exists() for p in (proposed,baseline)):pytest.skip('Both explicit actual development outcomes required')
@@ -1052,7 +1054,7 @@ def test_orientation_segments_do_not_merge_separate_tracking_episodes_or_hide_un
 
 
 def test_actual_old_and_new_P_orientation_review_retains_versions_and_exact_raw_outcomes(ledger_module,tmp_path):
-    base=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments'
+    base=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments')
     old=base/'cohort_05_full_task_r01/route/first_motion_after_prepath_hold/hospital_h4_cohort_05_full_task_r01_P_dynamics_full_envelope_after_prepath_hold_r01.json'
     new=base/'cohort_09_full_task_r01/route/hospital_h4_cohort_09_full_task_r01_P_dynamics_full_envelope_r01.json'
     if not all(p.is_file() for p in (old,new)):pytest.skip('Both explicit actual development P outcomes required')
@@ -1074,7 +1076,7 @@ def test_actual_old_and_new_P_orientation_review_retains_versions_and_exact_raw_
 
 
 def _explicit_hospital_development_results():
-    gate=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate'
+    gate=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate')
     paths=[]
     for scenario,folder in [('h1','path_execution_v3'),('h2','hospital_h2_path_execution_v3')]:
         paths.extend(gate/folder/'cohort_01'/f'hospital_{scenario}_stopalign_v3_{name}_path_r01.json'
@@ -1131,7 +1133,7 @@ def test_manuscript_table_rejects_duplicate_unstarted_or_mislabelled_records(led
 
 
 def test_terminal_reference_geometry_keeps_endpoint_and_ideal_handoff_distinct(ledger_module):
-    plan_path=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate/hospital_h4_execution_bundle/bundle_r01/P_dynamics_full_envelope.json'
+    plan_path=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate/hospital_h4_execution_bundle/bundle_r01/P_dynamics_full_envelope.json')
     if not plan_path.exists():pytest.skip('Original frozen H4 reference unavailable')
     plan=json.loads(plan_path.read_bytes());before=copy.deepcopy(plan)
     result=ledger_module.terminal_reference_geometry(plan,.025,.030,2.)
@@ -1147,14 +1149,14 @@ def test_terminal_reference_geometry_keeps_endpoint_and_ideal_handoff_distinct(l
 
 @pytest.mark.parametrize('distance,position,heading',[(float('nan'),.03,2.),(-.1,.03,2.),(1e8,.03,2.),(.025,0.,2.),(.025,.03,float('inf'))])
 def test_terminal_reference_geometry_rejects_unknown_or_invalid_bands(ledger_module,distance,position,heading):
-    plan_path=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate/hospital_h4_execution_bundle/bundle_r01/P_dynamics_full_envelope.json'
+    plan_path=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate/hospital_h4_execution_bundle/bundle_r01/P_dynamics_full_envelope.json')
     if not plan_path.exists():pytest.skip('Original frozen H4 reference unavailable')
     with pytest.raises(ValueError):ledger_module.terminal_reference_geometry(json.loads(plan_path.read_bytes()),distance,position,heading)
 
 
 def test_terminal_reference_review_keeps_all_four_methods_without_inventing_B1_motion(ledger_module,tmp_path):
     paths=_explicit_hospital_development_results()
-    b0=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments/cohort_07_full_task_r01/route/hospital_h4_cohort_07_full_task_r01_B0_fixed_counterphase_ramp_r01.json'
+    b0=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments/cohort_07_full_task_r01/route/hospital_h4_cohort_07_full_task_r01_B0_fixed_counterphase_ramp_r01.json')
     if not b0.exists():pytest.skip('Actual B0 not yet recorded')
     inputs=[b0,*paths[-2:]];pins={p:ledger_module.file_sha(p) for r in inputs for p in (r,r.with_suffix('.csv'))}
     target=ledger_module.write_terminal_reference_review(inputs,tmp_path/'derived')
@@ -1290,7 +1292,7 @@ def test_terminal_connection_filter_cannot_invent_or_duplicate_candidates_or_ref
 
 
 def test_all_four_prospective_terminal_candidates_replay_original_models_without_adopting_new_motion(ledger_module,tmp_path):
-    base=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate/hospital_h4_execution_bundle/bundle_r01'
+    base=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate/hospital_h4_execution_bundle/bundle_r01')
     if not base.exists():pytest.skip('Original frozen H4 pool unavailable')
     protected={p:ledger_module.file_sha(p) for p in base.glob('*.json')}
     target=ledger_module.write_terminal_connection_candidate(tmp_path/'candidate')
@@ -1317,7 +1319,7 @@ def test_all_four_prospective_terminal_candidates_replay_original_models_without
 
 @pytest.fixture
 def original_common_interface_archive():
-    path=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate/hospital_h4_terminal_connection_candidates/3828a169cafbb9c3/terminal_connection_candidate.json'
+    path=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate/hospital_h4_terminal_connection_candidates/3828a169cafbb9c3/terminal_connection_candidate.json')
     if not path.is_file():pytest.skip('Original prospective candidate archive unavailable')
     return path,json.loads(path.read_bytes())
 
@@ -1381,7 +1383,7 @@ def test_all_four_margin_export_preserves_raw_inputs_and_does_not_select_or_adop
 
 
 def test_actual_B1_FAIL_stays_in_matched_figure_without_completed_bar_or_goal_invention(ledger_module,tmp_path,monkeypatch):
-    b1=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments/cohort_08_full_task_r01/route/hospital_h4_cohort_08_full_task_r01_B1_multimode_kinematic_ramp_r01.json'
+    b1=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate/hospital_h4_experiments/cohort_08_full_task_r01/route/hospital_h4_cohort_08_full_task_r01_B1_multimode_kinematic_ramp_r01.json')
     if not b1.exists():pytest.skip('Actual B1 outcome not recorded')
     raw=json.loads(b1.read_bytes())
     if raw['verdict']!='FAIL':pytest.skip('Fixture requires actual unmodified failed outcome')
@@ -1437,7 +1439,7 @@ def test_one_actual_outcome_can_review_own_all_four_references_without_inventing
 def test_planner_version_contrast_orchestration_preserves_failures_and_rejects_unreviewed_changes(ledger_module,tmp_path,monkeypatch,fault):
     original=_explicit_hospital_development_results()[-2]
     raw=json.loads(original.read_bytes())
-    candidate_root=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate/hospital_h4_terminal_connection_candidates/3828a169cafbb9c3/execution_bundle/cbce49e1430f2237'
+    candidate_root=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate/hospital_h4_terminal_connection_candidates/3828a169cafbb9c3/execution_bundle/cbce49e1430f2237')
     plan=candidate_root/'P_dynamics_full_envelope.json'
     if not plan.exists():pytest.skip('Explicit prospective native plan unavailable')
     old=tmp_path/'SOFTWARE_OLD.json';new=tmp_path/'SOFTWARE_NEW.json'
@@ -1481,7 +1483,7 @@ def test_planner_version_contrast_orchestration_preserves_failures_and_rejects_u
 
 
 def test_existing_initial_motion_replay_preserves_all_135_runs_definitions_and_missing_metadata(ledger_module):
-    path=WORKSPACE/'studies/CICS26/paper_assets/patient_transport/final9/patient_transport_final9_metrics.csv'
+    path=_ijcas_path(WORKSPACE, 'studies/CICS26/paper_assets/patient_transport/final9/patient_transport_final9_metrics.csv')
     if not path.is_file():pytest.skip('Existing initial-motion evidence unavailable')
     before=ledger_module.file_sha(path);report=ledger_module.initial_motion_reuse_evidence()
     assert report['recorded_run_count']==report['reached_count']==135
@@ -1499,12 +1501,12 @@ def test_existing_initial_motion_replay_preserves_all_135_runs_definitions_and_m
 
 
 def _manuscript_sources():
-    gate=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate'
+    gate=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate')
     return (gate/'paper_evidence_inventory/manuscript_tables/hospital_development_6abbfc85692e6f0c.json',
         gate/'hospital_h4_experiments/cohort_09_full_task_r01/route/offline_planner_version_contrast/planner_version_contrast.json')
 
 
-@pytest.mark.skipif(not (WORKSPACE/'studies/IJCAS/paper').is_dir(), reason='Publication assets intentionally excluded from the technical workspace')
+@pytest.mark.skipif(not (_ijcas_path(WORKSPACE, 'studies/IJCAS/paper')).is_dir(), reason='Publication assets intentionally excluded from the technical workspace')
 def test_native_manuscript_keeps_prior_work_failed_outcomes_and_separate_P_versions(ledger_module,tmp_path):
     import re
     first,second=_manuscript_sources()
@@ -1541,7 +1543,7 @@ def test_native_manuscript_keeps_prior_work_failed_outcomes_and_separate_P_versi
 
 
 @pytest.mark.parametrize('fault',['missing_failure_row','renamed_original_P','relabeled_final_statistics','changed_input_sha'])
-@pytest.mark.skipif(not (WORKSPACE/'studies/IJCAS/paper').is_dir(), reason='Publication assets intentionally excluded from the technical workspace')
+@pytest.mark.skipif(not (_ijcas_path(WORKSPACE, 'studies/IJCAS/paper')).is_dir(), reason='Publication assets intentionally excluded from the technical workspace')
 def test_manuscript_does_not_silently_rewrite_or_promote_development_inputs(ledger_module,tmp_path,fault):
     first,second=_manuscript_sources()
     if not all(path.is_file() for path in (first,second)):pytest.skip('Explicit development inputs unavailable')
@@ -1556,11 +1558,11 @@ def test_manuscript_does_not_silently_rewrite_or_promote_development_inputs(ledg
     assert not (tmp_path/'not_created').exists()
 
 
-@pytest.mark.skipif(not (WORKSPACE/'studies/IJCAS/paper').is_dir(), reason='Publication assets intentionally excluded from the technical workspace')
+@pytest.mark.skipif(not (_ijcas_path(WORKSPACE, 'studies/IJCAS/paper')).is_dir(), reason='Publication assets intentionally excluded from the technical workspace')
 def test_korean_first_review_preserves_full_scope_CICS_distinction_and_editable_document(ledger_module,tmp_path):
     import zipfile
     import xml.etree.ElementTree as ET
-    source=WORKSPACE/'studies/IJCAS/paper/korean_manuscript.txt'
+    source=_ijcas_path(WORKSPACE, 'studies/IJCAS/paper/korean_manuscript.txt')
     before=source.read_bytes()
     target=ledger_module.write_korean_manuscript_review(tmp_path/'korean_review')
     report=json.loads(target.read_bytes());root=target.parent
@@ -1573,7 +1575,7 @@ def test_korean_first_review_preserves_full_scope_CICS_distinction_and_editable_
     assert not report['submission_ready'] and not report['actual_motion_authorized']
     assert report['new_PhysX_trial_count']==0
     ns={'w':'http://schemas.openxmlformats.org/wordprocessingml/2006/main'}
-    with zipfile.ZipFile(root/'korean_manuscript.docx') as z:
+    with zipfile.ZipFile(_ijcas_path(root, 'korean_manuscript.docx')) as z:
         assert z.testzip() is None
         for name in z.namelist():ET.fromstring(z.read(name))
         document=ET.fromstring(z.read('word/document.xml'))
@@ -1588,14 +1590,14 @@ def test_korean_first_review_preserves_full_scope_CICS_distinction_and_editable_
         styles=ET.fromstring(z.read('word/styles.xml'))
         assert any(n.get('{'+ns['w']+'}eastAsia')=='Noto Sans CJK KR' for n in styles.findall('.//w:rFonts',ns))
     for name,count in [('comparison_methods.csv',4),('hospital_scenarios.csv',6),('figure_plan.csv',8)]:
-        with (root/name).open(encoding='utf-8-sig',newline='') as stream:rows=list(csv.DictReader(stream))
+        with (_ijcas_path(root, name)).open(encoding='utf-8-sig',newline='') as stream:rows=list(csv.DictReader(stream))
         assert len(rows)==count
     assert source.read_bytes()==before
     assert ledger_module.write_korean_manuscript_review(root)==target
-    (root/'korean_manuscript.docx').write_bytes(b'AUTHOR_EDIT_MUST_BE_PRESERVED')
+    (_ijcas_path(root, 'korean_manuscript.docx')).write_bytes(b'AUTHOR_EDIT_MUST_BE_PRESERVED')
     with pytest.raises(ValueError,match='no overwrite'):
         ledger_module.write_korean_manuscript_review(root)
-    assert (root/'korean_manuscript.docx').read_bytes()==b'AUTHOR_EDIT_MUST_BE_PRESERVED'
+    assert (_ijcas_path(root, 'korean_manuscript.docx')).read_bytes()==b'AUTHOR_EDIT_MUST_BE_PRESERVED'
 
 
 @pytest.fixture
@@ -1716,7 +1718,7 @@ def test_platform_source_reader_and_diagram_cannot_edit_live_state_or_refit_mode
 @pytest.fixture(scope='module')
 def actual_H5_fixed_mode_witness_inputs():
     import numpy as np
-    gate=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate/hospital_h5_geometry_candidates'
+    gate=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate/hospital_h5_geometry_candidates')
     source=json.loads((gate/'native_planning_probes/17ead2e292304982/B0_fixed_counterphase_ramp.json').read_bytes())
     folder=gate/'common_map/e16a2898d38c414b';manifest=json.loads((folder/'common_map_candidate.json').read_bytes())
     with np.load(folder/'common_occupancy.npz') as grid:
@@ -1763,7 +1765,7 @@ def test_fixed_mode_witness_does_not_waive_collision_goal_or_repropagation(ledge
 
 
 def test_permission_review_is_idempotent_and_does_not_relabel_actual_search_failures(ledger_module,tmp_path):
-    native=WORKSPACE/'studies/IJCAS/results/hospital_paper_gate/hospital_h5_geometry_candidates/native_planning_probes/17ead2e292304982/planning_probe.json'
+    native=_ijcas_path(WORKSPACE, 'studies/IJCAS/results/hospital_paper_gate/hospital_h5_geometry_candidates/native_planning_probes/17ead2e292304982/planning_probe.json')
     before=native.read_bytes();target=ledger_module.write_fixed_mode_candidate_permission_review(native,tmp_path/'witness')
     report=json.loads(target.read_bytes());saved=target.read_bytes()
     assert all(not row['plan_success'] for row in report['actual_recorded_search_outcomes'])
