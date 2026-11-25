@@ -11,6 +11,15 @@ def digest(path):
     return value.hexdigest()
 
 
+def expected_active_digest(relative, record, revisions):
+    revision=revisions.get(relative)
+    if revision is None:return record['active_sha256']
+    if (relative!='src/ijcas_experiments/tools/verify_workspace.py' or
+            revision['previous_active_sha256']!=record['active_sha256']):
+        raise ValueError('Unreviewed source revision: '+relative)
+    return revision['active_sha256']
+
+
 def verify(full=False):
     meta=ROOT/'archive/layout_20261126'
     manifest=json.loads((meta/'before.json').read_text())
@@ -28,9 +37,12 @@ def verify(full=False):
         if '__pycache__' in path.parts:continue
         try:ast.parse(path.read_text())
         except SyntaxError as error:syntax.append(str(error))
+    revision_file=ROOT/'src/ijcas_experiments/config/publication_source_revisions.json'
+    revisions=json.loads(revision_file.read_text()) if revision_file.is_file() else {}
     for relative,row in json.loads((meta/'source_manifest.json').read_text()).items():
         current=ROOT/relative;original=ROOT/'archive/original'/row['original_path']
-        if not current.is_file() or digest(current)!=row['active_sha256'] or digest(original)!=row['original_sha256']:changed.append(relative)
+        expected=expected_active_digest(relative,row,revisions)
+        if not current.is_file() or digest(current)!=expected or digest(original)!=row['original_sha256']:changed.append(relative)
     broken=[]
     for folder in ('src','build','install'):
         for path in (ROOT/folder).rglob('*'):

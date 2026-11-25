@@ -27,3 +27,5 @@ ros2 launch ijcas_experiments experiment.launch.py scenario:=H2 method:=P condit
 기본 확인은 Isaac·물리·주행을 시작하지 않는다. `stage:=plan`은 SDK Python의 오프라인 계획/고정 경로 감사만 수행한다. 새 주행에는 기존과 같이 `stage:=run allow_motion:=true`를 명시한다. 이번 구조 변경 검증에서 새 주행이나 기존 결과 교체는 하지 않는다.
 
 공개 저장소도 이 구조로 갱신한다. 기존 커밋과 원본 사용자 수정은 보존하며 강제 push나 이력 재작성은 하지 않는다. 보존 검사는 정리 전 Git 커밋이 이후 커밋의 조상으로 남아 있는지를 확인한다. 로컬 보존 검사는 원래 Git 디렉터리의 유지 여부도 확인하는 PC별 검사이며, 새 clone의 보편적 재현성 검사가 아니다. 원본 데이터 없는 코드 복제본에서는 자료 의존 확인·실행·결과 재계산을 수행할 수 없다.
+
+공개 이후 정상 커밋을 허용하기 위한 검증기 자체의 변경은 `config/publication_source_revisions.json`에 이전/현재 SHA-256과 이유를 별도 기록했다. 불변 `archive/layout_20261126/source_manifest.json`은 고치지 않는다. 이 명시적 예외는 검증기 한 파일에만 적용되고 계획·제어·안전·지표 코드에는 적용되지 않으며, 임의 수정이나 이전 해시 불일치는 계속 거부한다.

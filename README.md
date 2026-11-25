@@ -211,7 +211,7 @@ ros2 launch ijcas_experiments experiment.launch.py \
 python3 -m pytest src/ijcas_experiments/test -q
 ```
 
-로컬 원본 자료가 있는 환경에서 5개 ROS 패키지 빌드와 90개 표준 검사(Python 89개, C++ 1개)를 확인했다. 확장 ROS 회귀는 604개 통과 / USD 전용 65개 건너뜀이며, 별도 SDK 수명주기 검사 182개를 통과했다. 이는 소프트웨어·정적 검증이며 이번 구조 정리에서 새 전체 주행을 수행했다는 뜻은 아니다. 자료가 없는 코드 복제본에서 자료 의존 테스트까지 통과한다고 주장하지 않는다.
+로컬 원본 자료가 있는 환경에서 5개 ROS 패키지 빌드와 90개 표준 검사(Python 89개, C++ 1개)를 확인했다. 공개 이력과 명시적 검증기 변경 증빙을 확인하는 Python 검사 4개를 추가했다. 확장 ROS 회귀는 604개 통과 / USD 전용 65개 건너뜀이며, 별도 SDK 수명주기 검사 182개를 통과했다. 이는 소프트웨어·정적 검증이며 이번 구조 정리에서 새 전체 주행을 수행했다는 뜻은 아니다. 자료가 없는 코드 복제본에서 자료 의존 테스트까지 통과한다고 주장하지 않는다.
 
 - [계획·실행·센서 연결](src/ijcas_experiments/docs/ARCHITECTURE.md)
 - [환경 설치와 원본 입력 복원](src/ijcas_experiments/docs/SETUP.md)

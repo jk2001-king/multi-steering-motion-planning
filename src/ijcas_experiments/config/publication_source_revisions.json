@@ -1,0 +1,8 @@
+{
+  "src/ijcas_experiments/tools/verify_workspace.py": {
+    "previous_active_sha256": "8c0819c371454d825500701dbab0a6f0097fb98ef1c81d0a871e68bac34e7f5c",
+    "active_sha256": "8bcaa93418fc3095219bc83e1f4099e44801b45690706c926f792e389e94d45b",
+    "reason": "Preserve the original Git directory and recorded ancestor while allowing normal publication commits; retain the immutable pre-publication source manifest and explicitly audit this verifier-only revision.",
+    "control_planning_safety_or_metric_code_changed": false
+  }
+}
