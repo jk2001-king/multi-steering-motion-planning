@@ -1,0 +1,51 @@
+schema_version: 1
+platform: laboratory_powered_wheelchair
+status: provisional_physics_screening
+
+source:
+  authoritative_xacro: src/wheelchair_description/urdf/wheel_chair.xacro
+  reference_urdf: isaac/assets/wheelchair/reference/wheel_chair.urdf
+  screening_urdf: src/wheelchair_description/urdf/wheel_chair_screening.urdf
+  original_snapshot: external/incoming/base_model_20260929/base_model
+  note: Drive Xacro revision is authoritative; Notion generated URDF is legacy only.
+
+frames:
+  forward_axis: +X
+  left_axis: +Y
+  up_axis: +Z
+  drive_axle_x_m: 0.0
+
+geometry_si:
+  drive_track_m: 0.6066
+  caster_pivot_track_m: 0.445
+  caster_pivot_x_m: 0.47
+  caster_trail_m: 0.049291
+  caster_contact_x_aligned_m: 0.519291
+  drive_wheel_radius_collision_m: 0.3298
+  caster_wheel_radius_collision_m: 0.065
+  nominal_contact_height_difference_m:
+    caster_minus_drive: -0.000878
+    interpretation: caster contact is approximately 0.878 mm lower
+
+screening_baseline:
+  total_mass_kg: 75.0
+  nominal_caster_load_share: 0.30
+  base_mass_kg: 69.0
+  drive_wheel_mass_each_kg: 2.0
+  caster_fork_mass_each_kg: 0.5
+  caster_wheel_mass_each_kg: 0.5
+  base_com_m: [0.154996471, 0.0, 0.10]
+  note: all values in this block are screening assumptions, not measurements
+
+physics_gate:
+  require_force_balance_relative_error_max: 0.10
+  require_caster_share_absolute_error_max: 0.05
+  require_unintended_body_ground_contact: false
+  require_all_four_wheel_contacts: true
+
+missing_measurements:
+  - empty_chair_total_mass
+  - occupied_total_mass_range
+  - empty_and_occupied_com_or_wheel_loads
+  - caster_swivel_friction_and_damping
+  - floor_tire_friction

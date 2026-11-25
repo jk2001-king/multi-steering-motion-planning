@@ -1,0 +1,19 @@
+{
+  "role": "USER_CLARIFIED_SIMULATION_STUDY_SCOPE_NOT_DRIVE_ADMISSION",
+  "primary_topic": "동역학과 전체 차체 외곽선을 통합한 다중 조향 경로계획",
+  "preserve_1029_method_and_original_results": true,
+  "current_validation_scope": "Isaac Sim realistic bed and hospital geometry; diverse task/condition comparison and manuscript synthesis",
+  "basis": "User interprets the professor feedback in the context of the previously reported simulation study; subsequent user requested continuous progress toward manuscript-usable results.",
+  "professor_exact_intent_independently_confirmed": false,
+  "real_robot_trials_required_for_current_completion_scope": false,
+  "previous_optional_hardware_12_trials_are_NOT_a_completion_requirement": true,
+  "CICS_role": "separately identified existing initial-motion research in the manuscript",
+  "CICS_runtime_integration": false,
+  "400_cells_role": "prior proposed evaluation budget, NOT a professor-mandated, journal-mandated, or already frozen final protocol",
+  "prior_pilot_results_remain_valid_in_their_original_roles": true,
+  "segmented_H3_goal_PASS_is_NOT_frozen_whole_sequence_completion": true,
+  "H4_geometry_preparation_is_NOT_abandonment_of_H3": true,
+  "preserve_current_H3_final_pose_all_12_joints_and_history_until_explicit_new_admission": true,
+  "automatic_motion_authorized": false,
+  "clinical_or_real_hospital_deployment_claim": false
+}

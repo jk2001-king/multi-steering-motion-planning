@@ -1,0 +1,208 @@
+<?xml version="1.0"?>
+<!--
+  Provisional physics screening model.
+  Geometry comes from the latest Drive base_model revision.
+  Mass, CoM, inertia, collision primitives, and joint dynamics are screening
+  assumptions and MUST NOT be used as final paper statistics before load-gate
+  validation and replacement with measured physical-platform values.
+
+  Baseline assembled mass: 75 kg
+  Nominal two-support-line caster load share: 30%
+  Coordinate convention: +X forward, +Y left, +Z up
+-->
+<robot name="wheelchair_screening">
+
+  <material name="white"><color rgba="1 1 1 1"/></material>
+  <material name="gray"><color rgba="0.5 0.5 0.5 1"/></material>
+  <material name="black"><color rgba="0.05 0.05 0.05 1"/></material>
+
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0.154996471 0 0.10" rpy="0 0 0"/>
+      <mass value="69.0"/>
+      <inertia ixx="7.064172057" ixy="0" ixz="0"
+               iyy="11.975738332" iyz="0" izz="11.074013693"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://wheelchair_description/meshes/wheel_chair_base.stl"
+              scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <origin xyz="0.15 0 0.10" rpy="0 0 0"/>
+      <geometry><box size="0.80 0.45 0.50"/></geometry>
+    </collision>
+  </link>
+
+  <link name="left_wheel_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="2.0"/>
+      <inertia ixx="0.055961902" ixy="0" ixz="0"
+               iyy="0.108768040" iyz="0" izz="0.055961902"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://wheelchair_description/meshes/wheel.stl"
+              scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.570796327 0 0"/>
+      <geometry><cylinder radius="0.3298" length="0.0973"/></geometry>
+    </collision>
+  </link>
+  <joint name="base_link_to_left_wheel" type="continuous">
+    <parent link="base_link"/>
+    <child link="left_wheel_link"/>
+    <origin xyz="0 0.3033 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="250" velocity="20"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+
+  <link name="right_wheel_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="2.0"/>
+      <inertia ixx="0.055961902" ixy="0" ixz="0"
+               iyy="0.108768040" iyz="0" izz="0.055961902"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://wheelchair_description/meshes/wheel.stl"
+              scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.570796327 0 0"/>
+      <geometry><cylinder radius="0.3298" length="0.0973"/></geometry>
+    </collision>
+  </link>
+  <joint name="base_link_to_right_wheel" type="continuous">
+    <parent link="base_link"/>
+    <child link="right_wheel_link"/>
+    <origin xyz="0 -0.3033 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="250" velocity="20"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+
+  <link name="left_caster_link">
+    <inertial>
+      <origin xyz="-0.000853 0 -0.085891" rpy="0 0 0"/>
+      <mass value="0.5"/>
+      <inertia ixx="0.001912211" ixy="0" ixz="0"
+               iyy="0.002097052" iyz="0" izz="0.001550174"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://wheelchair_description/meshes/caster.stl"
+              scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="gray"/>
+    </visual>
+    <collision>
+      <origin xyz="-0.000853 0 -0.085891" rpy="0 0 0"/>
+      <geometry><box size="0.144292 0.128 0.171782"/></geometry>
+    </collision>
+  </link>
+  <joint name="base_link_to_left_caster" type="continuous">
+    <parent link="base_link"/>
+    <child link="left_caster_link"/>
+    <origin xyz="0.47 0.2225 -0.1159" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="50" velocity="30"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+
+  <link name="left_caster_wheel_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.5"/>
+      <inertia ixx="0.001005167" ixy="0" ixz="0"
+               iyy="0.001056250" iyz="0" izz="0.001005167"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://wheelchair_description/meshes/caster_wheel.stl"
+              scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.570796327 0 0"/>
+      <geometry><cylinder radius="0.065" length="0.107"/></geometry>
+    </collision>
+  </link>
+  <joint name="left_caster_to_left_caster_wheel" type="continuous">
+    <parent link="left_caster_link"/>
+    <child link="left_caster_wheel_link"/>
+    <origin xyz="0.049291 0 -0.149778" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="50" velocity="40"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+
+  <link name="right_caster_link">
+    <inertial>
+      <origin xyz="-0.000853 0 -0.085891" rpy="0 0 0"/>
+      <mass value="0.5"/>
+      <inertia ixx="0.001912211" ixy="0" ixz="0"
+               iyy="0.002097052" iyz="0" izz="0.001550174"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://wheelchair_description/meshes/caster.stl"
+              scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="gray"/>
+    </visual>
+    <collision>
+      <origin xyz="-0.000853 0 -0.085891" rpy="0 0 0"/>
+      <geometry><box size="0.144292 0.128 0.171782"/></geometry>
+    </collision>
+  </link>
+  <joint name="base_link_to_right_caster" type="continuous">
+    <parent link="base_link"/>
+    <child link="right_caster_link"/>
+    <origin xyz="0.47 -0.2225 -0.1159" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="50" velocity="30"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+
+  <link name="right_caster_wheel_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.5"/>
+      <inertia ixx="0.001005167" ixy="0" ixz="0"
+               iyy="0.001056250" iyz="0" izz="0.001005167"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://wheelchair_description/meshes/caster_wheel.stl"
+              scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.570796327 0 0"/>
+      <geometry><cylinder radius="0.065" length="0.107"/></geometry>
+    </collision>
+  </link>
+  <joint name="right_caster_to_right_caster_wheel" type="continuous">
+    <parent link="right_caster_link"/>
+    <child link="right_caster_wheel_link"/>
+    <origin xyz="0.049291 0 -0.149778" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="50" velocity="40"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+
+</robot>

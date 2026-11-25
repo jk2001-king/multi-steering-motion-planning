@@ -1,0 +1,316 @@
+<?xml version="1.0"?>
+<!--
+  Laboratory patient-transfer mobility-base screening model.
+  Geometry measured 2026-10-05; +X forward, +Y left, +Z up.
+  Mass, inertia, CoM, friction and compliance remain provisional.
+-->
+<robot name="patient_transport_lab_screening"
+       xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:property name="pi_value" value="3.141592653589793"/>
+  <xacro:include filename="mount_HY.xacro"/>
+
+  <!-- Directly measured frame geometry [m]. -->
+  <xacro:property name="long_frame_length" value="1.630"/>
+  <xacro:property name="long_frame_width" value="0.160"/>
+  <xacro:property name="long_frame_height" value="0.080"/>
+  <xacro:property name="long_frame_center_z" value="0.270"/>
+  <xacro:property name="crossbeam_x" value="0.660"/>
+  <xacro:property name="crossbeam_x_size" value="0.082"/>
+  <xacro:property name="crossbeam_y_size" value="0.760"/>
+  <xacro:property name="crossbeam_z_size" value="0.030"/>
+  <xacro:property name="crossbeam_center_z" value="0.185"/>
+
+  <!-- The recorded caster X=0.462 m conflicts with photos showing each swivel
+       directly below a crossbeam. Use the crossbeam X provisionally until remeasured. -->
+  <xacro:property name="caster_pivot_x" value="${crossbeam_x}"/>
+  <xacro:property name="caster_pivot_y" value="0.355"/>
+  <xacro:property name="caster_pivot_z" value="0.150"/>
+  <xacro:property name="caster_visual_radius" value="0.0485"/>
+  <xacro:property name="caster_contact_radius" value="0.0475"/>
+  <xacro:property name="caster_width" value="0.030"/>
+  <xacro:property name="caster_trail" value="0.045"/>
+  <xacro:property name="caster_axle_z" value="0.0475"/>
+  <xacro:property name="caster_axle_z_from_pivot"
+                  value="${caster_axle_z - caster_pivot_z}"/>
+
+  <!-- Directly measured tandem steering-drive geometry [m]. -->
+  <xacro:property name="active_pivot_x" value="0.665"/>
+  <xacro:property name="active_pivot_z" value="0.174"/>
+  <xacro:property name="active_visual_radius" value="0.0725"/>
+  <xacro:property name="active_contact_radius" value="0.074"/>
+  <xacro:property name="active_width" value="0.050"/>
+  <xacro:property name="active_axle_z" value="0.074"/>
+  <xacro:property name="active_axle_z_from_pivot"
+                  value="${active_axle_z - active_pivot_z}"/>
+  <!-- Conflicting sheet entries are resolved to coaxial for the first model. -->
+  <xacro:property name="active_horizontal_offset" value="0.0"/>
+  <xacro:property name="steering_limit" value="${45.0 * pi_value / 180.0}"/>
+
+  <!-- Directly measured equipment-box envelopes [m]. -->
+  <xacro:property name="battery_x" value="0.201"/>
+  <xacro:property name="battery_y" value="0.319"/>
+  <xacro:property name="battery_z" value="0.110"/>
+  <xacro:property name="battery_center_z" value="0.365"/>
+  <xacro:property name="electrical_x" value="0.194"/>
+  <xacro:property name="electrical_y" value="0.364"/>
+  <xacro:property name="electrical_z" value="0.108"/>
+  <xacro:property name="electrical_center_z" value="0.367"/>
+  <xacro:property name="electrical_center_x" value="0.6665"/>
+
+  <!-- Provisional 240 kg split; not a laboratory mass measurement. -->
+  <xacro:property name="base_mass" value="220.0"/>
+  <xacro:property name="active_steer_mass" value="5.0"/>
+  <xacro:property name="active_wheel_mass" value="3.0"/>
+  <xacro:property name="caster_fork_mass" value="0.75"/>
+  <xacro:property name="caster_wheel_mass" value="0.25"/>
+
+  <material name="aluminum"><color rgba="0.72 0.74 0.76 1"/></material>
+  <material name="equipment_black"><color rgba="0.035 0.035 0.04 1"/></material>
+  <material name="equipment_white"><color rgba="0.88 0.88 0.84 1"/></material>
+  <material name="tire_black"><color rgba="0.025 0.025 0.025 1"/></material>
+  <material name="caster_gray"><color rgba="0.48 0.49 0.48 1"/></material>
+
+  <xacro:macro name="box_inertia" params="mass x y z">
+    <inertia
+      ixx="${mass * (y*y + z*z) / 12.0}" ixy="0" ixz="0"
+      iyy="${mass * (x*x + z*z) / 12.0}" iyz="0"
+      izz="${mass * (x*x + y*y) / 12.0}"/>
+  </xacro:macro>
+  <xacro:macro name="cylinder_inertia_y" params="mass radius length">
+    <inertia
+      ixx="${mass * (3.0*radius*radius + length*length) / 12.0}"
+      ixy="0" ixz="0" iyy="${0.5*mass*radius*radius}" iyz="0"
+      izz="${mass * (3.0*radius*radius + length*length) / 12.0}"/>
+  </xacro:macro>
+
+  <!-- Approximate bolted mounting plate directly below each crossbeam end. -->
+  <xacro:macro name="caster_mount_visual" params="name pivot_x y">
+    <visual name="${name}_caster_mount_plate_visual">
+      <origin xyz="${pivot_x} ${y} 0.160" rpy="0 0 0"/>
+      <geometry><box size="0.080 0.080 0.020"/></geometry>
+      <material name="aluminum"/>
+    </visual>
+  </xacro:macro>
+
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0 0 0.270" rpy="0 0 0"/>
+      <mass value="${base_mass}"/>
+      <xacro:box_inertia mass="${base_mass}" x="${long_frame_length}"
+                         y="${crossbeam_y_size}" z="0.426"/>
+    </inertial>
+    <visual name="longitudinal_frame_visual">
+      <origin xyz="0 0 ${long_frame_center_z}" rpy="0 0 0"/>
+      <geometry><box size="${long_frame_length} ${long_frame_width} ${long_frame_height}"/></geometry>
+      <material name="aluminum"/>
+    </visual>
+    <collision name="longitudinal_frame_collision">
+      <origin xyz="0 0 ${long_frame_center_z}" rpy="0 0 0"/>
+      <geometry><box size="${long_frame_length} ${long_frame_width} ${long_frame_height}"/></geometry>
+    </collision>
+    <visual name="front_crossbeam_visual">
+      <origin xyz="${crossbeam_x} 0 ${crossbeam_center_z}" rpy="0 0 0"/>
+      <geometry><box size="${crossbeam_x_size} ${crossbeam_y_size} ${crossbeam_z_size}"/></geometry>
+      <material name="aluminum"/>
+    </visual>
+    <collision name="front_crossbeam_collision">
+      <origin xyz="${crossbeam_x} 0 ${crossbeam_center_z}" rpy="0 0 0"/>
+      <geometry><box size="${crossbeam_x_size} ${crossbeam_y_size} ${crossbeam_z_size}"/></geometry>
+    </collision>
+    <visual name="rear_crossbeam_visual">
+      <origin xyz="${-crossbeam_x} 0 ${crossbeam_center_z}" rpy="0 0 0"/>
+      <geometry><box size="${crossbeam_x_size} ${crossbeam_y_size} ${crossbeam_z_size}"/></geometry>
+      <material name="aluminum"/>
+    </visual>
+    <collision name="rear_crossbeam_collision">
+      <origin xyz="${-crossbeam_x} 0 ${crossbeam_center_z}" rpy="0 0 0"/>
+      <geometry><box size="${crossbeam_x_size} ${crossbeam_y_size} ${crossbeam_z_size}"/></geometry>
+    </collision>
+    <xacro:caster_mount_visual name="front_left" pivot_x="${caster_pivot_x}"
+                                y="${caster_pivot_y}"/>
+    <xacro:caster_mount_visual name="front_right" pivot_x="${caster_pivot_x}"
+                                y="${-caster_pivot_y}"/>
+    <xacro:caster_mount_visual name="rear_left" pivot_x="${-caster_pivot_x}"
+                                y="${caster_pivot_y}"/>
+    <xacro:caster_mount_visual name="rear_right" pivot_x="${-caster_pivot_x}"
+                                y="${-caster_pivot_y}"/>
+    <visual name="battery_box_visual">
+      <origin xyz="0 0 ${battery_center_z}" rpy="0 0 0"/>
+      <geometry><box size="${battery_x} ${battery_y} ${battery_z}"/></geometry>
+      <material name="equipment_black"/>
+    </visual>
+    <collision name="battery_box_collision">
+      <origin xyz="0 0 ${battery_center_z}" rpy="0 0 0"/>
+      <geometry><box size="${battery_x} ${battery_y} ${battery_z}"/></geometry>
+    </collision>
+    <visual name="front_electrical_box_visual">
+      <origin xyz="${electrical_center_x} 0 ${electrical_center_z}" rpy="0 0 0"/>
+      <geometry><box size="${electrical_x} ${electrical_y} ${electrical_z}"/></geometry>
+      <material name="equipment_white"/>
+    </visual>
+    <collision name="front_electrical_box_collision">
+      <origin xyz="${electrical_center_x} 0 ${electrical_center_z}" rpy="0 0 0"/>
+      <geometry><box size="${electrical_x} ${electrical_y} ${electrical_z}"/></geometry>
+    </collision>
+    <visual name="rear_electrical_box_visual">
+      <origin xyz="${-electrical_center_x} 0 ${electrical_center_z}" rpy="0 0 0"/>
+      <geometry><box size="${electrical_x} ${electrical_y} ${electrical_z}"/></geometry>
+      <material name="equipment_white"/>
+    </visual>
+    <collision name="rear_electrical_box_collision">
+      <origin xyz="${-electrical_center_x} 0 ${electrical_center_z}" rpy="0 0 0"/>
+      <geometry><box size="${electrical_x} ${electrical_y} ${electrical_z}"/></geometry>
+    </collision>
+  </link>
+
+  <xacro:macro name="active_module" params="name x">
+    <link name="${name}_steering_link">
+      <inertial>
+        <origin xyz="0 0 -0.050" rpy="0 0 0"/>
+        <mass value="${active_steer_mass}"/>
+        <xacro:box_inertia mass="${active_steer_mass}" x="0.130" y="0.130" z="0.100"/>
+      </inertial>
+      <visual>
+        <origin xyz="0 0 -0.050" rpy="0 0 0"/>
+        <geometry><cylinder radius="0.065" length="0.100"/></geometry>
+        <material name="equipment_black"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 -0.050" rpy="0 0 0"/>
+        <geometry><cylinder radius="0.065" length="0.100"/></geometry>
+      </collision>
+    </link>
+    <joint name="base_link_to_${name}_steering" type="revolute">
+      <parent link="base_link"/>
+      <child link="${name}_steering_link"/>
+      <origin xyz="${x} 0 ${active_pivot_z}" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="${-steering_limit}" upper="${steering_limit}" effort="250" velocity="3.0"/>
+      <dynamics damping="0.08" friction="0"/>
+    </joint>
+    <link name="${name}_drive_wheel_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="${active_wheel_mass}"/>
+        <xacro:cylinder_inertia_y mass="${active_wheel_mass}"
+                                  radius="${active_visual_radius}" length="${active_width}"/>
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="${pi_value/2.0} 0 0"/>
+        <geometry><cylinder radius="${active_visual_radius}" length="${active_width}"/></geometry>
+        <material name="tire_black"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${pi_value/2.0} 0 0"/>
+        <geometry><cylinder radius="${active_contact_radius}" length="${active_width}"/></geometry>
+      </collision>
+    </link>
+    <joint name="${name}_steering_to_drive_wheel" type="continuous">
+      <parent link="${name}_steering_link"/>
+      <child link="${name}_drive_wheel_link"/>
+      <origin xyz="${active_horizontal_offset} 0 ${active_axle_z_from_pivot}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <limit effort="500" velocity="25"/>
+      <dynamics damping="0.05" friction="0"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:macro name="passive_caster" params="name x y">
+    <link name="${name}_caster_link">
+      <inertial>
+        <origin xyz="0 0 -0.050" rpy="0 0 0"/>
+        <mass value="${caster_fork_mass}"/>
+        <xacro:box_inertia mass="${caster_fork_mass}" x="0.070" y="0.060" z="0.100"/>
+      </inertial>
+      <visual>
+        <origin xyz="0 0 -0.050" rpy="0 0 0"/>
+        <geometry><box size="0.070 0.060 0.100"/></geometry>
+        <material name="caster_gray"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 -0.050" rpy="0 0 0"/>
+        <geometry><box size="0.070 0.060 0.100"/></geometry>
+      </collision>
+    </link>
+    <joint name="base_link_to_${name}_caster" type="continuous">
+      <parent link="base_link"/>
+      <child link="${name}_caster_link"/>
+      <origin xyz="${x} ${y} ${caster_pivot_z}" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+      <limit effort="50" velocity="30"/>
+      <dynamics damping="0.06" friction="0"/>
+    </joint>
+    <link name="${name}_caster_wheel_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="${caster_wheel_mass}"/>
+        <xacro:cylinder_inertia_y mass="${caster_wheel_mass}"
+                                  radius="${caster_visual_radius}" length="${caster_width}"/>
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="${pi_value/2.0} 0 0"/>
+        <geometry><cylinder radius="${caster_visual_radius}" length="${caster_width}"/></geometry>
+        <material name="tire_black"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${pi_value/2.0} 0 0"/>
+        <geometry><cylinder radius="${caster_contact_radius}" length="${caster_width}"/></geometry>
+      </collision>
+    </link>
+    <joint name="${name}_caster_to_wheel" type="continuous">
+      <parent link="${name}_caster_link"/>
+      <child link="${name}_caster_wheel_link"/>
+      <!-- Zero angle is leading; pi radians is the normal trailing state. -->
+      <origin xyz="${caster_trail} 0 ${caster_axle_z_from_pivot}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <limit effort="50" velocity="40"/>
+      <dynamics damping="0.004" friction="0"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:active_module name="front_active" x="${active_pivot_x}"/>
+  <xacro:active_module name="rear_active" x="${-active_pivot_x}"/>
+  <xacro:passive_caster name="front_left" x="${caster_pivot_x}" y="${caster_pivot_y}"/>
+  <xacro:passive_caster name="front_right" x="${caster_pivot_x}" y="${-caster_pivot_y}"/>
+  <xacro:passive_caster name="rear_left" x="${-caster_pivot_x}" y="${caster_pivot_y}"/>
+  <xacro:passive_caster name="rear_right" x="${-caster_pivot_x}" y="${-caster_pivot_y}"/>
+
+  <!-- HY laboratory sensor TF chain.  These are massless coordinate frames;
+       point-emitting sensor models are added only after MID-360 validation. -->
+  <link name="livox_frame"/>
+  <joint name="base_link_to_livox_frame" type="fixed">
+    <parent link="base_link"/>
+    <child link="livox_frame"/>
+    <origin xyz="${livox_frame_xyz}" rpy="0 0 0"/>
+  </joint>
+
+  <link name="livox_front"/>
+  <joint name="livox_frame_to_livox_front" type="fixed">
+    <parent link="livox_frame"/>
+    <child link="livox_front"/>
+    <origin xyz="${front_xyz}" rpy="${front_rpy}"/>
+  </joint>
+
+  <link name="livox_rear"/>
+  <joint name="livox_frame_to_livox_rear" type="fixed">
+    <parent link="livox_frame"/>
+    <child link="livox_rear"/>
+    <origin xyz="${rear_xyz}" rpy="${rear_rpy}"/>
+  </joint>
+
+  <link name="livox_top"/>
+  <joint name="livox_frame_to_livox_top" type="fixed">
+    <parent link="livox_frame"/>
+    <child link="livox_top"/>
+    <origin xyz="${top_xyz}" rpy="${top_rpy}"/>
+  </joint>
+
+  <link name="imu_link"/>
+  <joint name="livox_top_to_imu_link" type="fixed">
+    <parent link="livox_top"/>
+    <child link="imu_link"/>
+    <origin xyz="${imu_xyz}" rpy="0 0 0"/>
+  </joint>
+
+</robot>

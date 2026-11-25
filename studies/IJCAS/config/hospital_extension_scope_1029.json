@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "role": "RESEARCH_SCOPE_ANCHOR_NOT_A_NEW_PLANNER_OR_EXPERIMENT_ADMISSION",
+  "canonical_research_topic": "동역학과 전체 차체 외곽선을 통합한 다중 조향 경로계획",
+  "continuation": "Preserve the 1029 method and original results; extend validation to explicitly declared bed/hospital tasks and synthesize the results in a manuscript including the distinct existing initial-motion research.",
+  "professor_feedback_interpretation": {
+    "basis": "1015 and 1029 slide decks plus the email/feedback sequence provided by the user",
+    "no_replacement_by_a_steering_speed_or_stopping_only_topic": true,
+    "technical_CICS_integration_explicitly_required": false,
+    "professor_explicit_confirmation_of_this_exact_interpretation_claimed": false,
+    "physical_robot_experiments_explicitly_waived_or_proven_unnecessary": false
+  },
+  "primary_method_components_to_preserve": [
+    "spatial_path_and_steering_configuration_selection",
+    "front_only_rear_only_and_coordinated_counterphase_modes",
+    "carried_steering_state_rate_limits_transition_time_and_mode_specific_response",
+    "speed_consistent_planar_body_state_propagation",
+    "Newton_Euler_force_load_friction_LTR_actuator_and_bounded_caster_disturbance_constraints",
+    "full_body_and_caster_swept_envelope_with_declared_clearance",
+    "stopping_reachability_as_a_component_NOT_a_replacement_research_topic"
+  ],
+  "research_objectives": [
+    "task_and_dynamic_execution_feasibility",
+    "full_body_collision_clearance",
+    "path_length_and_total_time_where_improvement_is_demonstrated_NOT_universal_dominance"
+  ],
+  "counterphase_default_claim": {
+    "original_1015_intent_preserved": "counterphase platform with alternate steering configurations available where needed",
+    "hard_counterphase_priority_or_only_if_clearance_insufficient_policy_verified": false,
+    "required_reporting": "Distinguish platform default from an enforced planner preference; do not silently add such a preference or claim it is already implemented."
+  },
+  "implementation_form": "hierarchical_spatial_candidates_then_dynamic_refinement_and_selection_NOT_global_joint_optimality",
+  "CICS": {
+    "role": "manuscript_prior_work_and_separately_identified_original_initial_motion_results",
+    "runtime_technical_integration": false,
+    "original_differential_lateral_results_validate_longitudinal_hospital_modes": false,
+    "new_initial_alignment_or_micro_yaw_controller_required": false
+  },
+  "existing_results": {
+    "corridor_planning_contrast": "Preserve the recorded three-pair 0/3 versus 3/3 planning contrast; do not reinterpret it as missing evidence or as independent isolation of every component.",
+    "condition_repeats": "Preserve the fixed-route four-condition by three-repeat execution results; do not relabel as new hospital trials or universal robustness.",
+    "sensor_Nav2": "Preserve the existing corridor FollowPath plus terminal success; do not relabel as hospital sensor validation.",
+    "force_load": "Keep the safety constraints; operational performance attribution remains conditional on evidence. Inactive constraints are not a reason to redefine the whole topic."
+  },
+  "hospital_validation_rules": {
+    "H1_H2_H3_are_followup_validation_not_replacement_of_1029_results": true,
+    "declare_original_threshold_and_flush_as_different_conditions": true,
+    "same_frozen_common_executor_initial_history_geometry_goal_limits_and_budget_within_each_comparison": true,
+    "retain_all_FAIL_HOLD_and_setup_failures": true,
+    "tracking_braking_hold_and_handoff_improvements_are_supporting_execution_NOT_automatically_planning_contributions": true,
+    "frozen_replay_and_measured_state_replanning_are_separate_versions": true,
+    "segmented_goal_PASS_is_NOT_an_independent_frozen_whole_sequence_repeat": true,
+    "synthetic_model_design_cases_are_NOT_identified_physical_uncertainty": true
+  },
+  "excluded_topic_expansions": [
+    "new_caster_alignment_control_as_primary_contribution",
+    "threshold_or_rough_terrain_traversal_as_primary_contribution",
+    "tracking_or_braking_robust_control_as_primary_contribution",
+    "clinical_hospital_deployment_claim"
+  ],
+  "automatic_motion_authorized": false,
+  "source_sha256": {
+    "/home/jk/Downloads/261015_박정근_IJCAS확장검토.pptx": "70d196132072a2bc11b08b57caa1b59317edb270ca89fa548cc3a9e3a901d08d",
+    "/home/jk/Downloads/261029_박정근_IJCAS확장_내용보강.pptx": "6985b58e882f3f4fa33863e045e291fd6c6a504212019e8421b86c98c46c303d",
+    "studies/IJCAS/results/rigid_body_edge_gate/operational_dynamics_causality_r01/operational_dynamics_causal_repeats.json": "183f947282838e40acd2e1e12c3936e6ce17c4360101d5975201cbe1fb39dd31",
+    "studies/IJCAS/results/rigid_body_edge_gate/integrated_robustness_repeats.json": "c0a2a0f1aefa5afd2ec2f261f8c4437776ac5ff690e90b9f61078dc049c0c866",
+    "studies/IJCAS/results/sensor_closed_loop/nav2/corridor_90_turn_nav2_proposed_sensor_90turn_r06_contact.json": "19a2bb4120de54b6b4ec2be56b4dec9cc2c44d2e98b2acb8226f6bb174b64e22"
+  }
+}

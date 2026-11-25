@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<robot name="wheel_chair" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:include filename="$(find wheelchair_description)/urdf/wheel_chair_materials.xacro" />
+    <xacro:include filename="$(find wheelchair_description)/urdf/wheel_chair_macro.xacro" />
+
+    <link name="base_link"/>
+
+    <link name="base_footprint">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh scale="0.001 0.001 0.001" filename="package://wheelchair_description/meshes/wheel_chair_base.stl"/>
+            </geometry>
+            <material name="white"/>
+        </visual>
+
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh scale="0.001 0.001 0.001" filename="package://wheelchair_description/meshes/wheel_chair_base.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="base_link_to_base_footprint" type="fixed">
+        <parent link="base_link"/>
+        <child link="base_footprint"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <xacro:caster_wheel parent_prefix="base_link" caster_wheel_prefix="left">
+        <origin xyz="0.47 0.2225 -0.1159" rpy="0 0 0" />
+    </xacro:caster_wheel>
+
+    <xacro:caster_wheel parent_prefix="base_link" caster_wheel_prefix="right">
+        <origin xyz="0.47 -0.2225 -0.1159" rpy="0 0 0" />
+    </xacro:caster_wheel>
+
+    <xacro:wheel parent_prefix="base_link" wheel_prefix="left">
+        <origin xyz="0 0.3033 0" rpy="0 0 0" />
+    </xacro:wheel>
+
+    <xacro:wheel parent_prefix="base_link" wheel_prefix="right">
+        <origin xyz="0 -0.3033 0" rpy="0 0 0" />
+    </xacro:wheel>
+</robot>

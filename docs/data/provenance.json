@@ -1,0 +1,33 @@
+{
+  "source_export": "results/reproduced/20261125_133804_250711",
+  "source_files": {
+    "summary.csv": {
+      "source": "results/reproduced/20261125_133804_250711/summary.csv",
+      "sha256": "93cf34fe14297eb10d5b7da7cbd94f4846d0cf57ac18228f3d69b8ead68aba07"
+    },
+    "history_ablation.csv": {
+      "source": "results/reproduced/20261125_133804_250711/history_ablation.csv",
+      "sha256": "0fdf1cb7735764cb3ee17d7423d0b4d99ce7e01368915cfae6b8aed064be857f"
+    },
+    "individual.csv": {
+      "source": "results/reproduced/20261125_133804_250711/individual.csv",
+      "sha256": "63ed91ac355114fe3042d8d8a122b606a64e5d5463d7bf4692eea8be0cc564ee"
+    },
+    "constraints.csv": {
+      "source": "results/reproduced/20261125_133804_250711/constraints.csv",
+      "sha256": "8049319d82d3d9e333550f5ee848a6d090d273152a2b8f7fc844ae880ef9d1f1"
+    },
+    "offline_envelope.csv": {
+      "source": "results/reproduced/20261125_133804_250711/offline_envelope.csv",
+      "sha256": "717ebe046a90da732335ed3dc73a12e9bcfebebb782489aadfde00ad0af95dd9"
+    },
+    "sensor_raw_results.json": {
+      "source": "results/reproduced/20261125_133804_250711/sensor_raw_results.json",
+      "sha256": "42f771f89ba07aada4c051b807cc43b0f54fa8cfe880c92e7bf8c5713ec36ba5"
+    }
+  },
+  "operation": "Copy aggregate tables and select numeric/status columns; no new trial or result replacement. Public sensor provenance uses relative paths.",
+  "raw_evidence_in_git": false,
+  "recompute_command": "ros2 run ijcas_experiments reproduce_results",
+  "statistics": "sample SD (ddof=1); completed full missions for RMS; all declared conditions for completion fraction"
+}

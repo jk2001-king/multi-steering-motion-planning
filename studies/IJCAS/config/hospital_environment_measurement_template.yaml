@@ -1,0 +1,83 @@
+schema_version: 1
+status: measurement_required
+measurement_date: null
+measured_by: null
+location_or_asset_source: null
+coordinate_convention: >-
+  Metres in a shared hospital-map frame. Record the source pose and uncertainty
+  for every measured or CAD-derived dimension.
+
+robot:
+  source: studies/IJCAS/config/patient_transport_sim_platform.yaml
+  overall_length_m: 1.630
+  maximum_width_with_rotated_casters_m: 0.965
+  planning_clearance_m: 0.010
+
+bed:
+  identifier: null
+  source_type: null  # physical_measurement / manufacturer_CAD / audited_USD
+  source_reference: null
+  overall_length_m: null
+  overall_width_m: null
+  collision_height_m: null
+  wheel_or_frame_protrusions_m: null
+  measurement_uncertainty_m: null
+
+doorway:
+  identifier: null
+  source_reference: null
+  clear_width_m: null
+  wall_thickness_m: null
+  door_leaf_or_frame_intrusion_m: null
+  measurement_uncertainty_m: null
+
+ward_corridor:
+  identifier: null
+  source_reference: null
+  clear_width_m: null
+  corner_inner_radius_or_chamfer_m: null
+  measurement_uncertainty_m: null
+
+mobile_obstacle:
+  kind: null  # medical_cart / wheelchair / IV_pole / parked_bed
+  identifier: null
+  source_reference: null
+  overall_length_m: null
+  overall_width_m: null
+  measurement_uncertainty_m: null
+
+scenario_poses:
+  H1_bedside_departure:
+    start_xyyaw: null
+    goal_xyyaw: null
+  H2_bedside_lateral_alignment:
+    start_xyyaw: null
+    goal_xyyaw: null
+  H3_doorway_immediate_turn:
+    start_xyyaw: null
+    goal_xyyaw: null
+  H4_ward_corridor_turn:
+    start_xyyaw: null
+    goal_xyyaw: null
+  H5_obstacle_bypass_return:
+    start_xyyaw: null
+    goal_xyyaw: null
+
+asset_and_collision_audit:
+  hospital_stage_usd: null
+  bed_visual_prim: null
+  bed_collision_prim: null
+  visual_collision_bounds_match: null
+  planner_geometry_generated_from_this_file: false
+  isaac_geometry_generated_from_this_file: false
+  nav2_map_generated_from_this_file: false
+
+freeze:
+  geometry_frozen: false
+  frozen_at: null
+  frozen_by: null
+  notes: >-
+    Do not start final paper trials until all required values are populated,
+    visual/collision geometry is audited, and all three consumers are generated
+    from this measurement record.
+

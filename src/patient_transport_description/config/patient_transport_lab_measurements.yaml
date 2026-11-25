@@ -1,0 +1,113 @@
+schema_version: 1
+platform: patient_transfer_mobility_base_test_platform
+measurement_date: "2026-10-05"
+
+coordinate_convention:
+  origin: midpoint_between_front_and_rear_crossbeam_centers_on_longitudinal_centerline
+  x_positive: forward
+  y_positive: left
+  z_positive: up
+
+measured_geometry_m:
+  overall:
+    length: 1.630
+    frame_width: 0.760
+    maximum_width_including_rotated_casters: 0.965
+    frame_only_height: 0.310
+    equipment_included_height: 0.426
+  longitudinal_frame:
+    size: [1.630, 0.160, 0.080]
+    center: [0.0, 0.0, 0.270]
+  crossbeams:
+    center_distance: 1.320
+    size: [0.082, 0.760, 0.030]
+    front_center: [0.660, 0.0, 0.185]
+    rear_center: [-0.660, 0.0, 0.185]
+  passive_casters:
+    front_left_swivel: [0.462, 0.355, 0.150]
+    front_right_swivel: [0.462, -0.355, 0.150]
+    rear_left_swivel: [-0.462, 0.355, 0.150]
+    rear_right_swivel: [-0.462, -0.355, 0.150]
+    wheel_diameter: 0.097
+    wheel_width: 0.030
+    measured_axle_height: 0.0475
+    measured_pivot_to_axle_distance: 0.043
+    measured_trail: 0.045
+    swivel_continuous: true
+    all_four_contact_observed: true
+  active_modules:
+    front_steering_axis: [0.665, 0.0, 0.174]
+    rear_steering_axis: [-0.665, 0.0, 0.174]
+    wheel_diameter: 0.145
+    wheel_width: 0.050
+    measured_axle_height: 0.074
+    hardware_steering_continuous: true
+    controller_limit_deg: [-45.0, 45.0]
+    both_contact_observed: true
+  support_contact:
+    hard_floor_all_six_wheels_contact_observed: true
+    confirmation_date: "2026-10-21"
+    confirmation_source: operator_visual_confirmation
+    interpretation: >
+      All two active wheels and four passive caster wheels contact the hard
+      floor. This is not a measurement of equal wheel normal loads.
+  equipment_boxes:
+    center_battery:
+      size: [0.201, 0.319, 0.110]
+      center: [0.0, 0.0, 0.365]
+    front_electrical:
+      size: [0.194, 0.364, 0.108]
+      center: [0.6665, 0.0, 0.367]
+    rear_electrical:
+      size: [0.194, 0.364, 0.108]
+      center: [-0.6665, 0.0, 0.367]
+
+motor_and_drive_reference:
+  module_family: Zhuolan_WDS
+  wheel_size_match: WDS150
+  wheel_size_m: 0.150
+  manual_rated_radial_load_kg: 550
+  manual_drive_reduction_options:
+    - {ratio: 20, maximum_speed_mps: 1.18}
+    - {ratio: 34, maximum_speed_mps: 0.70}
+  servo_encoder: 17_bit_absolute
+  drive_manual: Leadshine_2ELD2_CAN
+  drive_protocol: CANopen
+  drive_voltage_vdc: [24, 70]
+
+provisional_not_measured:
+  total_mass_kg: 240.0
+  total_mass_source: rounded_prior_patient_transport_simulation_mass_not_lab_measurement
+  wheel_normal_loads: null
+  caster_load_share: null
+  center_of_mass: null
+  inertias: primitive_geometry_estimate
+  friction: null
+  contact_compliance: null
+
+resolved_modeling_choices:
+  caster_pivot_x_magnitude_m: 0.660
+  caster_pivot_x_reason: >
+    The recorded x magnitude 0.462 m would leave the caster 0.198 m away
+    from its crossbeam. Photos 1, 12 and 13 show the swivel mounted directly
+    beneath the crossbeam end. Use the crossbeam center x provisionally and
+    remeasure the caster pivot x before treating this as a calibrated model.
+  caster_mount_plate:
+    size_m: [0.080, 0.080, 0.020]
+    modeled_as: visual_only_plate_fixed_to_base_link
+    note: approximate geometry inferred from photographs, not separately measured
+  active_horizontal_steering_to_axle_offset_m: 0.0
+  active_offset_reason: >
+    The sheet reports 0.085 m horizontal distance but also reports zero
+    longitudinal and lateral offsets. Photographs show an approximately
+    coaxial steering axis and wheel center, so the first model uses zero.
+  passive_caster_collision_radius_m: 0.0475
+  passive_caster_visual_radius_m: 0.0485
+  active_wheel_collision_radius_m: 0.074
+  active_wheel_visual_radius_m: 0.0725
+
+follow_up_measurement:
+  - Remeasure the caster swivel x coordinate from the midpoint between crossbeam centers; the recorded magnitude 0.462 m conflicts with photographs.
+  - Resolve whether the reported 0.085 m active-module offset is vertical or horizontal.
+  - Read the exact drive and steering motor model numbers from an unobstructed nameplate.
+  - Confirm the installed WDS150 drive reduction ratio, 1/20 or 1/34.

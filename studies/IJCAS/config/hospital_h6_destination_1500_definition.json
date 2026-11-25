@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "definition_id": "H6_bed11_to_bed15_heading0_destination_effective1500_common_layout",
+  "status": "USER_ADOPTED_OFFLINE_COMMON_ENVIRONMENT_DEFINITION_NOT_LIVE_SETUP_STATIC_OR_DRIVE",
+  "scenario": "H6_integrated_transfer_mission",
+  "user_decision": {
+    "question_item_id": "call_22158785d882419ba692d9d41a6ba374:0",
+    "actual_answer_ko": "1.5m 공통 환경안 채택",
+    "scope": "Offline common environment definition only; no actual scene, timeline, new cohort, static or drive authority"
+  },
+  "original_task_definition": "/home/jk/Research/IJCAS_ws/studies/IJCAS/config/hospital_h6_task_definition.json",
+  "original_task_definition_sha256": "33ab38680a6a7c21124db09c06f9941330c568d926b6543b86620e7740fa292c",
+  "original_common_geometry": "/home/jk/Research/IJCAS_ws/studies/IJCAS/results/hospital_paper_gate/hospital_h6_task_geometry/33ab38680a6a7c21/common_geometry.json",
+  "original_common_geometry_sha256": "8a7b15541203a099867fa6482e2a38372f522eca1281c4f2c5d14067b9c2dbca",
+  "ordered_bed_roots": [
+    "/World/Hospital/SM_HospitalBed_02d11",
+    "/World/Hospital/SM_HospitalBed_02d15"
+  ],
+  "start_xyyaw": [
+    14.192329139709472,
+    16.568600039835417,
+    0
+  ],
+  "goal_xyyaw": [
+    24.31814346169873,
+    11.873745033615302,
+    0
+  ],
+  "common_methods": [
+    "B0_fixed_counterphase_ramp",
+    "B1_multimode_kinematic_ramp",
+    "B2_multimode_transition_cost_ramp",
+    "P_dynamics_full_envelope"
+  ],
+  "destination_aperture": {
+    "minimum_effective_raster_opening_width_m": 1.5,
+    "original_resolution_m": 0.01,
+    "geometric_opening_width_m": 1.52,
+    "geometric_extra_width_is_two_original_raster_cells_NOT_a_changed_robot_safety_margin": true,
+    "original_structural_full_slab_clear_Y_m": [
+      11.479153310834306,
+      12.72203902394875
+    ],
+    "lower_wall_outer_anchor_y_m": 10.203173218314415,
+    "rule": "One-sided southward opening enlargement; upper jamb and outside lower wall anchor fixed. No search across layouts or choice from method outcomes.",
+    "original_obstacle_height_slab_m": [
+      0.006,
+      0.45
+    ],
+    "structural_vertex_deformation": "Prescribed monotone piecewise-linear WORLD-Y map at ORIGINAL vertices; X and Z unchanged, topology retained and face orientation checked. Explicit NEW non-rigid architectural geometry.",
+    "doorway_structural_meshes": [
+      "/World/Hospital/Geo_M1_WallPanelDoor_851/Geo_M1_WallPanelDoor/Geo_M1_WallPanelDoor",
+      "/World/Hospital/Geo_M1_DoorWall25/Geo_M1_DoorWall/Geo_M1_DoorWall/Section0",
+      "/World/Hospital/Geo_M1_DoorWall25/Geo_M1_DoorWall/Geo_M1_DoorWall/Section1",
+      "/World/Hospital/Geo_M1_TrimStrateDoor25/Geo_M1_TrimStrateDoor/Geo_M1_TrimStrateDoor",
+      "/World/Hospital/Geo_M1_TrimStrateInsideDoor25/Geo_M1_TrimStrateInsideDoor1/Geo_M1_TrimStrateInsideDoor1",
+      "/World/Hospital/Geo_M_DoorFrame29_79/Geo_M_DoorFrame/Geo_M_DoorFrame"
+    ],
+    "threshold_mesh": "/World/Hospital/Geo_M_DoorFloor12/Geo_M_DoorFloor/Geo_M_DoorFloor",
+    "threshold_geometry": "Same monotone transverse map; existing flush disabled-collider policy retained. Authored floor/support unchanged, no replacement support inserted.",
+    "destination_leaf_mesh": "/World/Hospital/SM_Door_02b3/SM_Door_02b",
+    "destination_leaf_geometry": "Positive affine extension along the recorded leaf local-X width axis about its recorded source root; retain thickness/Z/topology, then apply the SAME prior adopted whole-leaf static inward perpendicular placement about the unchanged root.",
+    "source_parent_origin_NOT_a_verified_physical_hinge": true,
+    "original_source_USD_files_or_actual_Session_not_modified": true
+  },
+  "unchanged_conditions": {
+    "fixed_start_goal_heading_bed_geometry": true,
+    "first_door_and_first_flush_condition": true,
+    "cart14_northwest_chair14_southeast_bays": true,
+    "all_other_colliders_original_identities_and_geometry": true,
+    "same_ROI_resolution_unknown_and_authored_support_union": true,
+    "robot_1630_by965mm_full_envelope_and10mm_clearance": true,
+    "dynamic_coefficients_speeds_safety_and_terminal_criteria": true,
+    "no_stationary_steering_primitive_or_velocity_pose_reset": true,
+    "planning_and_execution_budgets_not_adopted_or_changed_by_this_definition": true
+  },
+  "verification_before_any_future_use": [
+    "Authenticate all original geometry/current task and source arrays; exact200 collider identity ledger.",
+    "Rebuild original and revised maps from disjoint ORIGINAL collider contributions. Never erase an occupied union.",
+    "New structural geometry/leaf/threshold topology, face orientation, source-frame reconstruction and body/start/goal/support checks.",
+    "Minimum1.50m effective grid opening across the actual wall-depth band, not a frame-only ray.",
+    "Four methods must use exactly the same new map/model/safety/task. New model plans are not original-task successes or actual Isaac execution."
+  ],
+  "original_task_versions_all_FAIL_HOLD_and_manuscript_author_copies_preserved": true,
+  "no_final_repetition_or_Nav2_or_clinical_validation_claim": true,
+  "new_PhysX_trial_count": 0,
+  "actual_motion_authorized": false,
+  "use_for_final_statistics": false
+}

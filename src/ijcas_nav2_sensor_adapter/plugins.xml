@@ -1,0 +1,12 @@
+<library path="ijcas_sensor_nav2_plugins">
+  <class name="ijcas_nav2_sensor_adapter/MeasuredPlatformController"
+         type="ijcas_nav2_sensor_adapter::MeasuredPlatformController"
+         base_class_type="nav2_core::Controller">
+    <description>Bounded external platform-controller proposals through the actual Nav2 controller server and footprint guard.</description>
+  </class>
+  <class name="ijcas_nav2_sensor_adapter/DeclaredTaskGoalChecker"
+         type="ijcas_nav2_sensor_adapter::DeclaredTaskGoalChecker"
+         base_class_type="nav2_core::GoalChecker">
+    <description>Exact independently assigned task goal plus platform fixed-hold completion, never a path endpoint substitution.</description>
+  </class>
+</library>

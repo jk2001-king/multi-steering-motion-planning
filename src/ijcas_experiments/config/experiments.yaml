@@ -1,0 +1,24 @@
+# Registered settings, not new motion authority. CLI arguments override defaults.
+schema: 1
+defaults:
+  environment: hospital
+  scenario: H2
+  method: P
+  condition: 1
+  feedback: ground_truth
+  stage: check
+  output: ''
+  sdk_python: ''
+  headless: false
+  allow_motion: false
+environments:
+  hospital:
+    scene: isaac/scenes/hospital_experiment.usda
+    execution_protocol: studies/IJCAS/results/hospital_paper_gate/revision_final_n3_seed30_v2_20261122/execution_protocol.json
+    tasks:
+      H1: {simulation_budget_s: 180.0, wall_budget_s: 900.0}
+      H2: {simulation_budget_s: 180.0, wall_budget_s: 900.0}
+      H3: {simulation_budget_s: 300.0, wall_budget_s: 900.0}
+      H4: {simulation_budget_s: 300.0, wall_budget_s: 900.0}
+      H5: {simulation_budget_s: 240.0, wall_budget_s: 900.0}
+      H6: {simulation_budget_s: 600.0, wall_budget_s: 1500.0}

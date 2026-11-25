@@ -1,0 +1,200 @@
+<?xml version="1.0"?>
+<!--
+  Parametric screening model of the powered wheelchair currently available
+  in the laboratory.
+
+  Measured geometry: 2026-09-29
+  Confirmed assembled mass: 40 kg
+  Coordinate convention: +X forward, +Y left, +Z up; base_link is at the
+  drive-axle midpoint and wheel-center height.
+
+  IMPORTANT:
+  - Geometry is based on direct measurements and the 150x30 caster marking.
+  - Link mass distribution, inertia, CoM, friction, and contact compliance
+    remain screening assumptions until physical calibration.
+  - Keep wheel_chair.xacro and wheel_chair_screening.urdf unchanged: they
+    represent the earlier, visually different reference platform.
+-->
+<robot name="wheelchair_lab_screening" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+
+  <!-- Confirmed geometry [m]. -->
+  <xacro:property name="drive_radius" value="0.325"/>
+  <xacro:property name="drive_effective_radius" value="0.323085"/>
+  <xacro:property name="drive_width" value="0.030"/>
+  <xacro:property name="drive_track" value="0.500"/>
+  <xacro:property name="caster_radius" value="0.075"/>
+  <xacro:property name="caster_width" value="0.030"/>
+  <xacro:property name="caster_track" value="0.427"/>
+  <xacro:property name="caster_pivot_x" value="0.500"/>
+  <xacro:property name="caster_trail" value="0.010"/>
+  <xacro:property name="caster_pivot_z" value="-0.100"/>
+  <xacro:property name="caster_axle_z_from_pivot" value="-0.150"/>
+  <xacro:property name="seat_center_x" value="0.120"/>
+  <xacro:property name="seat_width" value="0.340"/>
+  <xacro:property name="seat_depth" value="0.400"/>
+  <xacro:property name="seat_surface_z_from_ground" value="0.555"/>
+  <xacro:property name="seat_thickness" value="0.040"/>
+
+  <!-- Total mass is confirmed; this link-level split is provisional. -->
+  <xacro:property name="base_mass" value="36.0"/>
+  <xacro:property name="drive_mass" value="1.5"/>
+  <xacro:property name="caster_fork_mass" value="0.25"/>
+  <xacro:property name="caster_wheel_mass" value="0.25"/>
+
+  <material name="frame_black"><color rgba="0.04 0.04 0.04 1"/></material>
+  <material name="tire_black"><color rgba="0.015 0.015 0.015 1"/></material>
+  <material name="seat_black"><color rgba="0.08 0.08 0.08 1"/></material>
+  <material name="caster_gray"><color rgba="0.65 0.62 0.52 1"/></material>
+
+  <xacro:macro name="cylinder_inertia_y" params="mass radius length">
+    <inertia
+      ixx="${mass * (3.0 * radius * radius + length * length) / 12.0}"
+      ixy="0" ixz="0"
+      iyy="${0.5 * mass * radius * radius}"
+      iyz="0"
+      izz="${mass * (3.0 * radius * radius + length * length) / 12.0}"/>
+  </xacro:macro>
+
+  <link name="base_link">
+    <inertial>
+      <!-- Approximate 30% unloaded caster share; not yet measured. -->
+      <origin xyz="0.15264 0 0.10" rpy="0 0 0"/>
+      <mass value="${base_mass}"/>
+      <inertia ixx="1.3308" ixy="0" ixz="0"
+               iyy="2.0175" iyz="0" izz="1.8483"/>
+    </inertial>
+
+    <!-- Lower frame/chassis: primitive visual because matching CAD is absent. -->
+    <visual name="frame_visual">
+      <origin xyz="0.16 0 0.10" rpy="0 0 0"/>
+      <geometry><box size="0.70 0.42 0.20"/></geometry>
+      <material name="frame_black"/>
+    </visual>
+    <visual name="seat_visual">
+      <!-- base_link is drive_radius above ground. -->
+      <origin xyz="${seat_center_x} 0 ${seat_surface_z_from_ground - drive_radius - seat_thickness / 2.0}" rpy="0 0 0"/>
+      <geometry><box size="${seat_depth} ${seat_width} ${seat_thickness}"/></geometry>
+      <material name="seat_black"/>
+    </visual>
+    <visual name="backrest_visual">
+      <origin xyz="${seat_center_x - seat_depth / 2.0} 0 0.43" rpy="0 0 0"/>
+      <geometry><box size="0.04 ${seat_width} 0.44"/></geometry>
+      <material name="seat_black"/>
+    </visual>
+
+    <!-- Visual-only mounts connect the chassis to the measured caster swivel axes. -->
+    <visual name="left_caster_mount_visual">
+      <origin xyz="${caster_pivot_x} ${caster_track / 2.0} ${caster_pivot_z / 2.0}" rpy="0 0 0"/>
+      <geometry><box size="0.055 0.055 ${-caster_pivot_z}"/></geometry>
+      <material name="frame_black"/>
+    </visual>
+    <visual name="right_caster_mount_visual">
+      <origin xyz="${caster_pivot_x} ${-caster_track / 2.0} ${caster_pivot_z / 2.0}" rpy="0 0 0"/>
+      <geometry><box size="0.055 0.055 ${-caster_pivot_z}"/></geometry>
+      <material name="frame_black"/>
+    </visual>
+
+    <!-- Conservative chassis proxy; it stays clear of the ground. -->
+    <collision name="chassis_collision">
+      <origin xyz="0.16 0 0.11" rpy="0 0 0"/>
+      <geometry><box size="0.70 0.42 0.22"/></geometry>
+    </collision>
+  </link>
+
+  <xacro:macro name="drive_wheel" params="side y">
+    <link name="${side}_wheel_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="${drive_mass}"/>
+        <xacro:cylinder_inertia_y mass="${drive_mass}" radius="${drive_radius}" length="${drive_width}"/>
+      </inertial>
+      <visual>
+        <!-- High-resolution legacy mesh, rescaled and recentered to 650 x 30 mm. -->
+        <origin xyz="0 -0.007603 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://wheelchair_description/meshes/wheel.stl"
+                scale="0.000985371 0.000308379 0.000985481"/>
+        </geometry>
+        <material name="tire_black"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${pi / 2.0} 0 0"/>
+        <geometry><cylinder radius="${drive_radius}" length="${drive_width}"/></geometry>
+      </collision>
+    </link>
+    <joint name="base_link_to_${side}_wheel" type="continuous">
+      <parent link="base_link"/>
+      <child link="${side}_wheel_link"/>
+      <origin xyz="0 ${y} 0" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <limit effort="250" velocity="20"/>
+      <dynamics damping="0.087976" friction="0"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:macro name="caster" params="side y">
+    <link name="${side}_caster_link">
+      <inertial>
+        <origin xyz="0 0 -0.070" rpy="0 0 0"/>
+        <mass value="${caster_fork_mass}"/>
+        <inertia ixx="0.00050" ixy="0" ixz="0"
+                 iyy="0.00050" iyz="0" izz="0.00012"/>
+      </inertial>
+      <visual>
+        <origin xyz="0 0 -0.070" rpy="0 0 0"/>
+        <geometry><box size="0.045 0.055 0.140"/></geometry>
+        <material name="frame_black"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 -0.070" rpy="0 0 0"/>
+        <geometry><box size="0.045 0.055 0.140"/></geometry>
+      </collision>
+    </link>
+    <joint name="base_link_to_${side}_caster" type="continuous">
+      <parent link="base_link"/>
+      <child link="${side}_caster_link"/>
+      <origin xyz="${caster_pivot_x} ${y} ${caster_pivot_z}" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+      <limit effort="50" velocity="30"/>
+      <dynamics damping="0.122943" friction="0"/>
+    </joint>
+
+    <link name="${side}_caster_wheel_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="${caster_wheel_mass}"/>
+        <xacro:cylinder_inertia_y mass="${caster_wheel_mass}" radius="${caster_radius}" length="${caster_width}"/>
+      </inertial>
+      <visual>
+        <!-- High-resolution legacy mesh, rescaled to the measured 150 x 30 mm. -->
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://wheelchair_description/meshes/caster_wheel.stl"
+                scale="0.001153846 0.000280374 0.001154439"/>
+        </geometry>
+        <material name="caster_gray"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${pi / 2.0} 0 0"/>
+        <geometry><cylinder radius="${caster_radius}" length="${caster_width}"/></geometry>
+      </collision>
+    </link>
+    <joint name="${side}_caster_to_${side}_caster_wheel" type="continuous">
+      <parent link="${side}_caster_link"/>
+      <child link="${side}_caster_wheel_link"/>
+      <!-- Angle zero is leading; pi radians is the normal trailing state. -->
+      <origin xyz="${caster_trail} 0 ${caster_axle_z_from_pivot}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <limit effort="50" velocity="40"/>
+      <dynamics damping="0.004764" friction="0"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:drive_wheel side="left" y="${drive_track / 2.0}"/>
+  <xacro:drive_wheel side="right" y="${-drive_track / 2.0}"/>
+  <xacro:caster side="left" y="${caster_track / 2.0}"/>
+  <xacro:caster side="right" y="${-caster_track / 2.0}"/>
+
+</robot>
+

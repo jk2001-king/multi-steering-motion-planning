@@ -1,0 +1,7 @@
+# Example selection. All omitted values come from experiments.yaml.
+environment: hospital
+scenario: H2
+method: P
+condition: 3
+feedback: ground_truth
+stage: check

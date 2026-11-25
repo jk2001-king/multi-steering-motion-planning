@@ -1,0 +1,206 @@
+schema_version: 1
+study: initial_transient_and_dynamics_aware_hospital_navigation
+status: draft_pre_registered
+supersedes_for_final_paper: simulation_validation_protocol.yaml
+preservation_rule: >-
+  The earlier protocol and its corridor-90 evidence remain immutable pilot
+  evidence. They are not relabelled as hospital-environment paper trials.
+
+professor_direction:
+  received_date: "2026-10-29"
+  requirements:
+    - integrate_initial_motion_into_the_paper_method
+    - replace_simple_geometry_with_bed_and_hospital_workspaces
+    - analyze_results_across_diverse_environments
+
+claim_boundary:
+  primary: >-
+    Initial-transient-aware execution combined with steering-state, rigid-body,
+    stopping-reachability, and full-body-envelope planning improves hospital-task
+    feasibility and terminal accuracy relative to matched conventional and
+    ablated methods.
+  initial_motion_role: >-
+    The CICS micro-yaw initiation and body-yaw recovery principle supplies the
+    release state and initial-edge execution cost. It is not claimed that the
+    same numerical controller parameters apply to every platform.
+  rigid_body_role: >-
+    Newton-Euler force/load constraints are evaluated as safety constraints.
+    A performance gain is attributed to them only in cells where they produce
+    operational edge rejection or a paired execution difference.
+  excluded_until_physical_gate:
+    - calibrated_real_platform_force_and_load_validity
+    - clinical_safety_or_hospital_deployment_readiness
+    - generalization_beyond_the_predeclared_hospital_tasks
+
+hypotheses:
+  H1_initial_transient:
+    statement: >-
+      The proposed initial-motion layer reduces early lateral/yaw deviation and
+      first-confined-edge failures relative to the matched acceleration ramp.
+    primary_metrics:
+      - early_max_lateral_deviation_m
+      - early_max_yaw_deviation_deg
+      - caster_transition_distance_m
+      - first_confined_edge_success
+  H2_planning_dynamics:
+    statement: >-
+      Steering-state and speed-consistent propagation improves execution success
+      relative to multimode kinematic planning with instantaneous transitions.
+    primary_metrics:
+      - task_success
+      - terminal_position_error_m
+      - terminal_heading_error_deg
+  H3_full_envelope:
+    statement: >-
+      Swept full-body-envelope checking prevents body/caster contact missed by
+      centreline or point-footprint planning.
+    primary_metrics:
+      - obstacle_contact_event_count
+      - minimum_clearance_m
+      - collision_rejected_edge_count
+  H4_integrated_mission:
+    statement: >-
+      The full proposed method completes the integrated hospital transfer mission
+      more reliably than the strongest baseline under paired uncertainty seeds.
+    primary_metrics:
+      - mission_success
+      - mission_time_s
+      - safety_abort_count
+
+methods:
+  B0_fixed_counterphase_ramp:
+    initial_motion: acceleration_limited_ramp
+    planner: fixed_counterphase_kinematic
+    envelope: full_body
+  B1_multimode_kinematic_ramp:
+    initial_motion: acceleration_limited_ramp
+    planner: multimode_instantaneous_transition
+    envelope: full_body
+  B2_full_planner_ramp:
+    initial_motion: acceleration_limited_ramp
+    planner: dynamics_and_full_envelope
+    purpose: isolate_initial_motion_contribution
+  P_full_integrated:
+    initial_motion: micro_yaw_initiation_and_body_yaw_recovery
+    planner: dynamics_and_full_envelope
+    terminal_controller: bounded_2d_mode_switching
+
+scenarios:
+  H1_bedside_departure:
+    task: depart_from_parallel_bedside_pose_into_ward_aisle
+    contribution: initial_motion_to_first_edge
+    geometry_status: measurement_required
+  H2_bedside_lateral_alignment:
+    task: approach_and_align_parallel_to_bed_open_side
+    contribution: terminal_alignment_and_full_envelope
+    geometry_status: measurement_required
+  H3_doorway_immediate_turn:
+    task: traverse_room_door_and_turn_before_full_body_clearance
+    contribution: front_rear_envelope_and_mode_selection
+    geometry_status: measurement_required
+  H4_ward_corridor_turn:
+    task: turn_in_corridor_with_parked_bed_or_cart
+    contribution: hospital_replacement_for_simple_corridor_90
+    geometry_status: measurement_required
+  H5_obstacle_bypass_return:
+    task: bypass_mobile_medical_obstacle_and_return_to_corridor_lane
+    contribution: replanning_and_clearance_time_tradeoff
+    geometry_status: measurement_required
+  H6_integrated_transfer_mission:
+    task: bedside_departure_doorway_corridor_bypass_bedside_arrival
+    contribution: end_to_end_demonstration
+    geometry_status: derived_after_H1_to_H5_freeze
+
+trial_stages:
+  geometry_and_interface_gate:
+    repeats: 0
+    requirements:
+      - common_geometry_source_for_planner_isaac_and_nav2
+      - visual_and_collision_geometry_audited
+      - start_and_goal_full_envelope_collision_free
+  pilot:
+    repeats_per_method_scenario: 3
+    use_for_final_statistics: false
+    purpose: feasibility_tuning_and_failure_discovery
+  final_matched_comparison:
+    repeats_per_method_scenario: 10
+    paired_seed_required: true
+    method_freeze_required: true
+    geometry_freeze_required: true
+    confidence_interval_required: true
+  nav2_closed_loop:
+    pilot_repeats: 3
+    final_repeats: 10
+    required_scenarios:
+      - H1_bedside_departure
+      - H3_doorway_immediate_turn
+      - H4_ward_corridor_turn
+      - H2_bedside_lateral_alignment
+  physical_platform:
+    order:
+      - shadow_planning
+      - low_speed_empty_platform
+      - supervised_payload_trial
+    emergency_stop_required: true
+    requires_separate_approval: true
+
+acceptance:
+  obstacle_contact_event_count: 0
+  terminal_position_error_m_max: 0.030
+  terminal_heading_error_deg_abs_max: 2.0
+  terminal_speed_m_s_max: 0.005
+  all_commanded_actions_completed: true
+  no_safety_abort: true
+
+metrics:
+  task:
+    - task_success
+    - obstacle_contact_event_count
+    - minimum_clearance_m
+    - mission_time_s
+    - terminal_position_error_m
+    - terminal_heading_error_deg
+  initial_motion:
+    - early_max_lateral_deviation_m
+    - early_max_yaw_deviation_deg
+    - caster_transition_distance_m
+    - caster_transition_time_s
+    - peak_jerk_m_s3
+    - first_confined_edge_success
+  planning:
+    - path_length_m
+    - planning_time_s
+    - expanded_nodes
+    - mode_switch_count
+    - steering_travel_rad
+    - peak_steering_rate_rad_s
+    - rejection_counts_by_reason
+  dynamics:
+    - maximum_friction_utilization
+    - minimum_corner_load_fraction
+    - maximum_abs_ltr
+    - maximum_yaw_rate_rad_s
+    - stopping_reachability_margin_m_s
+
+robustness_cells:
+  - nominal
+  - low_friction
+  - front_com
+  - rear_com
+  - adverse_initial_caster_orientation
+  - sensor_noise_and_command_latency
+
+analysis:
+  primary_unit: paired_seed_trial
+  report:
+    - scenario_level_results
+    - pooled_predeclared_results
+    - failure_reason_counts
+    - paired_effect_and_95_percent_interval
+    - success_rate_and_95_percent_interval
+    - time_clearance_accuracy_tradeoff
+  prohibited:
+    - selecting_the_best_proposed_variant_per_condition
+    - mixing_pilot_and_final_trials
+    - replacing_missing_or_failed_trials
+    - claiming_force_load_benefit_without_operational_activation

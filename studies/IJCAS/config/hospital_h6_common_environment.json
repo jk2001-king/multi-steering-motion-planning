@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "condition_id": "H6_common_H3_recorded_fully_open_flush_v1",
+  "status": "USER_ADOPTED_CONDITION_DEFINITION_ONLY_NOT_LIVE_SETUP_OR_TASK_ADMISSION",
+  "decision_date_local": "2026-11-17",
+  "user_decision": {
+    "source": "actual user reply to request_user_input_async",
+    "question_item_id": "call_9b106f32f1724f528c98eaf68c0b6ccb:0",
+    "answer_ko": "기존 H3 조건을 공통 환경 정의로 채택",
+    "scope": "H6 common environment condition definition only",
+    "does_not_authorize_actual_scene_changes_or_motion": true
+  },
+  "definition": {
+    "historical_source_condition": "H3_flush_fully_open_continuous_floor",
+    "door": {
+      "root": "/World/Hospital/SM_Door_02b9",
+      "collider": "/World/Hospital/SM_Door_02b9/SM_Door_02b",
+      "policy": "Retain the door at the exact historical recorded fully-open world mesh; never delete the door or choose a new angle from method outcomes",
+      "vertex_count": 284,
+      "triangle_count": 200,
+      "collision_approximation": "none",
+      "historical_additional_world_Z_rotation_deg": 59.999634731112806,
+      "root_translation_and_Z_retained": true,
+      "recorded_vertex_recipe_maximum_residual_m": 3.552713678800501e-15,
+      "historical_geometry_consistency_tolerance_m_NOT_a_new_safety_limit": 0.00002
+    },
+    "threshold": {
+      "root": "/World/Hospital/Geo_M_DoorFloor20",
+      "collision_paths": [
+        "/World/Hospital/Geo_M_DoorFloor20/Geo_M_DoorFloor/Geo_M_DoorFloor"
+      ],
+      "policy": "Use the original H3 flush-condition suppression policy for this exact threshold only, if separately authorized for future setup",
+      "recorded_support_top_z_m": 0.001,
+      "no_other_threshold_or_door_is_implicitly_changed": true
+    },
+    "other_environment": {
+      "policy": "Retain the recorded current unrelated colliders, full medical-asset keepouts, authored support and unknown-space policy",
+      "protected_environment_source_row_count": 4997,
+      "protected_environment_source_sha256": "b7673ab55578f5efe51c44be3c896772b4d08db102912cc9746c7b58f3771dce",
+      "all_other_recorded_ROI_collider_contributions_retained": 117,
+      "existing_authored_support_rectangles": 3,
+      "new_support_or_expanded_mission_coverage_adopted": false,
+      "same_recorded_grid_resolution_m": 0.01,
+      "same_recorded_obstacle_height_slab_m": [0.006, 0.45],
+      "same_full_body_clearance_m": 0.01
+    },
+    "matched_comparison": {
+      "methods": [
+        "B0_fixed_counterphase_ramp",
+        "B1_multimode_kinematic_ramp",
+        "B2_multimode_transition_cost_ramp",
+        "P_dynamics_full_envelope"
+      ],
+      "same_environment_definition_for_all_methods": true,
+      "no_method_specific_obstacle_removal_or_guard_relaxation": true,
+      "task_path_model_executor_and_resource_budget_require_separate_freeze": true
+    }
+  },
+  "immutable_source_sha256": {
+    "studies/IJCAS/results/hospital_paper_gate/hospital_h3_flush_setup/setup_r02/flush_component_setup.json": "807792802724186a52077ae970f1bbdd97052a96e6f466eca4780388997c7ec4",
+    "studies/IJCAS/results/hospital_paper_gate/hospital_h3_flush_geometry/flush_r02/hospital_asset_geometry_audit_flush.json": "d719f9be58796aa83542f1b0e96b098ce584492b061f158fada88ee8d2bd62e5",
+    "studies/IJCAS/results/hospital_paper_gate/hospital_h3_doorway_geometry/fully_open_r04/doorway_geometry_audit.json": "82a1c5937b107fb8490a35850cab932a5175722063a601dcdaf35e777aadcc14",
+    "studies/IJCAS/results/hospital_paper_gate/hospital_h6_geometry_review/historical_condition_candidate/c42378e0cfcb21fa/offline_condition_proposal.json": "80abc46dc046e6b76f9600e11fb22a9047bf7fd8da1b4bd312f710def5b3f15f",
+    "studies/IJCAS/results/hospital_paper_gate/hospital_h6_geometry_review/historical_condition_candidate/c42378e0cfcb21fa/UNADOPTED_CONDITION_GEOMETRY.npz": "d74af69ade615fdd4bd287f2f0c72317f3141e8cfeb40a467cbfdda186b9ea2e",
+    "studies/IJCAS/results/hospital_paper_gate/hospital_h6_geometry_review/historical_condition_candidate/c42378e0cfcb21fa/executed_sources.zip": "91e42f5cea0ceaa282935de16c82a66e09c44aab6fe41fb112af8edace2aee4f",
+    "studies/IJCAS/results/hospital_paper_gate/hospital_h6_geometry_review/historical_condition_candidate/c42378e0cfcb21fa/software_contract.json": "2d1114ed0c32f8f4ac10748f6110c320ec7d9bb3f0c92e9f180c44be50596b76",
+    "studies/IJCAS/results/hospital_paper_gate/hospital_h6_geometry_review/historical_condition_candidate/c42378e0cfcb21fa/native_verification.json": "3d951b6f4378284841aea987e03962de256658f80cb8899ff5aa81784df53207"
+  },
+  "evidence_interpretation": {
+    "historical_candidate_report_and_filename_preserved_without_relabelling": true,
+    "all_ten_source_controls_and_45_pairs_are_geometry_controls_NOT_H6_waypoints": true,
+    "prior_sufficient_holonomic_geometry_pairs": 45,
+    "prior_sufficient_pairs_are_NOT_steering_dynamics_or_drive_successes": true,
+    "entire_original_H3_scene_physical_history_or_contact_restore_claimed": false,
+    "existing_H3_H4_H5_results_or_maps_relabelled": false
+  },
+  "pending": [
+    "Explicit H6 departure and arrival bed/room selection",
+    "Coverage and support for the selected whole mission, including any currently unreviewed destination",
+    "Matched full-body steering/dynamics planning and model/executor checks",
+    "Separately authorized actual environment setup, fresh cohort, static and drive trials",
+    "Hospital sensor/localization/Nav2 evidence and final matched evaluation"
+  ],
+  "execution_authority": {
+    "current_H5_scene_map_robot_or_protocol_change": false,
+    "source_USD_or_Session_edit": false,
+    "Play_Stop_Pause_reset_or_reopen": false,
+    "new_cohort_or_static_or_drive": false,
+    "automatic_retry": false,
+    "new_physical_trial_count": 0,
+    "actual_motion_authorized": false,
+    "use_for_final_statistics": false
+  }
+}

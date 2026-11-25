@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<robot name="wheel_chair_macro" xmlns:xacro="http://ros.org/wiki/xacro">
+    <xacro:include filename="$(find wheelchair_description)/urdf/wheel_materials.xacro" />
+    <xacro:macro name="caster_wheel" params="parent_prefix caster_wheel_prefix *joint_pose">
+        <link name="${caster_wheel_prefix}_caster_link">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh scale="0.001 0.001 0.001" filename="file://$(find wheelchair_description)/meshes/caster.stl" />
+                </geometry>
+                <material name="gray"/>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh scale="0.001 0.001 0.001" filename="file://$(find wheelchair_description)/meshes/caster.stl" />
+                </geometry>
+            </collision>
+        </link>
+
+        <joint name="${parent_prefix}_to_${caster_wheel_prefix}_caster" type="continuous">
+            <parent link="${parent_prefix}"/>
+            <child link="${caster_wheel_prefix}_caster_link"/>
+            <xacro:insert_block name="joint_pose"/>
+            <axis xyz="0 0 1"/>
+        </joint>
+
+        <link name="${caster_wheel_prefix}_caster_wheel_link">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh scale="0.001 0.001 0.001" filename="file://$(find wheelchair_description)/meshes/caster_wheel.stl" />
+                </geometry>
+                <material name="black"/>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh scale="0.001 0.001 0.001" filename="file://$(find wheelchair_description)/meshes/caster_wheel.stl" />
+                </geometry>
+            </collision>
+        </link>
+
+        <joint name="${caster_wheel_prefix}_caster_to_${caster_wheel_prefix}_caster_wheel" type="continuous">
+            <parent link="${caster_wheel_prefix}_caster_link"/>
+            <child link="${caster_wheel_prefix}_caster_wheel_link"/>
+            <origin xyz="0.049291 0 -0.149778" rpy="0 0 0" />
+            <axis xyz="0 1 0"/>
+        </joint>
+    </xacro:macro>
+
+    <xacro:macro name="wheel" params="parent_prefix wheel_prefix *joint_pose">
+        <link name="${wheel_prefix}_wheel_link">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh scale="0.001 0.001 0.001" filename="file://$(find wheelchair_description)/meshes/wheel.stl" />
+                </geometry>
+                <material name="black"/>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh scale="0.001 0.001 0.001" filename="file://$(find wheelchair_description)/meshes/wheel.stl" />
+                </geometry>
+            </collision>
+        </link>
+
+        <joint name="${parent_prefix}_to_${wheel_prefix}_wheel" type="continuous">
+            <parent link="${parent_prefix}"/>
+            <child link="${wheel_prefix}_wheel_link"/>
+            <xacro:insert_block name="joint_pose"/>
+            <axis xyz="0 1 0"/>
+        </joint>
+    </xacro:macro>
+
+</robot>

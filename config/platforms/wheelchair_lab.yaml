@@ -1,0 +1,60 @@
+schema_version: 1
+platform: laboratory_powered_wheelchair_measured
+status: measured_geometry_provisional_mass_distribution
+
+source:
+  xacro: src/wheelchair_description/urdf/wheelchair_lab_parametric.xacro
+  generated_urdf: src/wheelchair_description/urdf/wheelchair_lab_parametric.urdf
+  visual_model: parametric_primitives
+  note: >-
+    This is the wheelchair currently available in the laboratory. It is not
+    the same physical design as wheel_chair.xacro or wheel_chair_screening.urdf.
+
+frames:
+  forward_axis: +X
+  left_axis: +Y
+  up_axis: +Z
+  drive_axle_x_m: 0.0
+
+measured_geometry_si:
+  drive_wheel_outer_diameter_m: 0.650
+  drive_wheel_circumference_m: 2.030
+  drive_wheel_effective_diameter_m: 0.646169
+  drive_wheel_effective_radius_m: 0.323085
+  drive_wheel_collision_radius_m: 0.325
+  drive_wheel_width_m: 0.030
+  drive_track_m: 0.500
+  drive_outer_width_m: 0.530
+  drive_inner_gap_m: 0.470
+  caster_pivot_x_m: 0.500
+  caster_pivot_track_m: 0.427
+  caster_trail_m: 0.010
+  caster_wheel_nominal_diameter_m: 0.150
+  caster_wheel_radius_m: 0.075
+  caster_wheel_width_m: 0.030
+  seat_width_m: 0.340
+  seat_depth_m: 0.400
+  seat_front_x_m: 0.325
+  seat_rear_x_measured_m: -0.050
+  seat_center_x_nominal_m: 0.120
+  seat_center_x_uncertainty_m: [0.110, 0.1375]
+  seat_surface_height_m: [0.555, 0.590]
+
+mass:
+  total_mass_kg: 40.0
+  total_mass_status: confirmed_for_measured_wheelchair
+  link_distribution_status: provisional
+  assumed_base_mass_kg: 36.0
+  assumed_drive_wheel_mass_each_kg: 1.5
+  assumed_caster_fork_mass_each_kg: 0.25
+  assumed_caster_wheel_mass_each_kg: 0.25
+  assumed_unloaded_caster_share: 0.30
+  assumed_base_com_m: [0.15264, 0.0, 0.10]
+
+unresolved_physics:
+  - empty_chair_wheel_load_distribution
+  - occupied_com_and_wheel_load_distribution
+  - caster_swivel_friction_and_damping
+  - floor_tire_friction
+  - tire_contact_compliance
+

@@ -1,0 +1,143 @@
+schema_version: 3
+platform: patient_transport_ijcas_sim
+platform_profile: lab_hy
+profile_lock:
+  allowed: [lab_hy]
+  forbidden: [field_n, rbio]
+  reason: low_profile_lab_geometry_and_sensor_extrinsics_differ_from_unmarked_field_platform
+
+usd:
+  immutable_source: isaac/assets/patient_transport_lab/patient_transport_lab.usd
+  derived_stage: isaac/assets/patient_transport_ijcas/patient_transport_ijcas.usd
+  articulation_prim: /World/patient_transport_lab_screening/base_link
+  persistent_action_graph: /World/IJCAS/ROS2Graph
+  action_graph_trigger: isaacsim.core.nodes.OnPhysicsStep
+
+dynamics_baseline:
+  status: provisional_explicit_baseline
+  physics_rate_hz: 120
+  floor:
+    static_friction: 0.8
+    dynamic_friction: 0.6
+  compliant_contact:
+    stiffness_n_m: 100000.0
+    damping_n_s_m: 1500.0
+    restitution: 0.0
+  active_joint_drives:
+    steering: {stiffness: 30.0, damping: 5.0, max_force: 250.0}
+    rolling: {stiffness: 0.0, damping: 50.0, max_force: 500.0}
+
+physical_geometry_evidence:
+  source: src/patient_transport_description/config/patient_transport_lab_measurements.yaml
+  measured:
+    overall_length_m: 1.630
+    frame_width_m: 0.760
+    maximum_width_with_rotated_casters_m: 0.965
+    active_steering_axes_m:
+      front: [0.665, 0.0, 0.174]
+      rear: [-0.665, 0.0, 0.174]
+    active_wheel_diameter_m: 0.145
+    active_wheel_width_m: 0.050
+    caster_wheel_diameter_m: 0.097
+    caster_wheel_width_m: 0.030
+    caster_trail_m: 0.045
+  observed:
+    hard_floor_all_six_wheels_in_contact: true
+    observation_date: "2026-10-21"
+    limitation: visual_contact_confirmation_not_equal_normal_load_measurement
+  unresolved:
+    - caster_swivel_x_recorded_0p462_m_vs_photo_model_0p660_m
+    - active_steering_axis_to_wheel_axis_reported_85_mm_offset_direction
+    - controller_wheelbase_1p29_m_vs_crossbeam_1p32_m_vs_axis_record_1p33_m
+    - installed_WDS150_reduction_ratio_1_over_20_or_1_over_34
+
+frames:
+  global: map
+  odometry: odom
+  body: base_link
+  simulation_imu: sim_imu
+
+ros2_interface:
+  publish:
+    platform_profile: /patient_transport/platform_profile
+    clock: /clock
+    ground_truth_odometry: /sim/ground_truth/odom
+    joint_states: /joint_states
+    transforms: /tf
+    simulation_imu: /sim/imu
+  subscribe:
+    joint_command: /sim/joint_command
+
+tf_ownership:
+  map_to_odom: ros2_bringup_static_identity_until_localization_is_added
+  odom_to_base_link: isaac_action_graph
+  base_link_to_robot_links: robot_state_publisher
+  base_link_to_sim_imu: static_transform_publisher
+
+sensors:
+  source:
+    repository: https://github.com/songhyeonwook/test
+    commit: 7e46871669ea44b19724d2141ea85d04506bb3b0
+    platform_selection_rule: use_HY_low_profile_configuration_not_unmarked_field_platform_overrides
+  laboratory_network:
+    mode: unicon
+    topology: one_hub_one_nic_three_host_ip_aliases
+    selection_command: sudo tools/lidar_net_mode.sh unicon if=enP8p1s0
+    status_command: tools/lidar_net_mode.sh status
+    devices:
+      top: {lidar_ip: 192.168.1.135, host_ip: 192.168.1.50, imu_source: true}
+      front: {lidar_ip: 192.168.2.102, host_ip: 192.168.2.50}
+      rear: {lidar_ip: 192.168.3.144, host_ip: 192.168.3.50}
+    note: IP_table_is_shared_with_rbio_but_NIC_topology_is_not
+    confidence: inferred_from_repository_history_confirm_once_on_lab_computer
+  hy_extrinsics:
+    status: recovered_provisional_HY_mount_chain
+    required_frames: [livox_front, livox_rear, livox_top, imu_link]
+    source_rule: accept_only_HY_named_or_physically_measured_values
+    rejected_source: unmarked_mount_xacro_in_the_field_platform_repository
+    tf_chain:
+      base_link_to_livox_frame:
+        xyz_m: [0.0485, 0.005, 0.23]
+        rpy_rad: [0.0, 0.0, 0.0]
+      livox_frame_to_livox_front:
+        xyz_m: [0.6485, 0.345, 0.0]
+        rpy_rad: [0.005567, -0.010252, 1.5707963267948966]
+      livox_frame_to_livox_rear:
+        xyz_m: [-0.6485, -0.345, 0.0]
+        rpy_rad: [0.0, 0.0, -1.5707963267948966]
+      livox_frame_to_livox_top:
+        xyz_m: [-0.0375, -0.28, 0.12]
+        rpy_rad: [-1.589567, 0.009866, 3.141592653589793]
+      livox_top_to_imu_link:
+        xyz_m: [0.011, 0.02329, -0.04412]
+        rpy_rad: [0.0, 0.0, 0.0]
+    composed_base_link_positions_m:
+      livox_front: [0.697, 0.350, 0.230]
+      livox_rear: [-0.600, -0.340, 0.230]
+      livox_top: [0.011, -0.275, 0.350]
+      imu_link: [0.0002221, -0.2304506, 0.3274348]
+    confidence:
+      measured: [front_z, rear_z, top_z]
+      provisional_field_assumption: [front_x, front_y, front_rpy, rear_x, rear_y, rear_rpy, top_x, top_y, top_rpy]
+      manufacturer_value: [livox_top_to_imu_link_xyz]
+  simulation_imu:
+    enabled: true
+    type: ideal_isaac_physics_imu
+    parent: base_link
+    frame: sim_imu
+    topic: /sim/imu
+    translation_m: [0.0, 0.0, 0.0]
+    rotation_rpy_rad: [0.0, 0.0, 0.0]
+    rate_hz: 120
+    calibration_status: ideal_state_observation_not_a_physical_MID360_model
+  lidar_emission:
+    enabled: false
+    hardware_model: Livox_MID-360_x3
+    reason: isaac_install_has_no_validated_mid360_rtx_profile_do_not_substitute_generic_rotary_lidar
+
+research_boundaries:
+  - This platform is for the independent IJCAS planning study, not an extension of the CICS initial-motion claim.
+  - Mass, inertia, CoM, tire friction, and contact compliance remain provisional until calibrated.
+  - HY mount heights are measured; X/Y and RPY remain explicit provisional field-platform assumptions pending HY measurement.
+  - The recovered HY transform chain enables TF/interface validation, but not a claim of calibrated physical sensor geometry.
+  - Sensor noise and latency are disabled in schema version 3 and must be introduced as explicit experiment factors.

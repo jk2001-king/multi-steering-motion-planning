@@ -1,0 +1,442 @@
+{
+  "schema_version": 1,
+  "definition_id": "H6_bed11_to_bed15_south_heading0_common_static_workspace",
+  "status": "USER_ADOPTED_OFFLINE_COMMON_ENVIRONMENT_AND_FIXED_ENDPOINT_DEFINITION_NOT_LIVE_SETUP_OR_DRIVE",
+  "scenario": "H6_integrated_transfer_mission",
+  "user_decision": {
+    "actual_user_text_ko": "그럼 0도로 가자",
+    "context_question_item_id": "call_c3bb77a9373844118270e89a4f84ae60:0",
+    "preceding_clarification_was_NOT_adoption": true,
+    "choice": "Common-definition option1 with south-midpoint0deg(+X)",
+    "scope": "Offline common environment and arrival-task definition only; no actual scene/robot/physics/timeline or trial authority"
+  },
+  "task_ko": "병상11의 원래 H1 시작 자세에서 출발하여 병상15 남측 중앙에 +X 방향으로 정렬하는 통합 이송 임무",
+  "ordered_bed_roots": [
+    "/World/Hospital/SM_HospitalBed_02d11",
+    "/World/Hospital/SM_HospitalBed_02d15"
+  ],
+  "original_recorded_full_bed_collision_union_bounds": {
+    "/World/Hospital/SM_HospitalBed_02d11": {
+      "minimum_m": [
+        13.085384945284183,
+        14.83399761641378,
+        0.0010016784667968312
+      ],
+      "maximum_m": [
+        15.29927333413476,
+        15.926100039835415,
+        0.8918788100433986
+      ]
+    },
+    "/World/Hospital/SM_HospitalBed_02d15": {
+      "minimum_m": [
+        23.041316602602183,
+        12.516245033615302,
+        0.0010018310546874634
+      ],
+      "maximum_m": [
+        25.59497032079528,
+        13.622912167773805,
+        1.3034190993066737
+      ]
+    }
+  },
+  "start_xyyaw": [
+    14.192329139709472,
+    16.568600039835417,
+    0
+  ],
+  "goal_xyyaw": [
+    24.31814346169873,
+    11.873745033615302,
+    0
+  ],
+  "local_goal_xyyaw": [
+    10.12581432198926,
+    -4.694855006220115,
+    0
+  ],
+  "coordinate_frame": "Original hospital World, metres, Z-up; heading0 means body +X",
+  "start_source": {
+    "path": "/home/jk/Research/IJCAS_ws/studies/IJCAS/results/hospital_paper_gate/hospital_h1_geometry.json",
+    "field": "start_xyyaw",
+    "captured_from_current_robot": false
+  },
+  "goal_source": {
+    "path": "/home/jk/Research/IJCAS_ws/studies/IJCAS/results/hospital_paper_gate/hospital_h6_geometry_review/selected_transfer_condition/e7f2ff923f267492/bed15_south_workspace_review.json",
+    "port_id": "bbox_south_heading0",
+    "full_body_clearance_m": 0.01,
+    "normal_reserve_after_full_body_clearance_m": 0.15,
+    "clinical_docking_or_loading_clearance_NOT_validated": true,
+    "heading_choice_from_task_semantics_NOT_method_planning_outcomes": true
+  },
+  "common_methods": [
+    "B0_fixed_counterphase_ramp",
+    "B1_multimode_kinematic_ramp",
+    "B2_multimode_transition_cost_ramp",
+    "P_dynamics_full_envelope"
+  ],
+  "common_environment": {
+    "first_door_and_threshold_definition": "/home/jk/Research/IJCAS_ws/studies/IJCAS/config/hospital_h6_common_environment.json",
+    "destination_door": {
+      "root": "/World/Hospital/SM_Door_02b3",
+      "collider": "/World/Hospital/SM_Door_02b3/SM_Door_02b",
+      "static_open_policy": "Whole original leaf statically placed at the previously reviewed single room-inward perpendicular orientation",
+      "additional_world_Z_rotation_deg": 79.99985226047164,
+      "source_authored_parent_origin_verified": true,
+      "physical_hinge_or_door_opening_dynamics_NOT_established": true,
+      "leaf_deleted": false,
+      "original284_vertices_and200_triangles_retained": true
+    },
+    "destination_flush_threshold": {
+      "root": "/World/Hospital/Geo_M_DoorFloor12",
+      "collision_paths": [
+        "/World/Hospital/Geo_M_DoorFloor12/Geo_M_DoorFloor/Geo_M_DoorFloor"
+      ],
+      "prospective_collision_enabled": false,
+      "existing_authored_support_top_z_m": 0.001,
+      "no_new_support_geometry": true
+    },
+    "parked_assets": [
+      {
+        "root": "/World/Hospital/SM_SupplyCart_01e14",
+        "bay": "northwest",
+        "additional_world_Z_rotation_deg": 90,
+        "rotation_reason": "Align original cart's longer bounding axis with the north wall; ONE fixed angle, not a method/outcome-conditioned search.",
+        "world_XY_placement_rule": "Rotated collision-union AABB minX = domain west +150mm; maxY = domain north -150mm.",
+        "collider": "/World/Hospital/SM_SupplyCart_01e14/SM_SupplyCart_01e",
+        "point_count": 2658,
+        "triangle_count": 2604,
+        "original_union_bound": {
+          "minimum_m": [
+            24.08589082594906,
+            10.907155797698996,
+            0.0010004577636718742
+          ],
+          "maximum_m": [
+            24.79664358239129,
+            12.083786472805844,
+            1.1137109278877715
+          ],
+          "size_m": [
+            0.7107527564422291,
+            1.176630675106848,
+            1.1127104701240995
+          ]
+        },
+        "candidate_union_bound": {
+          "minimum_m": [
+            21.06137370492757,
+            12.904949597847171,
+            0.0010004577636718581
+          ],
+          "maximum_m": [
+            22.23800438003442,
+            13.6157023542894,
+            1.1137109278877715
+          ]
+        },
+        "rotation_pivot_world_m": [
+          24.441267204170174,
+          11.49547113525242,
+          0.5573556928257217
+        ],
+        "world_rotation_matrix": [
+          [
+            6.123233995736766e-17,
+            -1,
+            0
+          ],
+          [
+            1,
+            6.123233995736766e-17,
+            0
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ],
+        "post_rotation_translation_m": [
+          -2.7915781616891806,
+          1.7648548408158646,
+          0
+        ],
+        "topology_and_Z_and_pairwise_rigid_geometry_unchanged": true,
+        "positive_source_scale_not_replaced": true,
+        "full_footprint_inside_existing_analysis_ROI": true,
+        "missing_authored_support_area_m2": 0,
+        "full3D_enabled_other_collider_AABBs_checked": 2132,
+        "full3D_nonself_50mm_xy_expanded_bound_overlaps": [],
+        "conservative_AABB_overlap_is_NOT_cooked_contact": true
+      },
+      {
+        "root": "/World/Hospital/SM_Chair_01a14",
+        "bay": "southeast",
+        "additional_world_Z_rotation_deg": 0,
+        "world_XY_placement_rule": "Original collision-union AABB maxX = domain east -150mm; minY = existing ROI minY +150mm.",
+        "collider": "/World/Hospital/SM_Chair_01a14/SM_Chair_01a",
+        "point_count": 2322,
+        "triangle_count": 2792,
+        "original_union_bound": {
+          "minimum_m": [
+            22.643700245073333,
+            11.509826682067798,
+            0.0034485848297329934
+          ],
+          "maximum_m": [
+            23.703074780230917,
+            12.565284625138123,
+            1.0642011938870262
+          ],
+          "size_m": [
+            1.059374535157584,
+            1.0554579430703246,
+            1.0607526090572932
+          ]
+        },
+        "candidate_union_bound": {
+          "minimum_m": [
+            25.515180112636383,
+            11.205421818866617,
+            0.0034485848297329813
+          ],
+          "maximum_m": [
+            26.574554647793967,
+            12.260879761936941,
+            1.0642011938870262
+          ]
+        },
+        "rotation_pivot_world_m": [
+          23.173387512652127,
+          12.037555653602961,
+          0.5338248893583796
+        ],
+        "world_rotation_matrix": [
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ],
+        "post_rotation_translation_m": [
+          2.8714798675630497,
+          -0.30440486320118154,
+          0
+        ],
+        "topology_and_Z_and_pairwise_rigid_geometry_unchanged": true,
+        "positive_source_scale_not_replaced": true,
+        "full_footprint_inside_existing_analysis_ROI": true,
+        "missing_authored_support_area_m2": 0,
+        "full3D_enabled_other_collider_AABBs_checked": 2132,
+        "full3D_nonself_50mm_xy_expanded_bound_overlaps": [],
+        "conservative_AABB_overlap_is_NOT_cooked_contact": true
+      }
+    ],
+    "exact_selected_asset_root_default_overrides": {
+      "/World/Hospital/SM_Door_02b3": {
+        "xformOp:orient": {
+          "type": "Quatd",
+          "real": -4.163336342344337e-17,
+          "imaginary": {
+            "type": "Vec3d",
+            "values": [
+              0,
+              0,
+              1
+            ]
+          }
+        }
+      },
+      "/World/Hospital/SM_SupplyCart_01e14": {
+        "xformOp:orient": {
+          "type": "Quatd",
+          "real": 0.08715785927559537,
+          "imaginary": {
+            "type": "Vec3d",
+            "values": [
+              0,
+              0,
+              0.9961945129172793
+            ]
+          }
+        },
+        "xformOp:translate": {
+          "type": "Vec3d",
+          "values": [
+            21.737575949217785,
+            13.24609490471061,
+            0.0010004577636718891
+          ]
+        }
+      },
+      "/World/Hospital/SM_Chair_01a14": {
+        "xformOp:translate": {
+          "type": "Vec3d",
+          "values": [
+            26.06408728943805,
+            11.760180860675773,
+            0.0010025939941406391
+          ]
+        }
+      }
+    },
+    "selected_asset_root_override_count": 4,
+    "root_op_order_child_unit_scale_original_vertices_topology_Z_material_and_gains_retained": true,
+    "original200_collider_identities_accounted_once": true,
+    "unrelated194_source_contributions_retained": true,
+    "original45_medical_roots_retained": true,
+    "explicit_additional_whole_parked_chair_bay_keepout_common_to_all_methods": true,
+    "no_method_specific_environment_or_goal_or_tolerance": true
+  },
+  "map_definition": {
+    "source_array": "/home/jk/Research/IJCAS_ws/studies/IJCAS/results/hospital_paper_gate/hospital_h6_geometry_review/selected_transfer_condition/e7f2ff923f267492/UNADOPTED_BED15_SOUTH_WORKSPACE_CONSERVATIVE_ENVELOPES.npz",
+    "old_UNADOPTED_report_and_array_names_preserved_NOT_relabelled": true,
+    "new_adoption_does_NOT_rewrite_historical_candidate_status": true,
+    "source_ROI_xy_m": [
+      11.624561730535497,
+      27.055793535543966,
+      11.055421818866616,
+      31.96082240859503
+    ],
+    "resolution_m": 0.01,
+    "obstacle_height_slab_m": [
+      0.006,
+      0.45
+    ],
+    "same_three_authored_support_rectangles": [
+      [
+        [
+          8.467436528207728,
+          5.807367212727655
+        ],
+        [
+          28.467436528207728,
+          5.807367212727655
+        ],
+        [
+          28.467436528207728,
+          25.807367212727655
+        ],
+        [
+          8.467436528207728,
+          25.807367212727655
+        ]
+      ],
+      [
+        [
+          17.260976884871916,
+          25.807367212727655
+        ],
+        [
+          20.758984233433015,
+          25.807367212727655
+        ],
+        [
+          20.758984233433015,
+          28.75181784240991
+        ],
+        [
+          17.260976884871916,
+          28.75181784240991
+        ]
+      ],
+      [
+        [
+          15.001,
+          28.75181784240991
+        ],
+        [
+          20.758984233433015,
+          28.75181784240991
+        ],
+        [
+          20.758984233433015,
+          31.899997245667933
+        ],
+        [
+          15.001,
+          31.899997245667933
+        ]
+      ]
+    ],
+    "support_outside_ROI_unknown_space_blocked": true,
+    "full_body_rectangle_m": [
+      1.63,
+      0.965
+    ],
+    "full_body_clearance_m": 0.01,
+    "protected_source_environment": {
+      "row_count": 4997,
+      "sha256": "b7673ab55578f5efe51c44be3c896772b4d08db102912cc9746c7b58f3771dce"
+    },
+    "all16_prior_anchor_and120_pair_diagnostics_preserved_NOT_mandatory_waypoints": true,
+    "whole_original_medical_envelopes_retained_NOT_triangle_rebounds": true,
+    "current_H5_environment_or_any_original_source_file_NOT_changed": true
+  },
+  "integrated_scope": {
+    "required_stages": [
+      "bedside_departure",
+      "doorway_and_corridor_traversal",
+      "medical_obstacle_avoidance_or_bypass",
+      "bedside_arrival_and_single_hold"
+    ],
+    "no_old_component_endpoints_or_state_stitched": true,
+    "no_pose_joint_velocity_caster_or_reference_reset_at_stage_handoffs": true,
+    "actual_portal_crossings_bypass_identity_and_continuous_steering_route_still_require_review": true,
+    "H5_declared_replanning_and_hospital_sensor_Nav2_scope_remain_required_not_completed_here": true
+  },
+  "existing_common_limits": {
+    "maximum_command_speed_m_s": 0.05,
+    "maximum_acceleration_m_s2": 0.02,
+    "steering_command_slew_deg_s": 8,
+    "planning_terminal_position_m": 0.025,
+    "planning_terminal_heading_deg": 2,
+    "actual_terminal_position_m": 0.03,
+    "actual_terminal_heading_deg": 2,
+    "stopped_speed_m_s": 0.005,
+    "one_terminal_hold_s": 5
+  },
+  "pending_before_execution": [
+    "Full-ROI common planning adapter; replace H1 task-local X bounds. Numeric H1 +/-2m Y wall bounds are bypassed when the explicit map checker is supplied, so they are NOT proof of H6 infeasibility.",
+    "Predeclare common allowed direction/reversal resources, total planning budget including P candidate generation, and H6 simulation/wall limits",
+    "Matched steering/dynamics planning and independent full-footprint repropagation for all four methods",
+    "Continuous integrated stage/portal/bypass validation and model/physical executor review",
+    "Separately authorized actual common environment setup, fresh actor, own static and one drive trial",
+    "Hospital sensor/localization/Nav2 evidence and reduced predeclared final comparison"
+  ],
+  "execution_authority": {
+    "actual_scene_or_root_or_Session_or_robot_edit": false,
+    "Play_Stop_Pause_reset_or_reopen": false,
+    "new_cohort_static_drive_or_automatic_retry": false,
+    "new_PhysX_trial_count": 0,
+    "actual_motion_authorized": false,
+    "use_for_final_statistics": false
+  },
+  "input_sha256": {
+    "/home/jk/Research/IJCAS_ws/studies/IJCAS/results/hospital_paper_gate/hospital_h6_geometry_review/selected_transfer_condition/e7f2ff923f267492/bed15_south_workspace_review.json": "c66c8cacfd359dac02221deb2eb9b296eed514f0b5c0c2bfcb5e88bca73d85ce",
+    "/home/jk/Research/IJCAS_ws/studies/IJCAS/results/hospital_paper_gate/hospital_h6_geometry_review/selected_transfer_condition/e7f2ff923f267492/actual_frames_rigid_override_review.json": "2b0d741ae044ea087be1628d7a11d1404f4468b4b39f5859b1264999cf4a1303",
+    "/home/jk/Research/IJCAS_ws/studies/IJCAS/results/hospital_paper_gate/hospital_h6_geometry_review/selected_transfer_condition/e7f2ff923f267492/actual_frames_rigid_override_verification.json": "637f25c743093c97e0f755c93ac2f9fa74cc4b8642b09040b5682d85a7be9159",
+    "/home/jk/Research/IJCAS_ws/studies/IJCAS/results/hospital_paper_gate/hospital_h6_geometry_review/selected_transfer_condition/e7f2ff923f267492/bed15_south_workspace_definition.json": "cf23a69868f13bcb00caea70575cb675724adaedf492e1e88c716f5ac57bec44",
+    "/home/jk/Research/IJCAS_ws/studies/IJCAS/results/hospital_paper_gate/hospital_h6_geometry_review/selected_transfer_condition/e7f2ff923f267492/bed15_south_workspace_independent_verification.json": "da5176fc2cd2d83d11a246ede50a0ebde8a7ba1fc39b6d1503af03243a894732",
+    "/home/jk/Research/IJCAS_ws/studies/IJCAS/results/hospital_paper_gate/hospital_h6_geometry_review/selected_transfer_condition/e7f2ff923f267492/current_asset_frames_GET_r01/live_asset_frames.json": "cfc9d71eee37bdb74ab873df235b1da07e61fe61bc707a78cfd8e1c896e283cb",
+    "/home/jk/Research/IJCAS_ws/studies/IJCAS/results/hospital_paper_gate/hospital_h6_geometry_review/selected_transfer_condition/e7f2ff923f267492/UNADOPTED_BED15_SOUTH_WORKSPACE_CONSERVATIVE_ENVELOPES.npz": "723d3f70e28ecd48914b33b4f43696451ddaab2bd5752997853eb1056ec8f080",
+    "/home/jk/Research/IJCAS_ws/studies/IJCAS/results/hospital_paper_gate/hospital_h6_geometry_review/selected_transfer_condition/e7f2ff923f267492/destination_swing_candidate_definition.json": "7ae47d13b4c564e5327321cee4e95dbb106e6df758fd658443e72075b5edd6a6",
+    "/home/jk/Research/IJCAS_ws/studies/IJCAS/results/hospital_paper_gate/hospital_h6_geometry_review/selected_transfer_condition/e7f2ff923f267492/destination_swing_hypothesis_review.json": "ef2e2c84eba07bf8ed2f0d7cd581519f17752bbb427010a795104ab2e7011d5c",
+    "/home/jk/Research/IJCAS_ws/studies/IJCAS/config/hospital_h6_common_environment.json": "8a1f82bb7e7eb7daf170045258534090559a30361e1b6fbef198c675f21f3daa",
+    "/home/jk/Research/IJCAS_ws/studies/IJCAS/config/hospital_h6_transfer_candidate.json": "2bdd3a201aa29a52be8ed8f61399272a6d4951db79a6b78b00b56ff29a4ee371",
+    "/home/jk/Research/IJCAS_ws/studies/IJCAS/results/hospital_paper_gate/hospital_h6_geometry_review/coverage/4b47c62e8c07e532/coverage_review.json": "61a9607c820e5bb73eedf9000db1f815797c418b7a4eed435f5c9e1dace43880",
+    "/home/jk/Research/IJCAS_ws/studies/IJCAS/results/hospital_paper_gate/hospital_h1_geometry.json": "263bbe50422914d1f752f27b1e225bea43a26573590ddc1d5ee14985f78cfe4b"
+  }
+}

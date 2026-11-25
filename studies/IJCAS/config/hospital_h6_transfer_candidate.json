@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "USER_SELECTED_BED_PAIR_FOR_OFFLINE_REVIEW_NOT_FROZEN_ROBOT_POSES_OR_MOTION",
+  "user_decision": {
+    "question_item_id": "call_7edf570c1d3b496e9548c70fa7af3324:0",
+    "answer_ko": "H1 병상 → 동쪽 병상15 후보 검토",
+    "scope": "Offline candidate map, doorway and support review only"
+  },
+  "ordered_bed_roots": [
+    "/World/Hospital/SM_HospitalBed_02d11",
+    "/World/Hospital/SM_HospitalBed_02d15"
+  ],
+  "original_medical_review": "studies/IJCAS/results/hospital_paper_gate/hospital_h6_geometry_review/medical_keepouts/e6f758d5eba1bc8a/medical_keepout_review.json",
+  "common_environment_definition": "studies/IJCAS/config/hospital_h6_common_environment.json",
+  "input_sha256": {
+    "studies/IJCAS/results/hospital_paper_gate/hospital_h6_geometry_review/medical_keepouts/e6f758d5eba1bc8a/medical_keepout_review.json": "a89e603570b39d17e174d39d3ff9dd998472c573c1e2382c0b8897f54da244bb",
+    "studies/IJCAS/config/hospital_h6_common_environment.json": "8a1f82bb7e7eb7daf170045258534090559a30361e1b6fbef198c675f21f3daa"
+  },
+  "analysis_ROI_rule": "All ten unchanged source task controls and both selected full bed collision-union bounds, plus the existing circumscribed robot radius and fixed 0.500m coverage margin",
+  "all_other_named_beds_retained_in_support_review": true,
+  "robot_start_xyyaw": null,
+  "robot_goal_xyyaw": null,
+  "room_boundaries_and_doorway_sequence_verified": false,
+  "common_condition_applied_to_current_H5_or_live_scene": false,
+  "new_support_added": false,
+  "actual_motion_authorized": false,
+  "use_for_final_statistics": false
+}

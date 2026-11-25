@@ -1,0 +1,3 @@
+set;IJCAS_WORKSPACE_ROOT;@IJCAS_WORKSPACE_ROOT@
+prepend-non-duplicate;PYTHONPATH;@IJCAS_WORKSPACE_ROOT@/studies/IJCAS/scripts
+prepend-non-duplicate;PYTHONPATH;@IJCAS_WORKSPACE_ROOT@/tools

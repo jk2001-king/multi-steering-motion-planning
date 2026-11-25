@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!-- HY low-profile laboratory platform sensor mount values.
+
+     The front/rear (0.23 m) and top (0.35 m) sensor-centre heights are
+     measured.  X/Y and RPY retain the field-platform values provisionally and
+     must be replaced when HY-specific measurements become available.
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:property name="sensor_body_length" value="1.62"/>
+  <xacro:property name="sensor_body_width" value="0.952"/>
+  <xacro:property name="sensor_body_height" value="0.60"/>
+
+  <xacro:property name="livox_frame_xyz" value="0.0485 0.005 0.23"/>
+  <xacro:property name="front_xyz" value="0.6485 0.345 0"/>
+  <xacro:property name="front_rpy" value="0.005567 -0.010252 ${pi_value/2.0}"/>
+  <xacro:property name="rear_xyz" value="-0.6485 -0.345 0"/>
+  <xacro:property name="rear_rpy" value="0 0 ${-pi_value/2.0}"/>
+  <xacro:property name="top_xyz" value="-0.0375 -0.28 0.12"/>
+  <xacro:property name="top_rpy" value="-1.589567 0.009866 ${pi_value}"/>
+  <xacro:property name="imu_xyz" value="0.011 0.02329 -0.04412"/>
+</robot>

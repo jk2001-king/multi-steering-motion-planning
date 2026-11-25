@@ -1,0 +1,47 @@
+# Colcon and Python outputs
+/build/
+/install/
+/log/
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.nbi
+*.nbc
+.pytest_cache/
+.cache/
+.vscode/
+*.code-workspace
+
+# Original evidence, local relocation receipts and generated runs
+/studies/IJCAS/results/
+/studies/IJCAS/reports/
+/studies/CICS26/
+/data/
+/results/
+/migration/
+/archive/
+
+# Retired development inputs and local aliases
+/external/
+/scripts/
+/isaac_model/
+/motor_bag
+/motor_file
+/config/experiments
+isaac/scenes/*.bak*
+**/*~
+
+# Superseded early study notes; current documentation lives in docs/*.md
+/docs/research_plan.md
+/docs/isaac_steering_calibration.md
+/docs/wheelchair_model_intake_audit.md
+/docs/isaac_sim_model_inspection.md
+/docs/model_audit.md
+
+# Credentials and local environment overrides
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json

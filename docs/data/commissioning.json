@@ -1,0 +1,68 @@
+{
+  "source": "migration/gui_clock_sensor_reproduction_20261125.json",
+  "source_sha256": "d5b55c871ee9fca05394440b9043af0d8eb69a50e1c1a484c9183a3d30061700",
+  "cases": [
+    {
+      "task": "H2",
+      "method": "P",
+      "feedback": "ground_truth",
+      "outcome": "PASS",
+      "run_id": "20261125_042238_521302_H2_P_dynamics_full_envelope_f03",
+      "counted_in_fixed_paper_statistics": false,
+      "report_sha256": "a7a920b6f5cc4109e2815db191b55db0df3fd25a423dde56022eafdd0a97bedd",
+      "report": "results/experiments/20261125_042238_521302_H2_P_dynamics_full_envelope_f03/live/H2_P_dynamics_full_envelope_f03/route/route_readback.json"
+    },
+    {
+      "task": "H5",
+      "method": "P",
+      "feedback": "amcl_encoder",
+      "outcome": "PASS",
+      "run_id": "20261125_123612_853224_H5_sensor_cohort_04_r01",
+      "counted_in_fixed_paper_statistics": false,
+      "report_sha256": "16f6e2fc0cccbc7a71d0b5de3d69087893a7e910c11ee84b48f98460d255527b",
+      "report": "results/experiments/20261125_123612_853224_H5_sensor_cohort_04_r01/whole_H5_P_sensor_nav2/route/route_readback.json",
+      "comparison_scalar_flags": {
+        "fresh_actual_mission_PASS": true,
+        "original_full_clock_restored": true,
+        "physics_fields_same": true,
+        "all_physics_numeric_fields_identical": true,
+        "all_control_stamps_identical": true,
+        "all_joint_proposals_identical": true,
+        "all_estimated_poses_identical": true,
+        "all_reported_metric_differences_under1e_9": true,
+        "ground_truth_control_fallback": false,
+        "original_paper_results_replaced": false,
+        "new_case_count_in_paper_denominator": 0
+      },
+      "comparison_source": "results/experiments/20261125_123612_853224_H5_sensor_cohort_04_r01/paper_reproduction_comparison.json",
+      "comparison_sha256": "32da8b0a101b4fae878a83dd4cad34483066e27fbde9492fb9c9c54f96ecd2ac"
+    },
+    {
+      "task": "H6",
+      "method": "P",
+      "feedback": "amcl_encoder",
+      "outcome": "PASS",
+      "run_id": "20261125_125122_775531_H6_sensor_cohort_03_r01",
+      "counted_in_fixed_paper_statistics": false,
+      "report_sha256": "a123395f38b4bed01f8b82993b5b4d2090205f260539b9925ca6cc25483dae98",
+      "report": "results/experiments/20261125_125122_775531_H6_sensor_cohort_03_r01/whole_H6_P_sensor_nav2/route/route_readback.json",
+      "comparison_scalar_flags": {
+        "fresh_actual_mission_PASS": true,
+        "original_full_clock_restored": true,
+        "physics_fields_same": true,
+        "all_physics_numeric_fields_identical": true,
+        "all_control_stamps_identical": true,
+        "all_joint_proposals_identical": true,
+        "all_estimated_poses_identical": true,
+        "all_reported_metric_differences_under1e_9": true,
+        "ground_truth_control_fallback": false,
+        "original_paper_results_replaced": false,
+        "new_case_count_in_paper_denominator": 0
+      },
+      "comparison_source": "results/experiments/20261125_125122_775531_H6_sensor_cohort_03_r01/paper_reproduction_comparison.json",
+      "comparison_sha256": "af7622f65162171ce350cbc4a97cd341cc1c6ebc600cdd7ef2a95e61656680fd"
+    }
+  ],
+  "new_executions_separate_from_paper_statistics": true,
+  "all_72_cells_freshly_rerun": false
+}

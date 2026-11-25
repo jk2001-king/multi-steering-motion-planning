@@ -1,0 +1,1296 @@
+schema_version: 2
+study: dynamics_and_full_envelope_hospital_path_planning
+status: draft_pre_registered
+supersedes_for_final_paper: simulation_validation_protocol.yaml
+supersedes_draft: hospital_paper_validation_protocol_v01_superseded.yaml
+scope_revision:
+  date: "2026-11-01"
+  basis: user_selected_manuscript_inclusion_without_forced_controller_coupling
+  professor_has_explicitly_confirmed_this_interpretation: false
+  previous_draft_is_not_a_frozen_or_executed_hospital_comparison: true
+preservation_rule: >-
+  The earlier protocol and its corridor-90 evidence remain immutable pilot
+  evidence. They are not relabelled as hospital-environment paper trials.
+
+professor_direction:
+  received_date: "2026-10-29"
+  requirements:
+    - include_existing_initial_motion_research_in_the_manuscript
+    - replace_simple_geometry_with_bed_and_hospital_workspaces
+    - analyze_results_across_diverse_environments
+  controller_planner_algorithmic_integration_explicitly_requested: false
+
+research_scope:
+  new_contribution: steering_state_dynamics_stopping_and_full_envelope_path_planning
+  cics_role: prior_work_and_separately_identified_existing_results
+  cics_evidence: studies/CICS26/docs/patient_transport_lateral_final9_results.md
+  cics_validated_motion: lateral_departure_with_active_axes_near_90deg_and_differential_drive
+  hospital_navigation_motion: longitudinal_and_turning_with_counterphase_front_only_and_rear_only_steering
+  new_forward_micro_yaw_controller_required: false
+  controller_planner_joint_optimization_required: false
+  sequential_lateral_departure_to_navigation: optional_separate_future_validation
+  continuation_decision_20261104:
+    primary_contribution_unchanged: true
+    natural_entry_is_common_execution_setup_not_a_new_planner: true
+    immediate_gate: ordinary_0p30m_approach_to_original_H3_start_with_retained_caster_history
+    CICS_lateral_departure_to_navigation_bridge: optional_separate_small_system_experiment_not_implemented
+    CICS_forward_mode_transfer_or_mandatory_new_initial_controller: false
+    use_identical_entry_procedure_for_all_planning_methods_in_future_comparisons: true
+    record_entry_failures_and_total_approach_cost_no_success_only_selection: true
+  manuscript_requirements:
+    - explain_the_common_patient_transport_task_and_distinct_roles
+    - distinguish_existing_CICS_results_from_new_IJCAS_results
+    - cite_existing_publications_and_do_not_relabel_reused_results_as_new
+    - do_not_claim_CICS_lateral_results_validate_forward_micro_steering
+  archived_exploratory_branch:
+    script: isaac/scripts/isaac_run_ijcas_hospital_h1_initial_motion.py
+    result: studies/IJCAS/results/hospital_paper_gate/initial_motion/hospital_h1_initial_micro_yaw_r01.json
+    status: failed_development_trial_preserved_not_a_required_planning_gate
+
+claim_boundary:
+  primary: >-
+    Steering-state, rigid-body, stopping-reachability, and full-body-envelope
+    planning is evaluated for hospital-task
+    feasibility and terminal accuracy relative to matched conventional and
+    ablated methods.
+  initial_motion_role: >-
+    Existing CICS initial-motion control is described as prior work with its
+    original lateral-motion validation. It is not a mandatory front end of the
+    new planner or evidence for forward-mode transient performance.
+  rigid_body_role: >-
+    Newton-Euler force/load constraints are evaluated as safety constraints.
+    A performance gain is attributed to them only in cells where they produce
+    operational edge rejection or a paired execution difference.
+  excluded_until_physical_gate:
+    - calibrated_real_platform_force_and_load_validity
+    - clinical_safety_or_hospital_deployment_readiness
+    - generalization_beyond_the_predeclared_hospital_tasks
+
+hypotheses:
+  H2_planning_dynamics:
+    statement: >-
+      Steering-state and speed-consistent propagation improves execution success
+      relative to multimode kinematic planning with instantaneous transitions.
+    primary_metrics:
+      - task_success
+      - terminal_position_error_m
+      - terminal_heading_error_deg
+  H3_full_envelope:
+    statement: >-
+      Swept full-body-envelope checking prevents body/caster contact missed by
+      centreline or point-footprint planning.
+    primary_metrics:
+      - obstacle_contact_event_count
+      - minimum_clearance_m
+      - collision_rejected_edge_count
+  H4_integrated_mission:
+    statement: >-
+      The full proposed method completes the integrated hospital transfer mission
+      more reliably than the strongest baseline under paired uncertainty seeds.
+    primary_metrics:
+      - mission_success
+      - mission_time_s
+      - safety_abort_count
+
+methods:
+  B0_fixed_counterphase_ramp:
+    initial_motion: acceleration_limited_ramp
+    planner: fixed_counterphase_kinematic
+    envelope: full_body
+    terminal_controller: common_bounded_2d_mode_switching
+  B1_multimode_kinematic_ramp:
+    initial_motion: acceleration_limited_ramp
+    planner: multimode_instantaneous_transition
+    envelope: full_body
+    terminal_controller: common_bounded_2d_mode_switching
+  B2_multimode_transition_cost_ramp:
+    initial_motion: acceleration_limited_ramp
+    planner: multimode_kinematic_with_transition_time_cost
+    envelope: full_body
+    terminal_controller: common_bounded_2d_mode_switching
+    purpose: distinguish_transition_cost_from_state_propagation
+  P_dynamics_full_envelope:
+    initial_motion: acceleration_limited_ramp
+    planner: dynamics_and_full_envelope
+    envelope: full_body
+    terminal_controller: common_bounded_2d_mode_switching
+    implementation_form: hierarchical_spatial_candidates_then_speed_consistent_dynamic_refinement_and_selection
+    global_joint_state_search_claimed: false
+    mode_and_steering_transition_cost_in_selection: true
+
+comparison_controls:
+  initial_motion_controller: identical_acceleration_limited_ramp_for_all_methods
+  terminal_controller: identical_bounded_2d_mode_switching_for_all_methods
+  speed_and_acceleration_bounds: identical_for_all_methods
+  terminal_tolerances_and_safety_abort_rules: identical_for_all_methods
+  geometry_start_goal_and_uncertainty_seed: paired_across_methods
+  full_envelope_ablation: separately_labelled_safety_diagnostic_not_a_silent_baseline_change
+
+execution_order:
+  - common_zero_command_creep_diagnostic_and_cause_check
+  - verify_any_common_physics_or_stop_control_change_before_freezing
+  - H1_actual_hospital_geometry_path_planning_and_execution_pilot
+  - matched_four_method_H1_comparison
+  - H2_to_H5_hospital_geometry_and_matched_execution
+  - hospital_sensor_closed_loop_validation
+  - H6_navigation_mission_and_cross_environment_analysis
+  - manuscript_with_separately_labelled_CICS_prior_work
+
+common_execution_readiness:
+  pending_issue: residual_chassis_motion_after_zero_drive_speed_command
+  diagnostic_script: isaac/scripts/isaac_run_ijcas_hospital_h1_zero_command_diagnostic.py
+  cause_confirmed: false
+  latest_creep_observation:
+    source: studies/IJCAS/results/hospital_paper_gate/zero_command_diagnostic/hospital_h1_zero_r01.json
+    chassis_speed_m_s: 0.0044720049688828055
+    chassis_forward_travel_m: 0.013559341313483762
+    front_active_wheel_roll_travel_m: 0.0143680682182312
+    rear_active_wheel_roll_travel_m: 0.014275257349014282
+    interpretation: active_drive_rotation_observed_not_pure_chassis_sliding
+  standstill_hold_aba_evidence:
+    script: isaac/scripts/isaac_run_ijcas_hospital_h1_drive_hold_diagnostic.py
+    result: studies/IJCAS/results/hospital_paper_gate/zero_command_diagnostic/hospital_h1_drive_hold_aba_r01.json
+    design: original_zero_velocity_then_captured_drive_position_hold_then_original_zero_velocity
+    status: standstill_candidate_passed_not_moving_stop_validation
+    before_speed_m_s: 0.004521475004350512
+    hold_speed_m_s: 0.0008112449748632752
+    hold_three_second_drift_m: 0.0024404525756835938
+    hold_signed_longitudinal_speed_m_s: -0.000811244967144131
+    after_return_signed_longitudinal_speed_m_s: -0.003932316374464222
+    return_to_velocity_mode_reversed_residual_motion: true
+    hold_release_transition_not_yet_validated_for_navigation: true
+    original_gains_restored: true
+    gain_scope: two_active_drive_position_gains_only_temporary_and_restored
+    source_stage_and_contact_model_changed: false
+  motion_stop_component_evidence:
+    script: isaac/scripts/isaac_run_ijcas_hospital_h1_motion_stop_gate.py
+    result: studies/IJCAS/results/hospital_paper_gate/motion_stop/hospital_h1_ramp_stop_hold_r01.json
+    status: one_straight_forward_motion_stop_trial_passed_not_full_H1_validation
+    motion: ordinary_acceleration_limited_forward_0p30m_then_deceleration_and_motor_hold
+    cics_or_micro_yaw_enabled: false
+    terminal_hold_observation_s: 5.0
+    fixed_tail_evaluation_s: 3.0
+    all_original_motor_gains_restored_on_exit: true
+    counts_as_full_H1_path_execution: false
+    terminal_position_error_m: 0.0025699588547447583
+    terminal_heading_error_deg: 0.0016672439513054109
+    hold_tail_regression_speed_m_s: 0.00007776558595186544
+    further_scope: steering_modes_curved_path_and_closed_loop_execution_not_yet_validated_in_hospital
+  next_development_test:
+    task: H2_proposed_frozen_path_v3_ground_truth_PhysX_pilot_after_static_PASS
+    planning_directory: studies/IJCAS/results/hospital_paper_gate/planning/hospital_h1_planning_r06
+    proposed_plan: studies/IJCAS/results/hospital_paper_gate/planning/hospital_h1_planning_r06/P_dynamics_full_envelope.json
+    independent_offline_audit: studies/IJCAS/results/hospital_paper_gate/planning/hospital_h1_planning_r06/offline_audits/audit_r01.json
+    preview_script: isaac/scripts/isaac_prepare_ijcas_hospital_h1_plan_overlay.py
+    execution_script: isaac/scripts/isaac_run_ijcas_hospital_h1_path_gate.py
+    execution_helpers: studies/IJCAS/scripts/hospital_path_execution.py
+    execution_results_directory: studies/IJCAS/results/hospital_paper_gate/path_execution
+    preparation_order: stop_then_original_pose_preview_then_physics_then_fresh_static_PASS_then_path_runner_while_paused
+    proposed_pilot_result: studies/IJCAS/results/hospital_paper_gate/path_execution/hospital_h1_proposed_path_r01.json
+    proposed_pilot_status: one_actual_PhysX_development_PASS_not_statistical_validation
+    remaining_methods: []
+    measured_pilot_outcomes:
+      B0_fixed_counterphase_ramp: FAIL_terminal_timeout
+      B1_multimode_kinematic_ramp: FAIL_terminal_timeout
+      B2_multimode_transition_cost_ramp: PASS
+      P_dynamics_full_envelope: PASS
+    baseline_repeats_for_this_development_step: 1
+    comparison_script: studies/IJCAS/scripts/summarize_hospital_h1_path_pilots.py
+    interpretation_audit_script: studies/IJCAS/scripts/audit_hospital_h1_pilot_interpretation.py
+    interpretation_audit_result: studies/IJCAS/results/hospital_paper_gate/path_execution/interpretation_audits/hospital_h1_interpretation_r03.json
+    proposed_advantage_over_B2_established: false
+    common_terminal_convergence_ready_for_final_comparison: false
+    common_terminal_readiness_for_matched_development_cohort: true
+    any_control_change_requires_new_four_method_cohort: true
+    compare_before_and_after_common_terminal_correction: true
+    fixed_counterphase_scope: planning_path_only_common_terminal_mode_switching_disclosed
+    all_failed_attempts_retained: true
+    status: H2_static_support_PASS_verified_proposed_path_adapter_ready_actual_path_execution_pending
+    v2_readiness:
+      entry_script: isaac/scripts/isaac_run_ijcas_hospital_h1_stop_align_v2.py
+      controller: studies/IJCAS/scripts/hospital_path_execution_v2.py
+      result_directory: studies/IJCAS/results/hospital_paper_gate/path_execution_v2/readiness
+      immediate_method: B0_fixed_counterphase_ramp
+      next_method_after_B0_readiness_PASS: B1_multimode_kinematic_ramp
+      sequence: brake_then_measured_stop_then_active_wheel_hold_then_measured_steering_alignment_then_fixed_short_pulse
+      no_passive_caster_reset_or_material_or_torque_limit_change: true
+      final_acceptance_unchanged: 30mm_2deg_5mm_per_s_and_fixed_3s_tail_of_5s_hold
+      alignment_tolerance_deg_is_not_final_heading_tolerance: 2.5
+      alignment_timeout_s: 16.0
+      pulse_stall_timeout_s: 5.0
+      terminal_timeout_s: 90.0
+      actual_PhysX_success_verified: false
+      measured_comparison_complete: false
+      use_for_final_statistics: false
+      legacy_proposed_PASS_cannot_be_used_as_v2_reference: true
+      new_four_method_cohort_after_readiness_and_control_freeze: required
+      latest_measured_result: studies/IJCAS/results/hospital_paper_gate/path_execution_v2/readiness/hospital_h1_stopalign_v2_b0_fixed_path_r01.json
+      latest_measured_verdict: FAIL
+      failure: second_reverse_pulse_under_1mm_displacement_in_5sim_seconds
+      first_pulse_stopped_residual_mm_deg: [28.77, -0.956]
+      hold_was_not_attempted: true
+      failed_result_must_not_be_relabelled_as_PASS: true
+      physical_cause_of_second_pulse_stall_confirmed: false
+    v3_readiness:
+      entry_script: isaac/scripts/isaac_run_ijcas_hospital_h1_stop_align_v3.py
+      controller: studies/IJCAS/scripts/hospital_path_execution_v3.py
+      result_directory: studies/IJCAS/results/hospital_paper_gate/path_execution_v3/readiness
+      status: B0_and_B1_single_readiness_trials_passed_not_statistical_validation
+      next_task: proposed_first_then_B0_B1_B2_in_new_matched_v3_development_cohort
+      controller_change: stopped_inside_existing_30mm_2deg_region_enters_one_fixed_hold_evaluation
+      moving_pulse_inner_braking_target_unchanged: 15mm_1p5deg
+      stationary_settle_s: 0.5
+      maximum_fixed_hold_attempts_per_run: 1
+      hold_failure_is_FAIL_no_retry_or_best_window_selection: true
+      final_acceptance_unchanged: 30mm_2deg_5mm_per_s_and_fixed_3s_tail_of_5s_hold
+      no_passive_caster_reset_or_material_or_torque_limit_change: true
+      actual_PhysX_success_verified: true
+      actual_PhysX_success_scope: these_two_original_start_ground_truth_readiness_trials_only
+      measured_results:
+        B0_fixed_counterphase_ramp:
+          result: studies/IJCAS/results/hospital_paper_gate/path_execution_v3/readiness/hospital_h1_stopalign_v3_b0_fixed_path_r01.json
+          result_sha256: 9a3233a5ad52fe994403120bb0c5d72ceaf1f1af7235bbc5cca67bcc1e0a68a3
+          verdict: PASS
+          terminal_position_error_m: 0.028770112218831176
+          terminal_heading_error_deg: 0.956383407957274
+          terminal_pulse_count: 1
+          motion_and_terminal_correction_time_s: 55.60000289976597
+          fixed_tail_sample_count: 181
+        B1_multimode_kinematic_ramp:
+          result: studies/IJCAS/results/hospital_paper_gate/path_execution_v3/readiness/hospital_h1_stopalign_v3_b1_kinematic_path_r01.json
+          result_sha256: b0950c8e21352a0d9ebbac35190236bfb632043c286089780d75fd8c55ed747b
+          verdict: PASS
+          terminal_position_error_m: 0.00824900968206381
+          terminal_heading_error_deg: 1.76309181903924
+          terminal_pulse_count: 7
+          motion_and_terminal_correction_time_s: 106.36667221412063
+          fixed_tail_sample_count: 181
+      measured_source_hashes_match_current_controller: true
+      measured_pair_has_equal_comparison_settings: true
+      identical_random_seed_or_runtime_caster_state_verified: false
+      low_speed_reverse_stall_cause_resolved: false
+      measured_comparison_complete: false
+      use_for_final_statistics: false
+      legacy_or_v2_PASS_cannot_be_used_as_v3_reference: true
+      new_four_method_cohort_after_readiness_and_control_freeze: required
+    v3_matched_development_cohort:
+      status: COMPLETE_DEVELOPMENT_ONLY_all_four_methods_PASS_one_run_each
+      cohort: cohort_01
+      result_directory: studies/IJCAS/results/hospital_paper_gate/path_execution_v3/cohort_01
+      entry_script: isaac/scripts/isaac_run_ijcas_hospital_h1_stop_align_v3.py
+      execution_role: four_method_development_pilot
+      readiness_only: false
+      order:
+        - P_dynamics_full_envelope
+        - B0_fixed_counterphase_ramp
+        - B1_multimode_kinematic_ramp
+        - B2_multimode_transition_cost_ramp
+      planned_runs_per_method_for_this_development_step: 1
+      fresh_source_stage_and_static_PASS_before_each_run: true
+      original_world_start_goal_and_r06_plans_unchanged: true
+      identical_v3_controller_bounds_physics_and_acceptance_required: true
+      source_hashes_checked_against_new_proposed_reference: true
+      any_controller_or_physics_change_requires_new_cohort: true
+      readiness_records_not_copied_or_relabelled_as_comparison_runs: true
+      all_attempts_including_failures_retained: true
+      paired_runtime_caster_state_verified: false
+      use_for_final_statistics: false
+      measured_summary: studies/IJCAS/results/hospital_paper_gate/path_execution_v3/cohort_01/comparison_summaries/hospital_h1_pilot_comparison_r01.json
+      measured_summary_sha256: 0682a5fc7db20271165db911950b64ca5e09b1314f7673b5dff22aa179b8fc52
+      missing_methods: []
+      invalid_or_unmatched_runs: []
+      recorded_execution_failures: []
+      each_fixed_tail_has_181_samples_and_3_simulated_seconds: true
+      every_source_hash_matches_the_current_controller: true
+      statistical_superiority_established: false
+      proposed_advantage_over_B2_established: false
+      measured_motion_and_terminal_time_s:
+        B0_fixed_counterphase_ramp: 55.60000289976597
+        B1_multimode_kinematic_ramp: 106.36667221412063
+        B2_multimode_transition_cost_ramp: 42.166668865829706
+        P_dynamics_full_envelope: 41.80000218003988
+      measured_terminal_pulse_counts:
+        B0_fixed_counterphase_ramp: 1
+        B1_multimode_kinematic_ramp: 7
+        B2_multimode_transition_cost_ramp: 0
+        P_dynamics_full_envelope: 0
+      remaining_pilot_repeats_per_method_to_reach_protocol_target: 2
+      remaining_repeats_deferred_until_other_environment_smoke_tests_not_waived: true
+    H2_next_setup:
+      status: four_method_single_run_H2_development_coverage_audited_two_PASS_two_safety_aborts
+      geometry_builder: studies/IJCAS/scripts/build_hospital_h2_setup.py
+      preview_script: isaac/scripts/isaac_prepare_ijcas_hospital_h2_preview.py
+      task: approach_and_align_beside_Bed_B
+      target_bed: /World/Hospital/SM_HospitalBed_02d12
+      environment_scope: same_ward_as_H1_different_target_bed_and_arrival_task_not_a_new_layout
+      original_hospital_furniture_and_H1_controller_unchanged: true
+      readiness_gate: confirm_start_goal_and_heading_in_stopped_viewport_before_new_H2_planning_or_execution
+      H1_physics_or_execution_scripts_must_not_be_run_on_H2_preview: true
+      setup_review_basis: user_supplied_stopped_viewport_screenshot_qualitatively_consistent_not_metric_contact_proof
+      H2_offline_planning:
+        planning_script: studies/IJCAS/scripts/plan_hospital_h2.py
+        independent_audit_script: studies/IJCAS/scripts/audit_hospital_h2_plan.py
+        overlay_script: isaac/scripts/isaac_prepare_ijcas_hospital_h2_plan_overlay.py
+        result_directory: studies/IJCAS/results/hospital_paper_gate/planning/hospital_h2_planning_r01
+        status: FOUR_OFFLINE_PLANS_AUDITED_EXECUTION_PENDING
+        all_four_method_model_audits_PASS: true
+        all_four_substep_envelope_collision_counts_zero: true
+        H1_planner_and_rigid_body_bounds_unchanged: true
+        newly_generated_H2_routes_not_relabelled_H1_trajectories: true
+        proposed_selected_spatial_source: B2_multimode_transition_cost_ramp
+        proposed_selected_refinement_stopping_rejections: 4
+        proposed_selected_refinement_force_load_rejections: 0
+        proposed_action_count: 38
+        proposed_planning_terminal_position_error_m: 0.02286190761296712
+        proposed_planning_terminal_heading_error_deg: -0.572672817300338
+        proposed_planning_terminal_speed_m_s: 0.0030004114948320917
+        proposed_planning_time_s: 9.065997131023323
+        baseline_audits_do_not_certify_rigid_body_feasibility: true
+        physics_preparation_and_fresh_H2_static_gate_required_before_driving: true
+      H2_ground_truth_path_success_verified: true
+      H2_sensor_or_Nav2_success_verified: false
+      H2_physics_and_static_support:
+        physics_script: isaac/scripts/isaac_prepare_ijcas_hospital_h2_physics.py
+        static_script: isaac/scripts/isaac_run_ijcas_hospital_h2_static_gate.py
+        pure_verdict_rules: studies/IJCAS/scripts/hospital_static_gate.py
+        preparation_results_directory: studies/IJCAS/results/hospital_paper_gate/hospital_h2_physics_preparation
+        static_results_directory: studies/IJCAS/results/hospital_paper_gate/hospital_h2_static_contact
+        status: one_actual_H2_static_support_PASS_verified_not_driving_validation
+        simulation_mass_kg: 265.0
+        physics_hz: 120
+        static_dynamic_friction: [0.8, 0.6]
+        contact_stiffness_n_m: 100000.0
+        contact_damping_n_s_m: 1500.0
+        same_H1_motor_mass_contact_parameters: true
+        H1_scripts_and_evidence_remain_unchanged: true
+        direct_zero_command_only_no_forward_motion: true
+        caster_joint_state_reset_during_test: false
+        motor_gains_modified_during_static_test: false
+        automatic_settle_sample_pause_s: [1.0, 2.0]
+        static_acceptance_unchanged_from_H1: six_supported_wheels_force_weight_balance_no_external_obstacles_XY_drift_10mm_Z_span_5mm_roll_pitch_1deg
+        source_USD_saved: false
+        actual_static_PASS_verified: true
+        measured_static_result: studies/IJCAS/results/hospital_paper_gate/hospital_h2_static_contact/hospital_h2_static_r01.json
+        measured_static_result_sha256: 4eb0e3a35d0fe45c874d069b744823db50042ca793284bc4399209e0fb9a205b
+        measured_sample_count: 121
+        measured_observation_s: 2.0000001043081284
+        measured_XY_drift_m: 0.009464120241180339
+        measured_Z_span_m: 0.0005919337272644043
+        measured_max_abs_roll_pitch_deg: 0.017036393194201364
+        measured_vertical_force_weight_ratio: 1.0002969100214334
+        measured_obstacle_legacy_nonwheel_unclassified_callbacks: [0, 0, 0, 0]
+        raw_CSV_reproduces_static_PASS: true
+        H2_path_execution_verified: true
+        H2_sensor_or_Nav2_verified: false
+      H2_next_path_pilot:
+        status: actual_four_method_single_run_cohort_complete_development_only
+        entry_script: isaac/scripts/isaac_run_ijcas_hospital_h2_path_gate.py
+        controller_binding: studies/IJCAS/scripts/hospital_h2_path_execution.py
+        method: P_dynamics_full_envelope
+        planning_directory: studies/IJCAS/results/hospital_paper_gate/planning/hospital_h2_planning_r01
+        cohort: cohort_01
+        results_directory: studies/IJCAS/results/hospital_paper_gate/hospital_h2_path_execution_v3/cohort_01
+        runs_per_method_in_current_cohort: 1
+        feedback: Isaac_ground_truth_pose_and_joints_NOT_sensor_localization
+        unchanged_H1_v3_control_methods_inherited_without_retuning: true
+        H2_world_heading_pi_and_wraparound_validated: true
+        H2_plan_not_relabelled_or_translated: true
+        fresh_H2_static_PASS_and_PAUSED_timeline_required: true
+        prehold_s: 2.0
+        original_start_release_tolerance_m_deg: [0.010, 0.5]
+        release_speed_limit_m_s: 0.005
+        terminal_acceptance_unchanged: 30mm_2deg_5mm_per_s_and_fixed_3s_tail_of_one_5s_hold
+        temporary_hold_gain_scope: two_active_drive_position_gains_only_measured_targets_then_restore_after_Pause
+        caster_material_and_torque_limits_unchanged: true
+        read_only_wall_heartbeat_s: 15
+        actual_H2_path_PASS_verified: true
+        sensor_or_Nav2_success_verified: false
+        use_for_final_statistics: false
+        observed_outcomes:
+          B0_fixed_counterphase_ramp: FAIL_actual_swept_full_envelope_raster_guard
+          B1_multimode_kinematic_ramp: PASS
+          B2_multimode_transition_cost_ramp: FAIL_actual_swept_full_envelope_raster_guard
+          P_dynamics_full_envelope: PASS
+        all_four_raw_static_gates_reproduce_PASS: true
+        source_and_common_condition_mismatches: []
+        all_four_original_motor_gains_restored: true
+        obstacle_contact_callbacks_all_four: 0
+        unsafe_trigger_pose_not_saved_do_not_label_last_safe_row_as_collision_pose: true
+        failed_runs_retained_not_replaced_or_relabelled: true
+        statistical_superiority_established: false
+        remaining_pilot_repeats_per_method: 2
+        remaining_repeats_deferred_not_waived: true
+    H3_next_geometry:
+      status: H3_flush_static_straight_PASS_NEW_straight_cusp_continuous_geometry_and_nominal_timing_PASS_directional_dynamics_and_turning_PhysX_PENDING_old_HOLDs_preserved
+      primary_environment_condition: H3_flush_fully_open_continuous_floor
+      primary_environment_user_selected: true
+      environment_scope_revision_date: "2026-11-03"
+      original_retained_threshold_policy_applies_to_original_condition_only: true
+      flush_baseline:
+        status: actual_geometry_static_straight_PASS_turning_preview_verified_offline_route_NOT_yet_found
+        geometry_entry: isaac/scripts/isaac_prepare_ijcas_hospital_h3_flush_geometry.py
+        inventory_helper: studies/IJCAS/scripts/hospital_h3_flush_geometry.py
+        strict_map_builder: studies/IJCAS/scripts/build_hospital_h3_flush_setup.py
+        geometry_output_pattern: studies/IJCAS/results/hospital_paper_gate/hospital_h3_flush_geometry/flush_rNN
+        strict_map_output_pattern: studies/IJCAS/results/hospital_paper_gate/hospital_h3_flush_setup/setup_rNN
+        only_suppressed_hospital_asset: /World/Hospital/Geo_M_DoorFloor20
+        visual_and_collision_geometry_suppressed_together_in_Session_Layer: true
+        source_USD_and_original_FAILs_must_remain_unchanged: true
+        wall_frame_bed_and_doorway_width_must_remain_unchanged: true
+        other_low_terrain_stays_blocked_in_new_strict_map: true
+        H1_H2_and_original_H3_maps_must_not_be_overwritten: true
+        new_geometry_and_map_are_not_static_or_crossing_validation: true
+        intended_canonical_support_top_z_m: 0.001
+        actual_live_geometry_verified: true
+        measured_geometry_report: studies/IJCAS/results/hospital_paper_gate/hospital_h3_flush_geometry/flush_r01/flush_geometry_report.json
+        measured_geometry_report_sha256: 0cfbaec4034e4b4081feae95ccd0ee14722a879d643f4002d509747278ba053f
+        measured_strict_map_setup: studies/IJCAS/results/hospital_paper_gate/hospital_h3_flush_setup/setup_r01/flush_component_setup.json
+        actual_geometry_checks_all_true: true
+        actual_strict_map_matches_only_selected_threshold_removed: true
+        original_threshold_FAIL_count_preserved: 2
+        support_preparation_entry: isaac/scripts/isaac_prepare_ijcas_hospital_h3_flush_static.py
+        static_gate_entry: isaac/scripts/isaac_run_ijcas_hospital_h3_flush_static_gate.py
+        support_evidence_and_geometry_helper: studies/IJCAS/scripts/hospital_h3_flush_support.py
+        static_output_pattern: studies/IJCAS/results/hospital_paper_gate/hospital_h3_flush_static_contact/hospital_h3_flush_static_rNN.json
+        static_gate_uses_unchanged_H1_H2_criteria_and_no_forward_command: true
+        continuous_PhysX_support_prepared_and_verified: true
+        single_flat_support_authored_geometry_covers_whole_straight_component: true
+        actual_PhysX_support_scope: outside_door_static_and_recorded_straight_passage_only_NOT_turning_route
+        static_support_verified: true
+        measured_static_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3_flush_static_contact/hospital_h3_flush_static_r01.json
+        measured_static_sha256: 1521104cd8dd5ccfee9cc9d61dae2419d45c8001b2e5cd94c1c0cf3904090c3a
+        raw_static_CSV_reproduces_PASS: true
+        measured_static_sample_count: 121
+        measured_static_xy_drift_m: 0.00947639948347977
+        measured_static_roll_pitch_deg: 0.016944417325790058
+        measured_static_force_weight_ratio: 0.9997306656919894
+        measured_static_only_contact_category: wheel_support
+        straight_passage_entry: isaac/scripts/isaac_run_ijcas_hospital_h3_flush_crossing_gate.py
+        straight_passage_rules: studies/IJCAS/scripts/hospital_h3_flush_crossing.py
+        straight_passage_output_pattern: studies/IJCAS/results/hospital_paper_gate/hospital_h3_flush_component_execution/hospital_h3_flush_crossing_rNN.json
+        straight_passage_uses_frozen_ordinary_ramp_and_actuator_hold: true
+        straight_passage_speed_m_s: 0.030
+        straight_passage_start_is_current_PAUSED_static_PASS_without_pose_or_caster_reset: true
+        straight_passage_uses_new_strict_flush_map_no_obstacle_contact_exemption: true
+        straight_passage_requires_six_wheel_clearance_and_ONE_5s_hold_fixed_final_3s: true
+        straight_component_crossing_verified: true
+        measured_straight_passage_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3_flush_component_execution/hospital_h3_flush_crossing_r01.json
+        measured_straight_passage_sha256: c46e16e29c203dca44a4ab67183039c18d5d49abbe7c68c89e014884b1a381eb
+        measured_straight_passage_csv_sha256: 3566789eba6e31b0d493a6c64455004842823d4dda52b498f422f48929b166e1
+        raw_straight_passage_reproduces_PASS: true
+        measured_straight_passage_sample_count: 4855
+        measured_straight_passage_terminal_position_m: 0.004724847346612137
+        measured_straight_passage_terminal_heading_deg: -0.002471301591415572
+        measured_straight_passage_hold_regression_speed_m_s: 0.0000709641211059312
+        measured_straight_passage_original_motor_gains_restored: true
+        measured_straight_passage_all_six_wheels_started_east_and_finished_west: true
+        measured_straight_passage_only_contact_category: wheel_support
+        straight_PASS_does_not_relabel_original_retained_threshold_FAILs: true
+        turning_task_setup_builder: studies/IJCAS/scripts/build_hospital_h3_turn_setup.py
+        turning_task_preview_entry: isaac/scripts/isaac_prepare_ijcas_hospital_h3_turn_preview.py
+        turning_task_setup_output_pattern: studies/IJCAS/results/hospital_paper_gate/hospital_h3_turn_setup/setup_rNN
+        turning_task_preview_output_pattern: studies/IJCAS/results/hospital_paper_gate/hospital_h3_turn_previews/preview_rNN
+        turning_task_goal_rule: original_outside_door_staging_then_clockwise_90deg_goal_in_bed_end_aisle_facing_positive_world_Y_with_150mm_reserves
+        turning_task_poses_selected_from_method_performance: false
+        turning_task_map_independently_reprojected_from_active_assets: true
+        turning_task_endpoint_clearance_is_not_connecting_path_proof: true
+        turning_task_actual_live_preview_verified: true
+        turning_task_manifest: studies/IJCAS/results/hospital_paper_gate/hospital_h3_turn_setup/setup_r01/hospital_h3_turn_geometry.json
+        turning_task_manifest_sha256: 469c95fc38f4f837e8f4fdd53b17135ec194ed80e6f2d41f66006baa819217d2
+        turning_task_preview_receipt: studies/IJCAS/results/hospital_paper_gate/hospital_h3_turn_previews/preview_r01/task_preview.json
+        turning_task_preview_receipt_sha256: 074fa587bb9550d87092d682fcea7a014846df233232a541a590254633bb85f8
+        turning_task_explicit_user_viewport_confirmation_recorded: false
+        turning_task_geometry_frozen_for_paper: false
+        turning_task_endpoint_geometry_is_not_connectivity_proof: true
+        turning_task_planner_entry: studies/IJCAS/scripts/plan_hospital_h3.py
+        turning_task_independent_auditor: studies/IJCAS/scripts/audit_hospital_h3_plan.py
+        turning_task_overlay_entry: isaac/scripts/isaac_prepare_ijcas_hospital_h3_plan_overlay.py
+        turning_task_first_planning_attempt:
+          directory: studies/IJCAS/results/hospital_paper_gate/planning/hospital_h3_planning_r01
+          summary_sha256: d098b6e8d7bcdfbfc78a289c6c218f69b5f7b5556de69e6b8cec2985d3bc88d6
+          status: HOLD_OFFLINE_PLANNING_OR_AUDIT_NOT_COMPLETE
+          common_per_method_wall_budget_s: 45.0
+          common_node_limit: 20000
+          B0: PLANNING_TIMEOUT_NOT_PROVEN_INFEASIBLE
+          B1: PLANNING_TIMEOUT_NOT_PROVEN_INFEASIBLE
+          B2: PLANNING_TIMEOUT_NOT_PROVEN_INFEASIBLE
+          proposed_spatial_candidate_count: 0
+          proposed_refinement_attempt_count: 0
+          proposed_dynamics_constraint_failure_established: false
+          any_successful_route_or_offline_audit: false
+          physical_infeasibility_proven: false
+          H1_same_heading_connector_applies_to_quarter_turn: false
+          common_H1_H2_model_algorithm_modes_and_envelope_unchanged: true
+          all_attempts_retained_not_relabelled_as_driving_failures: true
+        turning_task_search_diagnosis:
+          original_90s_attempt: studies/IJCAS/results/hospital_paper_gate/planning/hospital_h3_planning_r02
+          original_90s_summary_sha256: 413e395996778bc29ed063d3654276c11f35a929a44364155de08a730a09a62f
+          original_90s_status: HOLD_all_baseline_timeouts_no_proposed_spatial_seeds
+          native_exact_SAT_attempt: studies/IJCAS/results/hospital_paper_gate/planning/hospital_h3_native_planning_r01
+          native_summary_sha256: 9a486382d93a87000e2d95161ab1215cad6286b0b836a6f140da59e32642d5d9
+          native_changes_collision_implementation_only_not_equations_or_plan_bytecode: true
+          guided_attempt: studies/IJCAS/results/hospital_paper_gate/planning/hospital_h3_guided_planning_r01
+          guided_summary_sha256: acf5e1f7ea40e4edb6ce5c84040f775ad6e71fba387f92199306df0a99ea8073
+          guided_heuristic_is_explicit_algorithm_revision_shared_by_all_four_methods: true
+          guided_heuristic_never_replaces_full_envelope_collision_validation: true
+          common_per_method_wall_budget_s: 90.0
+          common_node_limit: 40000
+          native_and_guided_status: HOLD_B0_node_limit_B1_B2_timeouts_no_proposed_spatial_seeds
+          original_frontier_diagnostic: studies/IJCAS/results/hospital_paper_gate/hospital_h3_planning_diagnostics/frontier_r01.json
+          original_frontier_sha256: 0dbe42862750ed3079a295e69b97d24404ab60c750897c64396e36092afc66bc
+          limited_simple_connector_diagnostic: studies/IJCAS/results/hospital_paper_gate/hospital_h3_planning_diagnostics/simple_connectors_r01.json
+          limited_simple_connector_sha256: 8515d6c5271e88b43b091b4c708dbbdeed02b37ce0646f4cd8cc3bb74b478b4f
+          limited_connector_endpoint_compatible_count: 603
+          limited_connector_search_bounds_rejected: 360
+          limited_connector_full_SAT_rejected: 243
+          limited_connector_collision_clear_count: 0
+          interpretation_audit: studies/IJCAS/results/hospital_paper_gate/hospital_h3_planning_diagnostics/interpretation_r01.json
+          interpretation_sha256: 970565919973238e026117f6e8fd04a302aeb1992c58b079377661b01a5ca941
+          all_attempts_same_goal_map_envelope_speed_and_model: true
+          proposed_dynamics_refinement_attempt_count_all_cohorts: 0
+          do_not_interpret_missing_spatial_seeds_as_dynamic_constraint_rejections: true
+          global_or_physical_infeasibility_proven: false
+          physical_turning_execution_or_final_statistics_established: false
+          original_threshold_stalls_and_flush_straight_PASS_remain_unchanged: true
+          move_goal_expand_modes_allow_reverse_or_change_curvature_not_authorized_by_this_diagnostic: true
+        turning_task_forward_connectivity_review:
+          status: HOLD_FORWARD_CONNECTION_NOT_ESTABLISHED
+          review_date: "2026-11-03"
+          review_entry: studies/IJCAS/scripts/summarize_hospital_h3_forward_connectivity.py
+          review_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3_forward_connectivity/summaries/connectivity_summary_r01.json
+          review_sha256: c1d75b5f1ea7b637f1ca9fa4cb5da12a5b519c38da27b0e93f4b08ab28c1b5f8
+          coarse_search_entry: studies/IJCAS/scripts/audit_hospital_h3_forward_connectivity.py
+          coarse_search_summary: studies/IJCAS/results/hospital_paper_gate/hospital_h3_forward_connectivity/connectivity_r01/summary.json
+          coarse_search_summary_sha256: 4b305a625db53bfd7bd3b3ec342e7b6758122486eb406b22c42fa6966dec9d6f
+          original_pose_bins_xy_m_yaw_deg: [0.025, 1.0]
+          common_coarse_search_budget_s: 20.0
+          common_coarse_node_limit: 40000
+          fixed_goal_side_expanded_nodes_frontier_empty: 1392
+          fixed_start_side_expanded_nodes_frontier_empty: 38454
+          multimode_goal_side_expanded_nodes_frontier_empty: 20135
+          multimode_start_side_expanded_nodes_at_timeout: 34817
+          backward_graph_expansion_inverts_forward_primitives_NOT_reverse_driving: true
+          pose_only_merging_is_explicit_kinematic_existence_search_revision_NOT_mode_cost_optimality: true
+          fine_search_entry: studies/IJCAS/scripts/audit_hospital_h3_fine_connectivity.py
+          fine_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3_forward_connectivity/fine_connectivity_r01.json
+          fine_result_sha256: b755003d9ac27213c92fcf88c72fc21bf3182e5ce9c4f99566a192ca3161a04d
+          fine_pose_bins_xy_m_yaw_deg: [0.0125, 0.5]
+          fine_goal_side_expanded_nodes_at_40s_timeout: 87400
+          finite_segment_entry: studies/IJCAS/scripts/audit_hospital_h3_segment_connectivity.py
+          finite_segment_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3_forward_connectivity/segment_connectivity_r01.json
+          finite_segment_result_sha256: ef4d7cf82f1ae1ac4ed0ba2a53b6d3456457b1e58be3e0ebd4e81421ef70bf0b
+          finite_segment_family: forward_straight_arc_straight_arc_straight_curvature_plus_minus_0p7_original_5cm_edges
+          finite_segment_endpoint_compatible_and_full_envelope_collision_rejected_count: 1613
+          recorded_propagator_sha256: 5e78eae0fb23a6bcf42f15099d8ede17712ee35ac52370d1526c19db42d3158d
+          unchanged_geometry_start_goal_clearance_curvatures_modes_and_forward_only_permission: true
+          any_exact_start_independently_audited_kinematic_connection_found: false
+          physical_or_global_infeasibility_proven: false
+          dynamics_refinement_PhysX_or_Nav2_certified: false
+          is_matched_four_method_performance_comparison: false
+          original_pass_fail_records_and_USD_preserved: true
+          authorized_condition_changes_performed: false
+          no_more_blind_timeout_retries_or_driving: true
+        turning_task_next_planning_scope: HOLD_unchanged_forward_connectivity_not_established_scope_choice_required_before_goal_geometry_or_motion_permission_changes
+        H3_turning_task_start_goal_selected_and_planned: false
+        Nav2_verified: false
+        old_threshold_static_and_crossing_scripts_must_not_run_on_flush_variant: true
+        first_execution_scope: fresh_stopped_source_geometry_and_map_only_no_Play
+        next_gate_after_actual_geometry_review: audited_connecting_route_required_before_any_turning_physics_or_driving_current_search_HOLD
+        all_four_methods_use_same_flush_environment_and_common_control_parameters: true
+        is_a_clinically_measured_hospital_replica: false
+        environment_basis: user_selected_accessible_planar_bedroom_doorway_modelling_assumption
+      H3B_bounded_reverse:
+        status: zero_stall_FAIL_and_pi_component_PASS_preserved_natural_entry_PASS_continued_S_probe_and_full_route_dynamics_PENDING
+        scope_revision_date: "2026-11-03"
+        user_authorized_separate_bounded_reverse_condition: true
+        H3A_forward_only_status_preserved: HOLD_FORWARD_CONNECTION_NOT_ESTABLISHED_NOT_GLOBAL_INFEASIBILITY
+        same_hospital_geometry_start_goal_and_clearance_as_H3A: true
+        geometry_manifest: studies/IJCAS/results/hospital_paper_gate/hospital_h3_turn_setup/setup_r01/hospital_h3_turn_geometry.json
+        geometry_manifest_sha256: 469c95fc38f4f837e8f4fdd53b17135ec194ed80e6f2d41f66006baa819217d2
+        policy_helper: studies/IJCAS/scripts/hospital_h3b_policy.py
+        common_forward_speed_limit_m_s: 0.05
+        common_reverse_speed_limit_m_s: 0.01
+        common_acceleration_m_s2: 0.02
+        maximum_reverse_episode_m: 0.50
+        maximum_total_reverse_m: 1.0
+        maximum_direction_changes: 4
+        common_full_envelope_clearance_m: 0.01
+        policy_scope: provisional_simulation_development_limits_NOT_clinical_or_hardware_identification
+        no_automatic_relaxation_after_failure: true
+        direction_change_policy: commanded_zero_AND_measured_speed_under_5mm_s_then_verified_captured_drive_hold_then_settle_0p5s_then_steering_alignment_2p5deg_for_0p25s_then_verified_hold_release
+        identical_policy_required_for_all_four_methods: true
+        spatial_entry: studies/IJCAS/scripts/plan_hospital_h3b_spatial.py
+        spatial_attempt: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_spatial/spatial_r01
+        spatial_summary_sha256: ebd8866a1b01418ab855d281398351d8ed7531bcae5e910486bcf861c53c24d2
+        spatial_search_per_method_budget_s: 30.0
+        spatial_search_per_method_node_limit: 80000
+        own_search_outcomes:
+          B0: kinematic_seed_found_73_actions_independent_original_polygon_SAT_PASS
+          B1: node_limit_or_frontier_exhausted_no_own_seed_NOT_infeasibility
+          B2: time_budget_exhausted_no_own_seed_NOT_infeasibility
+          proposed: NOT_RUN_stop_align_direction_change_model_and_common_readiness_required
+        audited_seed_reverse_distance_m: 0.25
+        audited_seed_max_reverse_episode_m: 0.15
+        audited_seed_direction_changes: 4
+        audited_seed_terminal_position_m: 0.01430968720609576
+        audited_seed_terminal_heading_deg: 0.38409218188746086
+        shared_candidate_auditor: studies/IJCAS/scripts/audit_hospital_h3b_candidate_pool.py
+        shared_candidate_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_candidate_pools/candidate_pool_r01.json
+        shared_candidate_sha256: c1da8ac761c4a4ddf90c3ff7af4b850cc1cb79796274da338d3356db82648622
+        shared_legal_seed_coverage_all_four_methods: true
+        all_four_may_reuse_legal_B0_seed_without_relabelling_own_search_outcomes: true
+        multimode_or_proposed_selection_forced: false
+        common_readiness_prepare_entry: isaac/scripts/isaac_prepare_ijcas_hospital_h3b_reverse_readiness.py
+        common_readiness_static_entry: isaac/scripts/isaac_run_ijcas_hospital_h3_flush_static_gate.py
+        common_readiness_execution_entry: isaac/scripts/isaac_run_ijcas_hospital_h3b_reverse_readiness.py
+        common_readiness_rules: studies/IJCAS/scripts/hospital_h3b_readiness.py
+        common_readiness_fixed_absolute_longitudinal_targets_m: [0.10, 0.0, 0.05]
+        common_readiness_forward_and_reverse_speed_m_s: 0.01
+        common_readiness_scope: OUTSIDE_DOOR_SHORT_STRAIGHT_REVERSAL_COMPONENT_NOT_turning_path_or_mission_goal_change
+        common_readiness_max_simulation_s: 90.0
+        common_readiness_max_wall_s: 300.0
+        common_readiness_one_hold_s: 5.0
+        common_readiness_fixed_tail_s: 3.0
+        common_readiness_PhysX_verified: true
+        measured_common_readiness_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_reverse_readiness/hospital_h3b_reverse_readiness_r01.json
+        measured_common_readiness_result_sha256: 2194245d9a031ee16e65dd6bc1479e9a3d7efc5a1c638dae9875cb947f96d38f
+        measured_common_readiness_csv_sha256: d645376c572adecad5e6a25315079c48e5c2645168ca78da85e85111bcad7159
+        measured_common_readiness_raw_sample_count: 1644
+        measured_common_readiness_position_m: 0.0010548455945030533
+        measured_common_readiness_heading_deg: 0.000204295716836047
+        measured_common_readiness_hold_regression_m_s: 0.0002250805773055205
+        measured_common_readiness_only_contact_category: wheel_support
+        measured_common_readiness_original_gains_restored: true
+        raw_reproduction_entry: studies/IJCAS/scripts/audit_hospital_h3b_reverse_readiness.py
+        raw_reproduction_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_reverse_readiness/audits/reversal_audit_r01.json
+        raw_reproduction_sha256: 0926e5c463e70ca32f05a6bb26f3f42c549b8b8987b8c4be0c7c37306a445ffe
+        raw_directions_hold_alignment_dwell_and_release_reproduced: true
+        median_signed_command_body_speeds_m_s:
+          forward_leg_0: [0.010, 0.014032]
+          reverse_leg_1: [-0.010, -0.013797]
+          forward_leg_2: [0.010, 0.013732]
+        command_limit_is_not_a_claim_of_equal_measured_speed: true
+        accurate_speed_tracking_or_validated_directional_dynamics_model_established: false
+        model_retuned_from_this_readiness_validation: false
+        nonzero_steering_alignment_PhysX_verified: false
+        stationary_alignment_prepare_entry: isaac/scripts/isaac_prepare_ijcas_hospital_h3b_alignment.py
+        stationary_alignment_static_entry: isaac/scripts/isaac_run_ijcas_hospital_h3_flush_static_gate.py
+        stationary_alignment_execution_entry: isaac/scripts/isaac_run_ijcas_hospital_h3b_alignment.py
+        stationary_alignment_rules: studies/IJCAS/scripts/hospital_h3b_alignment.py
+        stationary_alignment_targets: all_three_original_modes_at_plus_and_minus_0p7_then_return_straight
+        stationary_alignment_translation_command_m_s: 0.0
+        stationary_alignment_steering_rate_deg_s: 8.0
+        stationary_alignment_fixed_observation_per_target_s: 3.0
+        stationary_alignment_same_captured_wheel_targets_retained_without_recapture: true
+        stationary_alignment_capture_drift_guard_m_deg: [0.010, 0.5]
+        stationary_alignment_same_5s_hold_and_fixed_last_3s_no_retry: true
+        stationary_alignment_max_simulation_s: 100.0
+        stationary_alignment_max_wall_s: 360.0
+        stationary_alignment_requires_fresh_source_and_new_static_PASS_not_the_moved_reversal_end: true
+        stationary_alignment_actual_execution_verified: false
+        measured_stationary_alignment_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_alignment/hospital_h3b_alignment_r01.json
+        measured_stationary_alignment_result_sha256: 34aaac4751f3b50620a1f1a9357c5f1234ddb2a82b3db2d8bd1f5b2cb245e0a3
+        measured_stationary_alignment_verdict: FAIL
+        measured_stationary_alignment_raw_sample_count: 150
+        measured_stationary_alignment_first_target_elapsed_s: 0.5000000260770321
+        measured_stationary_alignment_abort_raw_filtered_limit_m_s: [0.005409492987667238, 0.0010871991209062072, 0.005]
+        measured_stationary_alignment_abort_capture_relative_displacement_m: 0.0004959115615249371
+        measured_stationary_alignment_completed_target_observations: 0
+        stationary_alignment_failure_audit_entry: studies/IJCAS/scripts/audit_hospital_h3b_alignment.py
+        stationary_alignment_failure_audit_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_alignment/audits/alignment_audit_r01.json
+        stationary_alignment_failure_audit_sha256: 0b86259f368f6ca846f510946988a1881591add113d516bf4ddf9ec6b22871ef
+        stationary_alignment_failure_cause_isolated: false
+        stationary_alignment_gate_or_gain_relaxation_authorized_by_failure: false
+        stationary_alignment_same_condition_observer_entry: isaac/scripts/isaac_run_ijcas_hospital_h3b_alignment_instrumented.py
+        stationary_alignment_observer_sampling_hz: 120
+        stationary_alignment_observer_changes_controller_gains_contacts_or_stop_gate: false
+        stationary_alignment_observer_COM_and_link_origin_velocity_distinction_explicit: true
+        stationary_alignment_instrumented_reproduction_executed: true
+        stationary_alignment_instrumented_primary_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_alignment/hospital_h3b_alignment_r02.json
+        stationary_alignment_instrumented_primary_sha256: 90674be9a40249bb1f658559d7b0a291b9c701a694466cba7cfecaa41b9d8765
+        stationary_alignment_instrumentation_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_alignment/instrumented_repeats/hospital_h3b_alignment_r02/instrumentation.json
+        stationary_alignment_instrumentation_sha256: 3f5cee12147bb3197c86a31e844c236218068e2e624d37bf0daf42db96ccba18
+        stationary_alignment_reproduction_audit_entry: studies/IJCAS/scripts/audit_hospital_h3b_alignment_reproduction.py
+        stationary_alignment_reproduction_audit: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_alignment/reproduction_audits/reproduction_audit_r01.json
+        stationary_alignment_reproduction_audit_sha256: 24869f766ed63208e368a62c56f2d248df6c3816076234cb4bbfee450e14331e
+        stationary_alignment_original_and_reproduction_verdicts: [FAIL, FAIL]
+        stationary_alignment_original_and_reproduction_primary_raw_traces_byte_identical: true
+        stationary_alignment_telemetry_joint_contact_counts: [300, 3600]
+        stationary_alignment_abort_COM_origin_speeds_m_s: [0.005409492987667238, 0.006315617762904475]
+        stationary_alignment_frame_conversion_alone_explains_failure: false
+        same_condition_further_alignment_retries_recommended: false
+        separate_rate_probe_entry: isaac/scripts/isaac_run_ijcas_hospital_h3b_alignment_rate_probe.py
+        separate_rate_probe_rules: studies/IJCAS/scripts/hospital_h3b_alignment_rate_probe.py
+        separate_rate_probe_role: only_first_positive_counterphase_target_then_straight_NOT_seven_target_readiness
+        separate_rate_probe_original_and_new_command_rate_deg_s: [8.0, 2.0]
+        separate_rate_probe_raw_speed_guard_m_s: 0.005
+        separate_rate_probe_alignment_timeout_s_each: 16.0
+        separate_rate_probe_gains_materials_clearance_or_acceptance_relaxed: false
+        separate_rate_probe_PhysX_executed: true
+        separate_rate_probe_measured_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_alignment_rate_probe/hospital_h3b_alignment_2deg_s_r01.json
+        separate_rate_probe_measured_sha256: a9cb541931614294a17b1a5c9ef6ce096cdb214de2f027fb8df7717391951895
+        separate_rate_probe_verdict: FAIL
+        separate_rate_probe_raw_sample_count: 226
+        separate_rate_probe_first_target_elapsed_s_at_abort: 1.7666667588055134
+        separate_rate_probe_abort_raw_filtered_speeds_m_s: [0.005089402325825021, 0.0013542930117409198]
+        separate_rate_probe_abort_capture_relative_displacement_m: 0.0010013652982902301
+        separate_rate_probe_completed_target_observations: 0
+        separate_rate_probe_audit_entry: studies/IJCAS/scripts/audit_hospital_h3b_rate_probe.py
+        separate_rate_probe_audit_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_alignment_rate_probe/audits/rate_probe_audit_r01.json
+        separate_rate_probe_audit_sha256: 751a12a4b43de66b2a7729f85dc1c178ef00589f920465773caf30e883da0efa
+        further_same_or_lower_rate_retries_recommended: false
+        current_kinematic_seed_nominal_direction_changes: 4
+        current_kinematic_seed_nominal_steering_target_change_deg_each_cusp: 48.59835202306028
+        nominal_cusp_angles_are_NOT_measured_or_dynamic_cusp_states: true
+        user_authorized_bounded_cusp_continuity_replan: true
+        continuity_replan_scope_revision_date: "2026-11-04"
+        continuity_search_entry: studies/IJCAS/scripts/plan_hospital_h3b_cusp_continuity.py
+        continuity_search_rules: studies/IJCAS/scripts/hospital_h3b_cusp_continuity.py
+        continuity_constraint: both_nominal_steering_targets_equal_within_1e_9rad_at_each_direction_change
+        continuity_constraint_is_NOT_actual_steering_or_stopping_model: true
+        continuity_constraint_if_used_later_required_for_all_four_methods: true
+        continuity_batch: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_cusp_continuity/continuity_r01
+        continuity_summary_sha256: f6368b2f31be8d6d1a4f9c749b9a5476abb767048f26185887d17b3fd7fcc8b3
+        continuity_search_budget_s_each: 60.0
+        continuity_expanded_node_limit_each: 80000
+        continuity_results_fixed_allmode:
+          actions: [0, 0]
+          expanded: [80000, 80000]
+          elapsed_s: [13.701806681987364, 45.17561549899983]
+          nominal_cusp_angle_change_rejections: [479994, 1439982]
+        continuity_outcome: HOLD_NO_CONNECTION_IN_RECORDED_BOUNDED_SEARCH_NOT_GLOBAL_INFEASIBILITY
+        continuity_saved_audit_entry: studies/IJCAS/scripts/audit_hospital_h3b_cusp_continuity.py
+        continuity_saved_audit_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_cusp_continuity/audits/continuity_audit_r01.json
+        continuity_saved_audit_sha256: a66aaa24c67678d0cce0de62fedcfd7747f358f1615d5a491dba3df60cb3c484
+        automatic_extra_search_or_gain_or_goal_relaxation: false
+        fallback_when_bounded_search_has_no_connection: superseded_by_user_request_to_continue_H3_with_seeded_continuous_curvature_search_H4_deferred
+        warm_start_scope_revision_date: "2026-11-04"
+        user_requested_continue_H3_not_declare_impossibility_or_switch_H4: true
+        warm_start_entry: studies/IJCAS/scripts/plan_hospital_h3b_warm_start.py
+        warm_start_rules: studies/IJCAS/scripts/hospital_h3b_warm_start.py
+        warm_start_representation: NEW_piecewise_linear_continuous_curvature_plus_variable_leg_lengths_seeded_from_original_73_action_B0
+        warm_start_is_NOT_unchanged_grid_four_method_comparison: true
+        warm_start_attempt: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_warm_start/warm_start_r01
+        warm_start_summary_sha256: 52010f49f529fbee9f2a97e664ae3b2b5a0a7b30ed60decef21cd3c04365a79f
+        warm_start_selected_geometry_case: straight_cusps_original_lengths
+        warm_start_result_sha256: 8d5081474c08ad6d8a698254bd18a34457951e8c4bd6006b9598e836f48928a0
+        warm_start_selected_case_elapsed_s_including_audit: 2.555722737015458
+        warm_start_original_polygon_SAT_sample_count: 1630
+        warm_start_collision_audit_scope: original_full_envelope_plus_10mm_at_independently_integrated_max_2p5mm_arc_samples_NOT_PhysX
+        warm_start_total_length_m: 3.9863028763210564
+        warm_start_total_reverse_m: 0.41831482529980846
+        warm_start_nominal_cusp_curvatures_1_m: [0.0, 0.0, 0.0, 0.0]
+        warm_start_leg_directions: [1, -1, 1, -1, 1]
+        warm_start_leg_lengths_m: [2.347360469564408, 0.1559140722601111, 0.5699915038130232, 0.26240075303969734, 0.6506360776437919]
+        warm_start_environment_start_goal_clearance_and_motor_settings_changed: false
+        warm_start_audit_entry: studies/IJCAS/scripts/audit_hospital_h3b_warm_start.py
+        warm_start_nominal_timing_rules: studies/IJCAS/scripts/hospital_h3b_nominal_timing.py
+        warm_start_saved_audit: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_warm_start/warm_start_r01/audits/warm_start_audit_r01.json
+        warm_start_saved_audit_sha256: 6b68ef4376764ea7f5c16162beac6210e3a5298f1b71c6911053310e41da4d60
+        warm_start_nominal_reference_motion_s: 130.9515087340334
+        warm_start_nominal_reference_motion_plus_cusp_dwell_s: 133.9515087340334
+        warm_start_nominal_speed_acceleration_and_8deg_s_steering_slew_caps_pass: true
+        warm_start_nominal_stop_dwell_is_NOT_measured_handshake_or_PhysX: true
+        warm_start_overlay_entry: isaac/scripts/isaac_prepare_ijcas_hospital_h3b_warm_start_overlay.py
+        warm_start_overlay_requires_fresh_stopped_original_task_preview_and_live_geometry_match: true
+        warm_start_actual_rolling_steering_braking_caster_response_and_turning_dynamics_verified: false
+        warm_start_old_stationary_steering_alignment_FAILs_are_not_relabelled_PASS: true
+        rolling_component_prepare_entry: isaac/scripts/isaac_prepare_ijcas_hospital_h3b_rolling_readiness.py
+        rolling_component_static_entry: isaac/scripts/isaac_run_ijcas_hospital_h3_flush_static_gate.py
+        rolling_component_execution_entry: isaac/scripts/isaac_run_ijcas_hospital_h3b_rolling_readiness.py
+        rolling_component_rules: studies/IJCAS/scripts/hospital_h3b_rolling_readiness.py
+        rolling_component_offline_preflight_entry: studies/IJCAS/scripts/audit_hospital_h3b_rolling_preflight.py
+        rolling_component_saved_preflight: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_rolling_preflight/preflight_r02.json
+        rolling_component_preflight_sha256: e12832e4ee51b2e55bc053d36e8e5b99476cec9974a28ca55c3b6b283a0a31ae
+        rolling_component_scope: representative_short_S_steering_then_measured_straight_stop_hold_release_and_reverse_NOT_identical_saved_route_replay
+        rolling_component_fixed_longitudinal_progress_curvature_knots: [[0.0, 0.0], [0.02, 0.0], [0.06, 0.7], [0.10, 0.0], [0.14, -0.7], [0.18, 0.0], [0.22, 0.0]]
+        rolling_component_fixed_legs_direction_and_target_m: [[1, 0.22], [-1, 0.17]]
+        rolling_component_forward_and_reverse_reference_speed_m_s: 0.01
+        rolling_component_command_steering_slew_limit_deg_s: 8.0
+        rolling_component_nominal_full_envelope_samples_clear: 274
+        rolling_component_nominal_max_heading_excursion_deg: 1.6044915265155901
+        rolling_component_existing_5mm_s_stop_and_common_5s_hold_final_3s_tail_unchanged: true
+        rolling_component_actual_neutral_steering_required_BEFORE_captured_drive_hold: true
+        rolling_component_held_nonzero_steering_fallback_or_same_condition_stationary_retry: false
+        rolling_component_same_existing_measured_hold_gain_helper_then_pause_and_original_gain_restore: true
+        rolling_component_nominal_swept_check_or_synthetic_tests_are_NOT_PhysX_or_dynamics_evidence: true
+        rolling_component_new_actual_static_verified: true
+        rolling_component_actual_rolling_verified: false
+        rolling_component_measured_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_rolling_readiness/hospital_h3b_rolling_readiness_r01.json
+        rolling_component_measured_result_sha256: 0e93c3551e9cd09923d6cf113eb0a3143448e45d18fde48d73f03a07bcbdcc17
+        rolling_component_measured_trace_sha256: 0f1296c581fd6abc4c254812e8bbdd98c483be30091ea75decc037835f118286
+        rolling_component_measured_verdict: FAIL
+        rolling_component_measured_first_stall_time_s: 19.76666769757867
+        rolling_component_measured_progress_m: 0.08575890064425096
+        rolling_component_measured_sample_count: 1186
+        rolling_component_measured_contacts: {wheel_support: 14232}
+        rolling_component_measured_hold_enabled_at_stall: false
+        rolling_component_measured_command_at_stall_m_s: 0.010
+        rolling_component_measured_actual_front_rear_steering_deg: [9.739461289429139, -9.707970702260795]
+        rolling_component_measured_command_front_rear_steering_deg: [9.13197065852659, -9.13197065852659]
+        rolling_component_measured_last_3s_longitudinal_regression_m_s: -0.0000002141712387505252
+        rolling_component_measured_wheel_angle_regressions_rad_s: [-0.00001585260128001456, 0.00007792094807489798]
+        rolling_component_measured_first_cusp_reverse_or_final_hold_reached: false
+        rolling_component_raw_failure_audit_entry: studies/IJCAS/scripts/audit_hospital_h3b_rolling_failure.py
+        rolling_component_raw_failure_audit_rules: studies/IJCAS/scripts/hospital_h3b_rolling_failure.py
+        rolling_component_raw_failure_audit: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_rolling_readiness/failure_audits/rolling_failure_audit_r01.json
+        rolling_component_raw_failure_audit_sha256: cf784ab03869be8da526c61496dedc04a542a9be4196f14df29c87ce6fb221ba
+        rolling_component_actual_stall_guard_from_frozen_readiness_helper: {window_s: 5.0, minimum_absolute_command_m_s: 0.006, maximum_progress_range_m: 0.001}
+        rolling_component_inherited_generic_GUARDS_stall_fields_do_not_describe_specialized_readiness_motion_stalled_function: true
+        rolling_component_unique_friction_caster_gain_solver_or_motor_saturation_cause_isolated: false
+        rolling_component_paused_readback_entry: isaac/scripts/isaac_audit_ijcas_hospital_h3b_rolling_stall.py
+        rolling_component_paused_readback_requires_CURRENT_failed_scene_not_fresh_source: true
+        rolling_component_paused_readback_is_post_cleanup_configuration_NOT_historical_motor_torque: true
+        rolling_component_paused_readback_actual_execution_verified: true
+        rolling_component_measured_paused_readback: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_rolling_readiness/paused_readbacks/hospital_h3b_rolling_readiness_r01_paused_readback_r01.json
+        rolling_component_measured_paused_readback_sha256: 645bd5103f6c7a757174de40f5cbaa00c8c58b31aa85ec66430c405cb9a114b0
+        rolling_component_measured_live_pose_and_joints_match_recorded_stall: true
+        rolling_component_measured_runtime_drive_stiffness_damping_limit: [0.0, 2864.7890625, 500.0]
+        rolling_component_measured_runtime_caster_swivel_stiffness_damping_joint_friction: [0.0, 3.43774676322937, 0.0]
+        rolling_component_measured_runtime_caster_roll_stiffness_damping_joint_friction: [0.0, 0.2291831374168396, 0.0]
+        rolling_component_authored_to_runtime_angular_gain_factor_matches_units: 57.29577951308232
+        rolling_component_large_numeric_angular_gain_ratio_is_NOT_by_itself_a_bad_gain_diagnosis: true
+        rolling_component_zero_joint_friction_does_NOT_mean_zero_floor_friction: true
+        rolling_component_neutral_caster_wheel_joint_center_offset_in_swivel_frame_m: [0.04500000178813934, 0.0, -0.10249999910593033]
+        rolling_component_offset_is_NOT_measured_contact_trail_or_proven_unique_stall_cause: true
+        rolling_component_configuration_review_entry: studies/IJCAS/scripts/audit_hospital_h3b_rolling_configuration.py
+        rolling_component_configuration_review: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_rolling_readiness/configuration_reviews/configuration_review_r01.json
+        rolling_component_configuration_review_sha256: b02151c1d8ab4ac697704b674e162b62fdce8f5f2458de7dc52f711fef8d0513
+        rolling_component_one_same_condition_passive_observation_prepared: true
+        rolling_component_passive_observation_entry: isaac/scripts/isaac_run_ijcas_hospital_h3b_rolling_instrumented.py
+        rolling_component_passive_observation_rules: studies/IJCAS/scripts/hospital_h3b_rolling_observation.py
+        rolling_component_passive_observation_changes_primary_controller_source_speed_gains_or_contacts: false
+        rolling_component_passive_observation_adds_native_wheel_floor_tangential_friction_data: true
+        rolling_component_passive_observation_sdk_capability_checked_before_any_primary_motion: true
+        rolling_component_passive_observation_requires_fresh_original_rolling_preparation_and_actual_static_PASS: true
+        rolling_component_passive_observation_maximum_attempts_before_review: 1
+        rolling_component_passive_observation_joint_and_friction_nominal_hz: [120.0, 30.0]
+        rolling_component_passive_observation_uses_physics_dt_NOT_observer_period_for_impulse_to_force_conversion: true
+        rolling_component_passive_observation_sdk_sign_retained_no_isolated_motor_torque_claim: true
+        rolling_component_passive_observation_actual_execution_verified: true
+        rolling_component_passive_observation_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_rolling_readiness/instrumented_repeats/hospital_h3b_rolling_readiness_r02/instrumentation.json
+        rolling_component_passive_observation_result_sha256: 2d46db509a429b1b6549c8d018db273acad6427ef6d6db5005dbf158749d75cc
+        rolling_component_passive_observation_primary_verdict: FAIL
+        rolling_component_passive_observation_joint_friction_anchor_counts: [2372, 594, 7128]
+        rolling_component_passive_observation_telemetry_errors: []
+        rolling_component_primary_r01_r02_traces_byte_identical: true
+        rolling_component_force_audit: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_rolling_readiness/force_audits/rolling_force_audit_r01.json
+        rolling_component_force_audit_sha256: 9762731ac7b7fec2432caa98a6348b923c6da5c792f0b3fa6d8ef3f3e016816b
+        rolling_component_fixed_final_3s_sdk_fixed_forward_active_caster_net_projection_n: [97.37250463697646, -97.84227962493895, -0.46977498796249506]
+        rolling_component_native_float32_anchor_sums_reproduced_exactly: true
+        rolling_component_aggregate_force_balance_is_NOT_unique_cause_or_local_friction_saturation_proof: true
+        rolling_component_passive_observer_completion_is_NOT_primary_motion_PASS_or_unique_cause: true
+        rolling_component_automatic_retry_or_speed_gain_contact_guard_change_authorized: false
+        rolling_component_proposed_method_or_statistical_superiority_claimed: false
+        full_H3B_dynamics_plan_selected: false
+        full_H3B_turning_execution_or_Nav2_verified: false
+        old_forward_only_H1_H2_H3A_path_adapters_must_not_execute_signed_paths: true
+        caster_pi_initial_condition_diagnostic:
+          explicitly_approved_by_user: true
+          condition: H3B_caster_pi_initial_only
+          changed_variable: four_passive_caster_swivel_initial_angles_0_to_180deg_BEFORE_first_Play_ONLY
+          original_failure_records_and_sources_preserved: true
+          fresh_original_source_required_no_reset_of_stalled_scene: true
+          prepare_entry: isaac/scripts/isaac_prepare_ijcas_hospital_h3b_caster_initial.py
+          static_entry: isaac/scripts/isaac_run_ijcas_hospital_h3b_caster_initial_static.py
+          rolling_entry: isaac/scripts/isaac_run_ijcas_hospital_h3b_caster_initial_rolling.py
+          helper: studies/IJCAS/scripts/hospital_h3b_caster_initial.py
+          results_directory: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_caster_initial_comparison/caster_pi_r01
+          original_controllers_reject_variant_specific_scene_markers: true
+          runtime_initial_PhysX_angle_and_static_to_rolling_continuity_readback_required: true
+          unchanged_rolling_command_and_safety_functions_AST_verified: true
+          speed_gains_materials_collider_geometry_task_and_acceptance_unchanged: true
+          reset_caster_angles_during_static_or_motion: false
+          passive_friction_observer_attached: false
+          maximum_static_and_rolling_attempts_before_review_each: 1
+          actual_new_static_or_rolling_execution_verified: true
+          actual_static_and_rolling_verdicts: [PASS, PASS]
+          measured_rolling_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_caster_initial_comparison/caster_pi_r01/rolling/hospital_h3b_caster_pi_rolling_r01.json
+          measured_rolling_result_sha256: 12cca01c4ca36124197eef585d96f61dc2375adf019128b90e4b9f83d1549e49
+          measured_rolling_trace_sha256: 5daad5e18789043457780b86ffb8045886879029394673979b66916d70b91183
+          measured_terminal_position_mm: 2.355461538734723
+          measured_terminal_heading_deg: -0.017155959773972843
+          measured_hold_regression_mm_s: 0.008074538879663633
+          measured_caster_trajectories_natural_after_initial_setup_not_held_at_180deg: true
+          original_condition_PASS_or_proposed_method_comparison_claimed: false
+          full_path_or_Nav2_success_claimed: false
+          use_for_final_statistics: false
+        ordinary_natural_entry_development:
+          condition: H3B_ordinary_straight_natural_entry_v1
+          role: common_approach_preparation_NOT_CICS_transfer_or_H3_path_execution
+          results_directory: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_natural_entry/entry_r01
+          prepare_entry: isaac/scripts/isaac_prepare_ijcas_hospital_h3b_natural_entry.py
+          static_entry: isaac/scripts/isaac_run_ijcas_hospital_h3b_natural_entry_static.py
+          approach_entry: isaac/scripts/isaac_run_ijcas_hospital_h3b_natural_entry.py
+          helper: studies/IJCAS/scripts/hospital_h3b_natural_entry.py
+          offline_preflight_entry: studies/IJCAS/scripts/audit_hospital_h3b_natural_entry_preflight.py
+          saved_preflight: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_natural_entry_preflight/preflight_r03.json
+          saved_preflight_sha256: f72cbc09afb41179e3d27a2852c53088cd74546575c74c1048d16be15254d809
+          entry_staging_world_xyyaw: [18.76743652820773, 15.807367212727655, 3.141592653589793]
+          approach_target_is_original_H3_mission_start: true
+          original_H3_goal_and_full_envelope_map_unchanged: true
+          fixed_straight_entry_distance_m: 0.300
+          forward_reference_speed_m_s: 0.010
+          nominal_envelope_samples_and_collisions: [121, 0]
+          initial_caster_state: unchanged_authored_source_then_actual_PhysX_history_NOT_all_hospital_initial_states
+          set_caster_angles_before_or_during_trial: false
+          accept_or_retry_based_on_caster_angle: false
+          actual_yaw_or_CICS_input: false
+          support_motor_material_contact_and_stop_criteria_changed: false
+          final_5s_hold_fixed_last_3s_evaluation: true
+          stricter_fixed_mission_start_handoff_position_m: 0.010
+          stricter_fixed_mission_start_handoff_heading_deg: 0.5
+          actual_PhysX_entry_verified: true
+          measured_entry_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_natural_entry/entry_r01/approach/hospital_h3b_natural_entry_r01.json
+          measured_entry_result_sha256: ae0585765d9690855c933cd57b16ec478c4c688dffc23d7b22bf7b339f0978a0
+          measured_entry_trace_sha256: 40b3cf6da36dee7ff1555b4a6717f023d9eaa65d28cfd6a369a1f6d24cceafff
+          measured_entry_sample_count: 1669
+          measured_entry_terminal_mm_deg: [1.4406055428775031, 0.0014589830758939104]
+          measured_entry_hold_regression_mm_s: 0.361216446933103
+          measured_retained_caster_angles_deg: [-4.507, -7.669, -3.966, -2.387]
+          measured_casters_did_NOT_become_180deg_and_alignment_is_NOT_implied: true
+          rolling_S_probe_or_full_route_verified: false
+          after_attempt: keep_PAUSED_retain_measured_joints_pose_and_source_lineage_no_old_controller_or_reset_before_review
+          maximum_attempts_before_review: 1
+          use_for_final_statistics: false
+        natural_entry_to_S_probe_continuation:
+          condition: H3B_natural_entry_to_rolling_probe_v1
+          helper: studies/IJCAS/scripts/hospital_h3b_natural_handoff.py
+          offline_audit_entry: studies/IJCAS/scripts/audit_hospital_h3b_natural_handoff.py
+          saved_offline_audit: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_natural_handoff_audits/handoff_audit_r02.json
+          saved_offline_audit_sha256: d97c0180fd8998ce5a7f3029135cbcfe1300c9404e0e7519b25334d17e066cad
+          execution_entry: isaac/scripts/isaac_run_ijcas_hospital_h3b_natural_handoff.py
+          results_directory: studies/IJCAS/results/hospital_paper_gate/hospital_h3b_natural_handoff/entry_r01_probe_r01
+          requires_SAME_actual_completed_entry_scene_PAUSED: true
+          reopen_source_or_reprepare_static_between_entry_and_probe: false
+          reset_pose_joints_or_choose_caster_angle: false
+          live_check_all_12_measured_joint_positions_and_body_before_any_hold_or_Play: true
+          paused_body_position_continuity_tolerance_m: 0.0001
+          paused_body_and_joint_angle_continuity_tolerance_rad: 0.0001
+          existing_measured_horizontal_stop_limit_m_s: 0.005
+          original_S_probe_command_and_safety_functions_AST_unchanged: true
+          original_fixed_task_start_goal_and_map_unchanged: true
+          entry_staging_static_NOT_relabelled_as_current_mission_start_static: true
+          current_start_readiness_from_measured_entry_final_hold_and_live_continuity: true
+          actual_continuation_PhysX_verified: false
+          maximum_attempts_before_review: 1
+          full_route_CICS_or_Nav2_success_claimed: false
+          use_for_final_statistics: false
+        next_gate: SAME_PAUSED_entry_PASS_then_live_all_joint_body_continuity_check_and_ONE_unchanged_S_straight_cusp_probe_no_reset_or_new_static
+        after_stationary_alignment_PASS: direction_change_aware_dynamics_refinement_including_braking_alignment_and_cusp_envelopes_before_full_turning_path
+        use_for_final_statistics: false
+      optional_low_step_robustness:
+        status: deferred_not_a_required_gate_not_implemented
+        controller_or_planner_algorithm_changes_for_step_climbing: false
+        do_not_claim_new_robust_controller_or_3D_terrain_aware_planner: true
+        main_focus_remains_steering_dynamics_stopping_and_full_envelope_path_planning: true
+      geometry_audit_script: studies/IJCAS/scripts/audit_hospital_h3_doorway.py
+      live_overlay_and_hinge_review_script: isaac/scripts/isaac_prepare_ijcas_hospital_h3_geometry_overlay.py
+      fully_open_preparation_script: isaac/scripts/isaac_prepare_ijcas_hospital_h3_fully_open.py
+      fully_open_geometry_helper: studies/IJCAS/scripts/hospital_h3_door_state.py
+      existing_condition_audit: studies/IJCAS/results/hospital_paper_gate/hospital_h3_doorway_geometry/audit_r01/doorway_geometry_audit.json
+      doorway_wall: /World/Hospital/Geo_M1_DoorWall11
+      doorway_frame: /World/Hospital/Geo_M_DoorFrame43
+      existing_leaf: /World/Hospital/SM_Door_02b9
+      threshold: /World/Hospital/Geo_M_DoorFloor20
+      structural_width_m: 1.24288600051134
+      robot_width_with_10mm_each_side_m: 0.985
+      authored_threshold_step_above_existing_canonical_support_m: 0.024360911280213026
+      current_leaf_straight_constant_Y_zero_yaw_crossing: blocked_at_sampled_sections_only
+      curved_path_feasibility: not_tested
+      baseline_door_state: fully_open
+      baseline_door_state_explicitly_selected_by_user: true
+      existing_partial_open_condition_preserved_as_separate_variant: true
+      actual_fully_open_transform_applied: true
+      actual_fully_open_geometry_report: studies/IJCAS/results/hospital_paper_gate/hospital_h3_doorway_geometry/fully_open_r01/doorway_geometry_audit.json
+      actual_fully_open_geometry_report_sha256: 68cf914f16e0e4fc57a61e41d155075c8befae32b7e71e3bc1647e8b6ab0e4b8
+      all_six_door_geometry_preparation_checks_true: true
+      actual_door_world_axes_identity_and_hinge_translation_preserved: true
+      door_hinge_origin_and_orientation_review_verified: true
+      hinge_review_basis: user_supplied_live_USD_transform_axes_and_root_frame_collider_bounds
+      reviewed_hinge_world_origin_m: [17.218881835937502, 15.177172241210938, 1.127729278564453]
+      reviewed_root_world_axes:
+        - [0.5000055210271341, -0.8660222161944716, 0.0]
+        - [0.8660222161944716, 0.5000055210271341, 0.0]
+        - [0.0, 0.0, 1.0]
+      additional_world_Z_rotation_deg: 59.999634731112806
+      fully_open_definition: negative_local_X_leaf_points_negative_world_X_perpendicular_to_world_Y_wall
+      hinge_translation_and_Z_must_remain_fixed: true
+      model_only_fully_open_cross_section_result: NOT_RULED_OUT_NOT_PROVEN
+      model_only_result_is_not_live_preparation_or_PhysX_validation: true
+      new_variant_output_pattern: studies/IJCAS/results/hospital_paper_gate/hospital_h3_doorway_geometry/fully_open_rNN
+      live_checks_before_export: reviewed_hinge_and_mesh_exact_rotation_all_collider_flags_and_other_asset_bounds_preserved
+      threshold_collision_must_remain_enabled: true
+      threshold_PhysX_traversal_validated: false
+      new_variant_geometry_and_map_required_after_door_rotation: true
+      H1_H2_maps_and_measured_results_must_remain_unchanged: true
+      H3_task_poses_created: false
+      H3_planning_or_execution_verified: false
+      source_USD_saved: false
+      use_for_final_statistics: false
+      threshold_component_next_gate:
+        scope: stationary_staging_then_future_bounded_threshold_component_trial_NOT_H3_mission_plan
+        setup_builder: studies/IJCAS/scripts/build_hospital_h3_terrain_setup.py
+        setup_manifest: studies/IJCAS/results/hospital_paper_gate/hospital_h3_terrain_setup/setup_r01/terrain_component_setup.json
+        setup_manifest_sha256: a6bf5ccb4073a3c4a1313480debbb3c08ff891a8a3dc08da6481f6b7fa8f122f
+        all_six_component_setup_geometry_checks_true: true
+        static_preparation_script: isaac/scripts/isaac_prepare_ijcas_hospital_h3_terrain_static.py
+        static_entry_script: isaac/scripts/isaac_run_ijcas_hospital_h3_static_gate.py
+        static_staging_xyyaw: [18.467436528207728, 15.807367212727655, 3.141592653589793]
+        future_component_endpoint_xyyaw: [16.234728860221132, 15.807367212727655, 3.141592653589793]
+        static_acceptance: unchanged_shared_six_wheel_support_10mm_drift_5mm_Z_span_1deg_tilt_and_no_obstacle_contacts
+        static_settle_record_s: [1.0, 2.0]
+        actual_static_PhysX_execution_verified: true
+        measured_static_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3_static_contact/hospital_h3_static_r01.json
+        measured_static_result_sha256: 0e5872a3da7ae636e034e4285c2bb9dfb1a93bb345fae621d3a2f7714a84f966
+        measured_static_verdict: PASS
+        measured_static_maximum_xy_drift_mm: 9.47639948347977
+        measured_static_base_z_span_mm: 0.575
+        measured_static_maximum_roll_pitch_deg: 0.017
+        measured_static_vertical_force_weight_ratio: 0.9997
+        measured_static_contact_categories: {wheel_support: 2232}
+        measured_static_metrics_rounded_except_drift: true
+        strict_map_keeps_all_unvalidated_thresholds_blocked: true
+        component_geometry_map_authorizes_only_selected_threshold_for_diagnostic_test: true
+        component_geometry_map_is_not_authorized_for_planning_or_Nav2: true
+        selected_threshold_collider_and_material_not_changed_for_static_gate: true
+        H1_H2_contact_mass_and_motor_parameters_reused_without_retuning: true
+        forward_command_or_CICS_input_for_this_static_gate: false
+        H3_threshold_traversal_verified: false
+        threshold_crossing_next:
+          status: actual_trial_failed_front_caster_threshold_contact_associated_stall_preserved
+          entry_script: isaac/scripts/isaac_run_ijcas_hospital_h3_terrain_gate.py
+          pure_rules: studies/IJCAS/scripts/hospital_h3_terrain.py
+          result_directory: studies/IJCAS/results/hospital_paper_gate/hospital_h3_terrain_execution
+          start_requirement: current_PAUSED_fresh_H3_static_PASS_no_Stop_Play_or_pose_reset
+          command: ordinary_straight_ramp_positive_both_active_wheels_no_yaw_or_CICS
+          speed_m_s: 0.030
+          acceleration_m_s2: 0.020
+          reference_distance_m: 2.2327076679865954
+          prehold_s: 2.0
+          prehold_displacement_limit_m: 0.003
+          original_start_and_absolute_endpoint_never_shifted: true
+          hold_s: 5.0
+          fixed_tail_s: 3.0
+          terminal_limits_position_m_heading_deg_speed_m_s: [0.030, 2.0, 0.005]
+          maximum_body_tilt_deg: 2.0
+          maximum_lateral_error_m: 0.030
+          forward_stall_window_s: 5.0
+          all_six_actual_wheel_threshold_contacts_and_start_end_clearance_required: true
+          nonwheel_threshold_or_any_other_hospital_obstacle_contact_is_failure: true
+          aborting_actual_pose_saved_before_guard: true
+          pause_before_original_motor_gain_restoration: true
+          physics_material_threshold_collision_and_door_pose_unchanged: true
+          actual_PhysX_threshold_crossing_verified: false
+          H3_path_planning_sensor_Nav2_and_final_statistics_verified: false
+          measured_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3_terrain_execution/hospital_h3_threshold_crossing_r01.json
+          measured_verdict: FAIL
+          raw_stall_guard_reproduced_from_CSV: true
+          measured_progress_m: 0.4429557085055791
+          threshold_callback_counts_front_left_right: [620, 615]
+          threshold_callbacks_are_not_independent_collision_events: true
+          observed_other_obstacle_or_nonwheel_contacts: 0
+          original_motor_gains_restored: true
+          failure_interpretation: front_caster_threshold_contact_associated_stall_under_recorded_ordinary_ramp_NOT_planner_failure_or_proof_of_all_approaches_impossible
+          maximum_height_is_not_a_single_vertical_step: true
+          recorded_authored_threshold_contains_sloped_faces: true
+          motor_torque_saturation_and_contact_solver_cause_not_isolated: true
+          no_gain_material_speed_or_threshold_collider_change_authorized_by_this_diagnostic: true
+          offline_stall_audit_script: studies/IJCAS/scripts/audit_hospital_h3_terrain_stall.py
+          offline_stall_audit: studies/IJCAS/results/hospital_paper_gate/hospital_h3_terrain_diagnostics/hospital_h3_threshold_crossing_r01_stall_audit_r01.json
+          immediate_next_gate: H3_flush_separate_geometry_variant_original_threshold_condition_remains_HOLD
+          paused_readback_script: isaac/scripts/isaac_audit_ijcas_hospital_h3_stall.py
+          paused_runtime_readback_is_after_cleanup_not_historical_stall_torque: true
+          keep_failed_trial_PAUSED_until_readback: true
+          actual_paused_readback_completed: true
+          paused_readback_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3_terrain_diagnostics/hospital_h3_threshold_crossing_r01_paused_readback_r01.json
+          paused_readback_result_sha256: 86c09320f38a7de53fb49e504d2fcc60633ab207ab3b01aee838480cb8ae8a2b
+          actual_readback_root_session_and_timeline_unchanged: true
+          active_capsule_radius_m: 0.07400000095367432
+          caster_capsule_radius_m: 0.04749999940395355
+          runtime_active_drive_stiffness_damping_limit: [0.0, 2864.7890625, 500.0]
+          runtime_damping_matches_USD_50_times_180_over_pi_not_gain_conversion_error: true
+          active_drive_velocity_targets_zero_after_cleanup: true
+          effective_threshold_physics_material_defaults_unknown_not_zero_friction: true
+          contact_and_rest_offsets_not_recorded_as_resolved_runtime_values: true
+          same_condition_reproduction:
+            status: actual_same_condition_stall_reproduced_instrumentation_complete_original_H3_HOLD
+            preparation_entry: isaac/scripts/isaac_prepare_ijcas_hospital_h3_same_condition_repeat.py
+            execution_entry: isaac/scripts/isaac_run_ijcas_hospital_h3_instrumented_repeat.py
+            observer_serialization: studies/IJCAS/scripts/hospital_h3_instrumentation.py
+            reopen_original_without_saving_then_new_fully_open_geometry_export: true
+            new_setup_compares_both_raster_digests_original_poses_threshold_and_physics_parameters: true
+            fresh_static_PASS_required_before_any_forward_motion: true
+            uses_byte_identical_measured_H3_controller_and_guards: true
+            changes_to_speed_gain_material_threshold_or_caster_state_by_observer: false
+            observer_records: [joint_positions, joint_velocities, solver_projected_joint_efforts, runtime_gains_and_targets, raw_contact_points_normals_impulses_and_separations]
+            solver_projected_joint_effort_is_not_isolated_motor_drive_torque: true
+            unknown_contact_sign_not_assumed: true
+            observer_failure_does_not_relabel_original_controller_verdict: true
+            no_claim_of_new_traversal_planner_or_Nav2_success: true
+            actual_static_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3_static_contact/hospital_h3_static_r02.json
+            actual_static_verdict: PASS
+            actual_component_result: studies/IJCAS/results/hospital_paper_gate/hospital_h3_terrain_execution/hospital_h3_threshold_crossing_r02.json
+            actual_component_verdict: FAIL
+            actual_instrumentation: studies/IJCAS/results/hospital_paper_gate/hospital_h3_terrain_diagnostics/instrumented_repeats/hospital_h3_threshold_crossing_r02/instrumentation.json
+            actual_joint_samples: 210
+            actual_threshold_contact_points: 10829
+            telemetry_errors: []
+            actual_component_progress_m: 0.4429557085055791
+            original_primary_trace_byte_identical_to_reference_trial: true
+            not_independent_seed_or_statistical_robustness_evidence: true
+            original_gains_restored: true
+            reproduction_evidence_audit_script: studies/IJCAS/scripts/audit_hospital_h3_instrumented_reproduction.py
+            reproduction_evidence_audit: studies/IJCAS/results/hospital_paper_gate/hospital_h3_terrain_diagnostics/reproduction_audits/instrumented_reproduction_r01.json
+            reported_contact_normals_opposing_commanded_direction_fraction: 1.0
+            final_diagnostic_window_projected_joint_effort_front_rear_Nm: [12.354064559936523, 12.364083290100098]
+            actual_500Nm_motor_torque_saturation_not_established: true
+            friction_force_not_inferred_from_normal_impulse_only_data: true
+            original_H3_threshold_traversal_stays_unverified: true
+            original_H3_planner_map_threshold_stays_blocked: true
+            no_more_identical_retries_without_a_new_hypothesis: true
+            physical_environment_or_controller_changes_require_explicit_new_condition: true
+            scope_choice_pending_user_direction: false
+            user_selected_next_condition: H3_flush_fully_open_continuous_floor
+    feedback_scope: ground_truth_pose_and_joints_not_sensor_localization_or_Nav2
+    original_world_start_and_goal_preserved: true
+    cics_input_or_online_replanning: false
+    acceptance: 30mm_2deg_5mm_per_s_with_fixed_3s_tail_of_5s_motor_hold
+    paper_statistics_enabled: false
+    planning_solver_settings_frozen_for_final_paper: false
+    pure_joint_state_search_timeouts_preserved_as_development_results: true
+    fixed_mode_baseline_solver: discrete_counterphase_turn_straight_opposite_turn_connector_then_lattice_fallback
+  material_and_drive_tuning_requires_new_trace_and_revalidation: true
+  existing_terminal_acceptance_must_not_be_relaxed_to_hide_creep: true
+  diagnostic_success_is_not_moving_stop_or_path_validation: true
+
+scenarios:
+  H1_bedside_departure:
+    task: depart_from_parallel_bedside_pose_into_ward_aisle
+    contribution: full_body_bedside_clearance_and_executable_route_to_ward_aisle
+    geometry_status: measurement_required
+  H2_bedside_lateral_alignment:
+    task: approach_and_align_parallel_to_bed_open_side
+    contribution: terminal_alignment_and_full_envelope
+    geometry_status: measurement_required
+  H3_doorway_immediate_turn:
+    task: traverse_room_door_and_turn_before_full_body_clearance
+    contribution: front_rear_envelope_and_mode_selection
+    geometry_status: H3_flush_static_straight_PASS_NEW_continuous_curvature_straight_cusp_geometry_and_nominal_timing_PASS_turning_PhysX_PENDING_original_HOLDs_FAILs_preserved
+  H4_ward_corridor_turn:
+    task: turn_in_corridor_with_parked_bed_or_cart
+    contribution: hospital_replacement_for_simple_corridor_90
+    geometry_status: original_corridor_and_parked_cart_candidates_identified_LIVE_read_only_review_PENDING_no_task_or_physics
+    live_read_only_review_entry: isaac/scripts/isaac_inspect_ijcas_hospital_h4_geometry.py
+    review_helper: studies/IJCAS/scripts/hospital_h4_geometry_review.py
+    review_region_xy_m: [15.0, 22.0, 23.0, 34.5]
+    original_parked_cart_candidate: /World/Hospital/SM_SupplyCart_02a7
+    original_cart_or_other_hospital_assets_moved: false
+    start_goal_and_collision_map_frozen: false
+    live_geometry_and_support_and_execution_verified: false
+    immediate_work_deferred_by_user_to_continue_H3: true
+  H5_obstacle_bypass_return:
+    task: bypass_mobile_medical_obstacle_and_return_to_corridor_lane
+    contribution: replanning_and_clearance_time_tradeoff
+    geometry_status: measurement_required
+  H6_integrated_transfer_mission:
+    task: bedside_departure_doorway_corridor_bypass_bedside_arrival
+    contribution: end_to_end_demonstration
+    geometry_status: derived_after_H1_to_H5_freeze
+
+trial_stages:
+  geometry_and_interface_gate:
+    repeats: 0
+    requirements:
+      - common_geometry_source_for_planner_isaac_and_nav2
+      - visual_and_collision_geometry_audited
+      - start_and_goal_full_envelope_collision_free
+  pilot:
+    repeats_per_method_scenario: 3
+    use_for_final_statistics: false
+    purpose: feasibility_tuning_and_failure_discovery
+  final_matched_comparison:
+    repeats_per_method_scenario: 10
+    paired_seed_required: true
+    method_freeze_required: true
+    geometry_freeze_required: true
+    confidence_interval_required: true
+  nav2_closed_loop:
+    pilot_repeats: 3
+    final_repeats: 10
+    required_scenarios:
+      - H1_bedside_departure
+      - H3_doorway_immediate_turn
+      - H4_ward_corridor_turn
+      - H2_bedside_lateral_alignment
+  physical_platform:
+    order:
+      - shadow_planning
+      - low_speed_empty_platform
+      - supervised_payload_trial
+    emergency_stop_required: true
+    requires_separate_approval: true
+
+acceptance:
+  obstacle_contact_event_count: 0
+  terminal_position_error_m_max: 0.030
+  terminal_heading_error_deg_abs_max: 2.0
+  terminal_speed_m_s_max: 0.005
+  all_commanded_actions_completed: true
+  no_safety_abort: true
+
+metrics:
+  task:
+    - task_success
+    - obstacle_contact_event_count
+    - minimum_clearance_m
+    - mission_time_s
+    - terminal_position_error_m
+    - terminal_heading_error_deg
+  prior_cics_initial_motion_not_pooled_with_new_trials:
+    - early_max_lateral_deviation_m
+    - early_max_yaw_deviation_deg
+    - caster_transition_distance_m
+    - caster_transition_time_s
+    - peak_jerk_m_s3
+    - first_confined_edge_success
+  planning:
+    - path_length_m
+    - planning_time_s
+    - expanded_nodes
+    - mode_switch_count
+    - steering_travel_rad
+    - peak_steering_rate_rad_s
+    - rejection_counts_by_reason
+  dynamics:
+    - maximum_friction_utilization
+    - minimum_corner_load_fraction
+    - maximum_abs_ltr
+    - maximum_yaw_rate_rad_s
+    - stopping_reachability_margin_m_s
+
+robustness_cells:
+  - nominal
+  - low_friction
+  - front_com
+  - rear_com
+  - adverse_initial_caster_orientation
+  - sensor_noise_and_command_latency
+
+analysis:
+  primary_unit: paired_seed_trial
+  report:
+    - scenario_level_results
+    - pooled_predeclared_results
+    - failure_reason_counts
+    - paired_effect_and_95_percent_interval
+    - success_rate_and_95_percent_interval
+    - time_clearance_accuracy_tradeoff
+  prohibited:
+    - selecting_the_best_proposed_variant_per_condition
+    - mixing_pilot_and_final_trials
+    - replacing_missing_or_failed_trials
+    - claiming_force_load_benefit_without_operational_activation
+    - treating_the_forward_micro_yaw_pilot_as_a_required_hospital_planning_gate
+    - pooling_existing_CICS_lateral_trials_with_new_hospital_navigation_trials
+

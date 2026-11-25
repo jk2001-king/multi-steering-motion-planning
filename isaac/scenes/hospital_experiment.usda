@@ -1,0 +1,786 @@
+#usda 1.0
+(
+    customLayerData = {
+        dictionary cameraSettings = {
+            dictionary Front = {
+                double3 position = (5, 0, 0)
+                double radius = 5
+            }
+            dictionary Perspective = {
+                double3 position = (-9.070060868397285, -115.0436295290894, 28.4575978394059)
+                double3 target = (-11.30260212951609, 16.225192148593067, 1.1773250693647341)
+            }
+            dictionary Right = {
+                double3 position = (0, -5, 0)
+                double radius = 5
+            }
+            dictionary Top = {
+                double3 position = (0, 0, 5)
+                double radius = 5
+            }
+            string boundCamera = "/OmniverseKit_Persp"
+        }
+        dictionary navmeshSettings = {
+            double agentHeight = 1.8
+            double agentMaxFloorSlope = 45
+            double agentMaxStepHeight = 0.4
+            double agentRadius = 0.2
+            dictionary areas = {
+                dictionary "0" = {
+                    string areaName = "Walkable"
+                    float3 color = (0.2, 0.8, 1)
+                    double defaultCost = 1
+                }
+            }
+            bool excludeRigidBodies = 1
+        }
+        dictionary omni_layer = {
+            string authoring_layer = "./hospital_experiment.usda"
+            dictionary locked = {
+            }
+            dictionary muteness = {
+            }
+        }
+        dictionary patientTransportAckermannReference = {
+            double frontRawZeroDeg = 90
+            string physicalAngleDefinition = "physical_deg = raw_deg - 90"
+            double rawLowerLimitDeg = 45
+            double rawUpperLimitDeg = 135
+            double rearRawZeroDeg = 90
+            string source = "isaac_ackermann_zero_check run01"
+        }
+        dictionary patientTransportSteeringCalibration = {
+            double equivalentFriction = 0.0025
+            int physicsHz = 120
+            string source = "real ground steering data; Isaac mu=0.0025 runs 01-03"
+            double steeringKd = 1000
+            double steeringKp = 10000
+            double steeringLimitDeg = 45
+        }
+        dictionary renderSettings = {
+        }
+    }
+    defaultPrim = "World"
+    endTimeCode = 1000000
+    metersPerUnit = 1
+    startTimeCode = 0
+    timeCodesPerSecond = 60
+    upAxis = "Z"
+)
+
+def Xform "World"
+{
+    over "patient_transport" (
+        prepend references = @../../src/patient_transport_description/urdf/patient_transport/patient_transport.usd@
+    )
+    {
+        string isaac:namespace (
+            displayName = "Namespace"
+            doc = "Namespace of the prim in Isaac Sim"
+        )
+
+        over "joints"
+        {
+            over "caster_fl_swivel_joint"
+            {
+                uniform token drive:angular:physics:type = "force"
+                string isaac:nameOverride (
+                    displayName = "Name Override"
+                    doc = "Name override for prim lookup in base name search"
+                )
+            }
+
+            over "caster_fl_wheel_joint"
+            {
+                uniform token drive:angular:physics:type = "force"
+                string isaac:nameOverride (
+                    displayName = "Name Override"
+                    doc = "Name override for prim lookup in base name search"
+                )
+            }
+
+            over "caster_fr_swivel_joint"
+            {
+                uniform token drive:angular:physics:type = "force"
+                string isaac:nameOverride (
+                    displayName = "Name Override"
+                    doc = "Name override for prim lookup in base name search"
+                )
+            }
+
+            over "caster_fr_wheel_joint"
+            {
+                uniform token drive:angular:physics:type = "force"
+                string isaac:nameOverride (
+                    displayName = "Name Override"
+                    doc = "Name override for prim lookup in base name search"
+                )
+            }
+
+            over "caster_rl_swivel_joint"
+            {
+                uniform token drive:angular:physics:type = "force"
+                string isaac:nameOverride (
+                    displayName = "Name Override"
+                    doc = "Name override for prim lookup in base name search"
+                )
+            }
+
+            over "caster_rl_wheel_joint"
+            {
+                uniform token drive:angular:physics:type = "force"
+                string isaac:nameOverride (
+                    displayName = "Name Override"
+                    doc = "Name override for prim lookup in base name search"
+                )
+            }
+
+            over "caster_rr_swivel_joint"
+            {
+                uniform token drive:angular:physics:type = "force"
+                string isaac:nameOverride (
+                    displayName = "Name Override"
+                    doc = "Name override for prim lookup in base name search"
+                )
+            }
+
+            over "caster_rr_wheel_joint"
+            {
+                uniform token drive:angular:physics:type = "force"
+                string isaac:nameOverride (
+                    displayName = "Name Override"
+                    doc = "Name override for prim lookup in base name search"
+                )
+            }
+
+            over "front_steering_joint"
+            {
+                float drive:angular:physics:damping = 1000
+                float drive:angular:physics:maxForce = 1500
+                float drive:angular:physics:stiffness = 10000
+                float drive:angular:physics:targetPosition = 90
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "acceleration"
+                string isaac:nameOverride (
+                    displayName = "Name Override"
+                    doc = "Name override for prim lookup in base name search"
+                )
+                float physics:lowerLimit = 45
+                float physics:upperLimit = 135
+                float state:angular:physics:position = 90
+                float state:angular:physics:velocity = 0
+            }
+
+            over "rear_steering_joint"
+            {
+                float drive:angular:physics:damping = 1000
+                float drive:angular:physics:maxForce = 1500
+                float drive:angular:physics:stiffness = 10000
+                float drive:angular:physics:targetPosition = 90
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "acceleration"
+                string isaac:nameOverride (
+                    displayName = "Name Override"
+                    doc = "Name override for prim lookup in base name search"
+                )
+                float physics:lowerLimit = 45
+                float physics:upperLimit = 135
+                float state:angular:physics:position = 90
+                float state:angular:physics:velocity = 0
+            }
+
+            over "front_wheel_joint"
+            {
+                float drive:angular:physics:damping = 1
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+                string isaac:nameOverride (
+                    displayName = "Name Override"
+                    doc = "Name override for prim lookup in base name search"
+                )
+            }
+
+            over "rear_wheel_joint"
+            {
+                float drive:angular:physics:damping = 1
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+                string isaac:nameOverride (
+                    displayName = "Name Override"
+                    doc = "Name override for prim lookup in base name search"
+                )
+            }
+        }
+
+        over "base_link" (
+            prepend apiSchemas = ["PhysxRigidBodyAPI"]
+        )
+        {
+            bool physxRigidBody:disableGravity = 0
+        }
+
+        over "caster_fl_link_1" (
+            prepend apiSchemas = ["PhysxRigidBodyAPI"]
+        )
+        {
+            bool physxRigidBody:disableGravity = 0
+        }
+
+        over "caster_fl_wheel_link" (
+            prepend apiSchemas = ["PhysxRigidBodyAPI"]
+        )
+        {
+            string isaac:nameOverride (
+                displayName = "Name Override"
+                doc = "Name override for prim lookup in base name search"
+            )
+            bool physxRigidBody:disableGravity = 0
+        }
+
+        over "caster_fr_link_1" (
+            prepend apiSchemas = ["PhysxRigidBodyAPI"]
+        )
+        {
+            bool physxRigidBody:disableGravity = 0
+        }
+
+        over "caster_fr_wheel_link" (
+            prepend apiSchemas = ["PhysxRigidBodyAPI"]
+        )
+        {
+            bool physxRigidBody:disableGravity = 0
+        }
+
+        over "caster_rl_link_1" (
+            prepend apiSchemas = ["PhysxRigidBodyAPI"]
+        )
+        {
+            bool physxRigidBody:disableGravity = 0
+        }
+
+        over "caster_rl_wheel_link" (
+            prepend apiSchemas = ["PhysxRigidBodyAPI"]
+        )
+        {
+            bool physxRigidBody:disableGravity = 0
+        }
+
+        over "caster_rr_link_1" (
+            prepend apiSchemas = ["PhysxRigidBodyAPI"]
+        )
+        {
+            bool physxRigidBody:disableGravity = 0
+        }
+
+        over "caster_rr_wheel_link" (
+            prepend apiSchemas = ["PhysxRigidBodyAPI"]
+        )
+        {
+            bool physxRigidBody:disableGravity = 0
+        }
+
+        over "front_steer_link_1" (
+            prepend apiSchemas = ["PhysxRigidBodyAPI"]
+        )
+        {
+            bool physxRigidBody:disableGravity = 0
+        }
+
+        over "front_wheel_link_1" (
+            prepend apiSchemas = ["PhysxRigidBodyAPI"]
+        )
+        {
+            rel material:binding:physics = </World/PatientTransportCalibrationMaterials/Tire>
+            bool physxRigidBody:disableGravity = 0
+        }
+
+        over "rear_steer_link_1" (
+            prepend apiSchemas = ["PhysxRigidBodyAPI"]
+        )
+        {
+            bool physxRigidBody:disableGravity = 0
+        }
+
+        over "rear_wheel_link_1" (
+            prepend apiSchemas = ["PhysxRigidBodyAPI"]
+        )
+        {
+            rel material:binding:physics = </World/PatientTransportCalibrationMaterials/Tire>
+            bool physxRigidBody:disableGravity = 0
+        }
+    }
+
+    def Scope "PatientTransportCalibrationMaterials"
+    {
+        def Material "Tire" (
+            prepend apiSchemas = ["PhysicsMaterialAPI"]
+        )
+        {
+            float physics:dynamicFriction = 0.0025
+            float physics:restitution = 0
+            float physics:staticFriction = 0.0025
+        }
+
+        def Material "Ground" (
+            prepend apiSchemas = ["PhysicsMaterialAPI"]
+        )
+        {
+            float physics:dynamicFriction = 0.0025
+            float physics:restitution = 0
+            float physics:staticFriction = 0.0025
+        }
+    }
+
+    def Xform "Hospital" (
+        prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Hospital/hospital.usd@
+    )
+    {
+        over "Navmesh"
+        {
+            over "NavMeshVolume" (
+                prepend apiSchemas = ["NavMeshAreaAPI"]
+            )
+            {
+                string nav:area = "Walkable"
+            }
+        }
+
+        over "SM_ShelfSet_01a15" (
+            active = false
+        )
+        {
+        }
+
+        over "SM_ShelfSet_01a16" (
+            active = false
+        )
+        {
+        }
+
+        over "SM_Computer_02b10" (
+            active = false
+        )
+        {
+        }
+
+        over "SM_Chair_01a10" (
+            active = false
+        )
+        {
+        }
+
+        over "SM_SupplyCart_01e10" (
+            active = false
+        )
+        {
+        }
+
+        over "Geo_M1_SideWall20" (
+            active = false
+        )
+        {
+        }
+
+        over "Geo_M1_SideWall21" (
+            active = false
+        )
+        {
+        }
+
+        over "Geo_M1_SideWallPanel18" (
+            active = false
+        )
+        {
+        }
+
+        over "Geo_M1_SideWallPanel19" (
+            active = false
+        )
+        {
+        }
+
+        over "Geo_M1_TrimInsideSide66" (
+            active = false
+        )
+        {
+        }
+
+        over "Geo_M1_TrimInsideSide69" (
+            active = false
+        )
+        {
+        }
+
+        over "SM_HospitalBed_02d11"
+        {
+            matrix4d xformOp:transform:restartLayout = ( (0.000010586805302859048, 0.9999999999439598, 0, 0), (-0.9999999999439598, 0.000010586805302859048, 0, 0), (0, 0, 1, 0), (14.1923291015625, 15.380048828125002, 0.0010016784667968893, 1) )
+            uniform token[] xformOpOrder = ["xformOp:transform:restartLayout"]
+        }
+
+        over "Geo_M1_Rooff10"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M1_Rooff11"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M1_Rooff12"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M1_Rooff13"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M1_Rooff14"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M1_Rooff15"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M1_Rooff16"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M1_Rooff17"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M1_Rooff18"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M1_Rooff19"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M1_Rooff2"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M1_Rooff20"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M1_Rooff21"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M1_Rooff22"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M1_Rooff23"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M1_Rooff3"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M1_Rooff4"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M1_Rooff5"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M1_Rooff6"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M1_Rooff7"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M1_Rooff8"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M1_Rooff9"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M1_Rooff_760"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M2_Ceiling10"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M2_Ceiling11"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M2_Ceiling12_92"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M2_Ceiling2_47"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M2_Ceiling3_49"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M2_Ceiling5"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M2_Ceiling8_82"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M2_Ceiling9"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M3_Ceiling2"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M3_Ceiling3"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M3_Ceiling4"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M3_Ceiling7"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M3_Ceiling8"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_M3_Ceiling_2"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_O_Roof_955"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_Roof_Costum10_548"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_Roof_Costum11_554"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_Roof_Costum12"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_Roof_Costum13"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_Roof_Costum1_34"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_Roof_Costum2_37"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_Roof_Costum3_40"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_Roof_Costum4_31"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_Roof_Costum5_10"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_Roof_Costum6_19"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_Roof_Costum7_22"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_Roof_Costum8_25"
+        {
+            token visibility = "invisible"
+        }
+
+        over "Geo_Roof_Costum9_28"
+        {
+            token visibility = "invisible"
+        }
+    }
+}
+
+def Xform "Environment"
+{
+    token visibility = "invisible"
+    quatd xformOp:orient = (1, 0, 0, 0)
+    double3 xformOp:scale = (1, 1, 1)
+    double3 xformOp:translate = (0, 0, 0)
+    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+    def DistantLight "defaultLight" (
+        prepend apiSchemas = ["ShapingAPI"]
+    )
+    {
+        float inputs:angle = 1
+        float inputs:intensity = 3000
+        float inputs:shaping:cone:angle = 180
+        float inputs:shaping:cone:softness
+        float inputs:shaping:focus
+        color3f inputs:shaping:focusTint
+        asset inputs:shaping:ies:file
+        quatd xformOp:orient = (0.6532814824381883, 0.2705980500730985, 0.27059805007309845, 0.6532814824381882)
+        double3 xformOp:scale = (1, 1, 1)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+    }
+}
+
+def "Render" (
+    hide_in_stage_window = true
+    no_delete = true
+)
+{
+    def "OmniverseKit"
+    {
+        def "HydraTextures" (
+            hide_in_stage_window = true
+            no_delete = true
+        )
+        {
+            def RenderProduct "omni_kit_widget_viewport_ViewportTexture_0" (
+                prepend apiSchemas = ["OmniRtxSettingsCommonAdvancedAPI_1", "OmniRtxSettingsRtAdvancedAPI_1", "OmniRtxSettingsPtAdvancedAPI_1", "OmniRtxPostColorGradingAPI_1", "OmniRtxPostChromaticAberrationAPI_1", "OmniRtxPostBloomPhysicalAPI_1", "OmniRtxPostMatteObjectAPI_1", "OmniRtxPostCompositingAPI_1", "OmniRtxPostDofAPI_1", "OmniRtxPostMotionBlurAPI_1", "OmniRtxPostTvNoiseAPI_1", "OmniRtxPostTonemapIrayReinhardAPI_1", "OmniRtxPostDebugSettingsAPI_1", "OmniRtxDebugSettingsAPI_1"]
+                hide_in_stage_window = true
+                no_delete = true
+            )
+            {
+                rel camera = </OmniverseKit_Persp>
+                token omni:rtx:background:source:texture:textureMode = "repeatMirrored"
+                token omni:rtx:background:source:type = "domeLight"
+                string omni:rtx:material:db:rtSensorNameToIdMap = "DefaultMaterial:0;AsphaltStandardMaterial:1;AsphaltWeatheredMaterial:2;VegetationGrassMaterial:3;WaterStandardMaterial:4;GlassStandardMaterial:5;FiberGlassMaterial:6;MetalAlloyMaterial:7;MetalAluminumMaterial:8;MetalAluminumOxidizedMaterial:9;PlasticStandardMaterial:10;RetroMarkingsMaterial:11;RetroSignMaterial:12;RubberStandardMaterial:13;SoilClayMaterial:14;ConcreteRoughMaterial:15;ConcreteSmoothMaterial:16;OakTreeBarkMaterial:17;FabricStandardMaterial:18;PlexiGlassStandardMaterial:19;MetalSilverMaterial:20"
+                bool omni:rtx:post:registeredCompositing:invertColorCorrection = 1
+                bool omni:rtx:post:registeredCompositing:invertToneMap = 1
+                bool omni:rtx:pt:lightcache:cached:dontResolveConflicts = 1
+                int omni:rtx:pt:maxSamplesPerLaunch = 2073600
+                int omni:rtx:pt:mgpu:maxPixelsPerRegionExponent = 12
+                color3f omni:rtx:rt:ambientLight:color = (0.1, 0.1, 0.1)
+                bool omni:rtx:rt:demoire = 0
+                bool omni:rtx:rt:ecoMode:enabled
+                bool omni:rtx:rt:lightcache:spatialCache:dontResolveConflicts = 1
+                bool omni:rtx:scene:useViewLightingMode = 1
+                uint omni:rtx:viewTile:limit = 4294967295
+                rel orderedVars = </Render/Vars/LdrColor>
+                custom bool overrideClipRange = 0
+                uniform int2 resolution = (1280, 720)
+            }
+        }
+    }
+
+    def RenderSettings "OmniverseGlobalRenderSettings" (
+        prepend apiSchemas = ["OmniRtxSettingsGlobalRtAdvancedAPI_1", "OmniRtxSettingsGlobalPtAdvancedAPI_1"]
+        no_delete = true
+    )
+    {
+        rel products = </Render/OmniverseKit/HydraTextures/omni_kit_widget_viewport_ViewportTexture_0>
+    }
+
+    def "Vars"
+    {
+        def RenderVar "LdrColor" (
+            hide_in_stage_window = true
+            no_delete = true
+        )
+        {
+            uniform string sourceName = "LdrColor"
+        }
+    }
+}
+
+def PhysicsScene "physicsScene" (
+    prepend apiSchemas = ["PhysxSceneAPI"]
+)
+{
+    uint physxScene:timeStepsPerSecond = 120
+}
+
+def "FlatGrid" (
+    active = false
+    prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Grid/default_environment.usd@
+)
+{
+    over "GroundPlane"
+    {
+        over "CollisionPlane" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            rel material:binding:physics = </World/PatientTransportCalibrationMaterials/Ground>
+            bool physics:collisionEnabled = 1
+        }
+    }
+}
+
