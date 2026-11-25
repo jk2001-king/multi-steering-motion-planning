@@ -8,7 +8,7 @@
 ![Navigation](https://img.shields.io/badge/Navigation-Nav2-0066CC)
 ![Localization](https://img.shields.io/badge/Localization-AMCL-00A98F)
 
-전·후방 조향 구동륜과 네 개의 수동 캐스터를 갖춘 환자이승로봇의 **응답 모델 기반 다중 조향 경로계획** ROS 2 워크스페이스다. 조향 전환과 차체 속도 응답을 예측하고, 전체 점유영역의 충돌 여부와 근사 물리 제약을 검사하여 병실 출발부터 목적지 침대 정렬까지의 경로를 선택한다.
+전·후방 조향 구동륜과 네 개의 수동 캐스터를 갖춘 환자이승로봇의 **응답 모델 기반 다중 조향 경로계획** ROS 2 워크스페이스이다. 조향 전환과 차체 속도 응답을 예측하고, 전체 점유영역의 충돌 여부와 근사 물리 제약을 검사하여 병실 출발부터 목적지 침대 정렬까지의 경로를 선택한다.
 
 Isaac Sim 병원 환경의 H1–H6 비교 실험, 상태 이력 제거 ablation, 전체 외곽 검사 비교와 별도 H5/H6 AMCL·엔코더·Nav2 통합 실행을 지원한다. 논문 실험에 사용한 내부 패키지명 `ijcas_experiments`, `patient_initial_stability`는 호환성을 위해 유지한다.
 
